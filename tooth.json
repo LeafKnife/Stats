@@ -4,16 +4,16 @@
     "version": "0.1.0",
     "info": {
         "name": "LK-Stats",
-        "description": "My Mod Description",
-        "author": "My Name",
+        "description": "BDS统计信息插件",
+        "author": "LWenK",
         "tags": [
             "platform:levilamina",
             "type:mod"
         ]
     },
-    "asset_url": "My Asset Url",
+    "asset_url": "https://github.com/lwenk/LK-Stats/releases/download/v0.1.0/LK-Stats-windows-x64.zip",
     "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": "1.0.0"
+        "github.com/LiteLDev/LeviLamina": "1.0.x"
     },
     "files": {
         "place": [
