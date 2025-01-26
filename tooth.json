@@ -1,6 +1,6 @@
 {
     "format_version": 2,
-    "tooth": "LK-Stats",
+    "tooth": "github.com/lwenk/LK-Stats",
     "version": "0.1.0",
     "info": {
         "name": "LK-Stats",
