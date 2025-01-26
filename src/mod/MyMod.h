@@ -2,7 +2,7 @@
 
 #include "ll/api/mod/NativeMod.h"
 
-namespace my_mod {
+namespace Stats {
 
 class MyMod {
 
