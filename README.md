@@ -1,35 +1,19 @@
-# LeviLamina Mod Template
+# LK-Stats
 
-A LeviLamina mod template
+Minecraft基岩版服务器(BDS) 统计信息插件
 
-This mod is a template for developing LeviLamina mods.
+## 安装
 
-## Install
+### 使用Lip
 
-Generate a new repository from this template.
+```sh
+lip install github.com/lwenk/LK-Stats
+```
+### 手动安装
 
-## Usage
+从[发布页面](https://github.com/lwenk/LK-Stats/releases)下载最新版本。
+解压`LK-Stats-windows-x64.zip`文件。
+将`LK-Stats`文件夹复制到BDS安装目录下的plugins文件夹中。
 
-Before using this mod template, make sure that you have installed XMake and a Minecraft Bedrock Server with LeviLamina.
-
-1. Clone the new repository into a local folder.
-
-1. Change the mod name and the expected LeviLamina version in `xmake.lua`.
-
-1. Add your code.
-
-1. Run `xmake repo -u` in the root of the repository.
-
-1. Run `xmake` to build the mod.
-
-Now the build is complete at `bin/`.
-
-## Contributing
-
-Ask questions by creating an issue.
-
-PRs accepted.
-
-## License
-
-CC0-1.0 © LiteLDev
+## 使用
+启动服务器即可
