@@ -1,6 +1,13 @@
 on:
   pull_request:
+    branches:
+      - "main"
   push:
+    branches:
+      - "main"
+    paths:
+      - "src/**"
+      - "xmake.lua"
   workflow_dispatch:
   
 jobs:
