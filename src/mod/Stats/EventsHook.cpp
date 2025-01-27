@@ -33,6 +33,7 @@
 #include "mc/world/events/PlayerOpenContainerEvent.h"
 #include "mc/world/gamemode/GameMode.h"
 #include "mc/world/gamemode/InteractionResult.h"
+#include "mc/world/inventory/CraftingContainer.h"
 #include "mc/world/inventory/network/crafting/CraftHandlerCrafting.h"
 #include "mc/world/inventory/transaction/ComplexInventoryTransaction.h"
 #include "mc/world/inventory/transaction/InventoryAction.h"
@@ -51,11 +52,15 @@
 #include "mc/world/level/Level.h"
 #include "mc/world/level/block/BasePressurePlateBlock.h"
 #include "mc/world/level/block/Block.h"
+#include "mc/world/level/block/CakeBlock.h"
+#include "mc/world/level/block/CauldronBlock.h"
 #include "mc/world/level/block/ComparatorBlock.h"
+#include "mc/world/level/block/CraftingTableBlock.h"
 #include "mc/world/level/block/DiodeBlock.h"
 #include "mc/world/level/block/FarmBlock.h"
 #include "mc/world/level/block/ItemFrameBlock.h"
 #include "mc/world/level/block/LiquidBlockDynamic.h"
+#include "mc/world/level/block/NoteBlock.h"
 #include "mc/world/level/block/RedStoneWireBlock.h"
 #include "mc/world/level/block/RedstoneTorchBlock.h"
 #include "mc/world/level/block/RespawnAnchorBlock.h"
@@ -80,7 +85,7 @@
 #include "mod/Stats/PlayerStats.h"
 
 namespace Stats::event::hook {
-
+auto& logger = Stats::MyMod().getSelf().getLogger();
 LL_TYPE_INSTANCE_HOOK(
     PlayerStartSleepHook,
     HookPriority::Normal,
@@ -102,25 +107,115 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
-    PlayerUseItemOnHook,
+    CraftingTableUseHook,
     HookPriority::Normal,
-    GameMode,
-    &GameMode::$useItemOn,
-    InteractionResult,
-    ItemStack&      item,
-    BlockPos const& blockPos,
-    uchar           face,
-    Vec3 const&     clickPos,
-    Block const*    block,
-    bool            isFirstEvent
+    CraftingTableBlock,
+    &CraftingTableBlock::$use,
+    bool,
+    ::Player&         player,
+    ::BlockPos const& pos,
+    uchar             face
 ) {
-    auto res = origin(item, blockPos, face, clickPos, block, isFirstEvent);
-    if (!isFirstEvent) return res;
-    auto& logger = Stats::MyMod().getSelf().getLogger();
-    logger
-        .info("PlayeruseItemuseItemHook {} {} {}", item.getTypeName(), isFirstEvent,
-        static_cast<int>(res.mResult));
+    auto res = origin(player, pos, face);
+    // logger.info("CraftingTableBlockUseHook {} {} {}", player.getRealName(), pos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::interact_with_crafting_table);
     return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    NoteBlockAttackHook,
+    HookPriority::Normal,
+    NoteBlock,
+    &NoteBlock::$attack,
+    bool,
+    ::Player*         player,
+    ::BlockPos const& pos
+) {
+    auto res = origin(player, pos);
+    // logger.info("NoteBlockAttackHook {} {} {}", player->getRealName(), pos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::play_noteblock);
+    return res;
+}
+
+LL_TYPE_STATIC_HOOK(
+    CakeRemoveSliceHook,
+    HookPriority::Normal,
+    CakeBlock,
+    &CakeBlock::removeCakeSlice,
+    void,
+    ::Player&         player,
+    ::BlockSource&    region,
+    ::BlockPos const& pos,
+    ::Block const*    cakeBlock
+) {
+    origin(player, region, pos, cakeBlock);
+    // logger.info("CakeRemoveSliceHook {} {}", player.getRealName(), pos);
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::eat_cake_slice);
+    return;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    CauldronBlockUseInventoryHook,
+    HookPriority::Normal,
+    CauldronBlock,
+    &CauldronBlock::_useInventory,
+    void,
+    class Player&    player,
+    class ItemStack& current,
+    class ItemStack& replaceWith,
+    int              useCount
+) {
+    // logger.info(
+    //     "CauldronBlockUseInventoryHook {} {} {} {}",
+    //     player.getRealName(),
+    //     current.getTypeName(),
+    //     replaceWith.getTypeName(),
+    //     useCount
+    // );
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return origin(player, current, replaceWith, useCount);
+    if (current.getTypeName() == "minecraft:bucket") playerStats->addCustomStats(CustomType::use_cauldron);
+    if (current.getTypeName() == "minecraft:water_bucket") playerStats->addCustomStats(CustomType::fill_cauldron);
+    return origin(player, current, replaceWith, useCount);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    CauldronBlockCleanHook,
+    HookPriority::Normal,
+    CauldronBlock,
+    &CauldronBlock::_sendCauldronUsedEventToClient,
+    void,
+    class Player const&                          player,
+    short                                        itemId,
+    ::MinecraftEventing::POIBlockInteractionType interactionType
+) {
+    origin(player, itemId, interactionType);
+    // logger.info("CauldronBlockCleanHook {} {} {}", player.getRealName(), itemId, static_cast<int>(interactionType));
+    if (interactionType != ::MinecraftEventing::POIBlockInteractionType::ClearItem) return;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    if ((itemId >= -627 && itemId <= -613) || itemId == 218)
+        return playerStats->addCustomStats(CustomType::clean_shulker_box);
+    if (itemId >= 360 && itemId <= 363) return playerStats->addCustomStats(CustomType::clean_armor);
+    if (itemId == 600) return playerStats->addCustomStats(CustomType::clean_banner);
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -133,25 +228,34 @@ LL_TYPE_INSTANCE_HOOK(
     ::BlockPos const& blockPos
 ) {
     origin(player, blockPos);
-    //auto& logger         = Stats::MyMod().getSelf().getLogger();
+    // auto& logger         = Stats::MyMod().getSelf().getLogger();
     auto& block          = Stats::event::getBlockByBlockPos(blockPos, player.getDimensionId());
     auto  blockType      = block.getTypeName();
     auto& playerStatsMap = Stats::event::getPlayerStatsMap();
     auto  uuid           = player.getUuid();
     auto  playerStats    = playerStatsMap.find(uuid)->second;
     if (!playerStats) return;
-    //logger.debug("BlockInteractedWith {} {} {}", player.getRealName(), blockType, blockPos);
+    // logger.debug("BlockInteractedWith {} {} {}", player.getRealName(), blockType, blockPos);
     auto it = CustomInteractBlockMap.find(blockType);
     if (it != CustomInteractBlockMap.end()) {
         return playerStats->addCustomStats(it->second);
     }
-    if(blockType =="minecraft:flower_pot"){
-        //TODO
+    if (blockType == "minecraft:flower_pot") {
+        // TODO
     }
-    if(blockType == "minecraft:cauldron"){
-        //TODO
-    }
-    //营火 唱片机 工作台 监听不到
+    // 营火 唱片机 工作台~ 监听不到
+}
+
+LL_TYPE_INSTANCE_HOOK(PlayerEatHook, HookPriority::Normal, Player, &Player::eat, void, ItemStack const& instance) {
+    Player* player         = this;
+    auto    item           = &const_cast<ItemStack&>(instance);
+    auto    playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto    uuid           = player->getUuid();
+    auto    playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    playerStats->addStats(StatsDataType::used, item->getTypeName());
+    origin(instance);
+    // logger.info("PlayerEatHook {} {}", player->getRealName(), item->getTypeName());
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -180,11 +284,23 @@ LL_TYPE_INSTANCE_HOOK(
 void hook() {
     PlayerStartSleepHook::hook();
     PlayerDropItemHook1::hook();
+    PlayerEatHook::hook();
+    CraftingTableUseHook::hook();
+    NoteBlockAttackHook::hook();
+    CakeRemoveSliceHook::hook();
+    CauldronBlockUseInventoryHook::hook();
+    CauldronBlockCleanHook::hook();
     BlockInteractedWithHook::hook();
 }
 void unhook() {
     PlayerStartSleepHook::unhook();
     PlayerDropItemHook1::unhook();
+    PlayerEatHook::unhook();
+    CraftingTableUseHook::unhook();
+    NoteBlockAttackHook::unhook();
+    CraftingTableUseHook::unhook();
+    CauldronBlockUseInventoryHook::unhook();
+    CauldronBlockCleanHook::unhook();
     BlockInteractedWithHook::unhook();
 }
 } // namespace Stats::event::hook
