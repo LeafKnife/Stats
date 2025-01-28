@@ -273,13 +273,13 @@ LL_TYPE_INSTANCE_HOOK(
     ::Actor const&    projectile
 ) {
     auto mob = projectile.getOwner();
-    logger.info(
-        "TargetBlockOnProjectileHitHook {} {} {} {}",
-        region.getBlock(pos).getTypeName(),
-        pos,
-        projectile.getTypeName(),
-        mob->getTypeName()
-    );
+    // logger.info(
+    //     "TargetBlockOnProjectileHitHook {} {} {} {}",
+    //     region.getBlock(pos).getTypeName(),
+    //     pos,
+    //     projectile.getTypeName(),
+    //     mob->getTypeName()
+    // );
     if (!mob->isType(::ActorType::Player)) return origin(region, pos, projectile);
     Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
     if (!player) return origin(region, pos, projectile);
@@ -313,10 +313,7 @@ LL_TYPE_INSTANCE_HOOK(
     if (it != CustomInteractBlockMap.end()) {
         return playerStats->addCustomStats(it->second);
     }
-    if (blockType == "minecraft:flower_pot") {
-        // TODO
-    }
-    // 营火 唱片机 工作台~ 监听不到
+    // 营火~ 唱片机 工作台~ 监听不到
 }
 
 LL_TYPE_INSTANCE_HOOK(PlayerEatHook, HookPriority::Normal, Player, &Player::eat, void, ItemStack const& instance) {
