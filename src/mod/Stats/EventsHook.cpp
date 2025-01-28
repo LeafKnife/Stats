@@ -110,6 +110,27 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
+    PlayerBlockUsingShieldHook,
+    HookPriority::Normal,
+    Player,
+    &Player::_blockUsingShield,
+    bool,
+    ::ActorDamageSource const& source,
+    float                      damage
+) {
+    auto    res    = origin(source, damage);
+    Player* player = this;
+    //logger.info("PlayerBlockUsingShieldHook {} {} {}", player->getRealName(), damage, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::damage_blocked_by_shield, static_cast<int>(damage * 10));
+    return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
     CraftingTableUseHook,
     HookPriority::Normal,
     CraftingTableBlock,
@@ -355,6 +376,7 @@ void hook() {
     PlayerStartSleepHook::hook();
     PlayerDropItemHook1::hook();
     PlayerEatHook::hook();
+    PlayerBlockUsingShieldHook::hook();
     CraftingTableUseHook::hook();
     NoteBlockAttackHook::hook();
     CakeRemoveSliceHook::hook();
@@ -369,6 +391,7 @@ void unhook() {
     PlayerStartSleepHook::unhook();
     PlayerDropItemHook1::unhook();
     PlayerEatHook::unhook();
+    PlayerBlockUsingShieldHook::unhook();
     CraftingTableUseHook::unhook();
     NoteBlockAttackHook::unhook();
     CraftingTableUseHook::unhook();
