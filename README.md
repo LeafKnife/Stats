@@ -80,7 +80,7 @@ lip install github.com/lwenk/LK-Stats
 | 与信标交互次数     | 玩家和信标交互的次数。                             | minecraft:interact_with_beacon            | :white_check_mark: |
 | 与高炉交互次数     | 玩家和高炉交互的次数。                             | minecraft:interact_with_blast_furnace     | :white_check_mark: |
 | 与酿造台交互次数   | 玩家和酿造台交互的次数。                           | minecraft:interact_with_brewingstand      | :white_check_mark: |
-| 与营火交互次数     | 玩家和营火交互的次数。                             | minecraft:interact_with_campfire          | :x:                |
+| 与营火交互次数     | 玩家和营火交互的次数。                             | minecraft:interact_with_campfire          | :white_check_mark: |
 | 与制图台交互次数   | 玩家和制图台交互的次数。                           | minecraft:interact_with_cartography_table | :white_check_mark: |
 | 与工作台交互次数   | 玩家和工作台交互的次数。                           | minecraft:interact_with_crafting_table    | :white_check_mark: |
 | 与熔炉交互次数     | 玩家和熔炉交互的次数。                             | minecraft:interact_with_furnace           | :white_check_mark: |
@@ -98,7 +98,7 @@ lip install github.com/lwenk/LK-Stats
 | 音符盒播放次数     | 玩家击打音符盒的次数。                             | minecraft:play_noteblock                  | :white_check_mark: |
 | 音符盒调音次数     | 玩家和音符盒交互的次数。                           | minecraft:tune_noteblock                  | :white_check_mark: |
 | 死亡次数           | 玩家死亡的次数。                                   | minecraft:deaths                          | :white_check_mark: |
-| 盆栽种植数         | 玩家将植物种进花盆的次数。                         | minecraft:pot_flower                      | :x:                |
+| 盆栽种植数         | 玩家将植物种进花盆的次数。                         | minecraft:pot_flower                      | :white_check_mark: |
 | 玩家击杀数         | 玩家（在开启 PvP 的服务器中）击杀的玩家总数        | minecraft:player_kills                    | :white_check_mark: |
 | 触发袭击次数       | 玩家触发袭击的次数。                               | minecraft:raid_trigger                    | :x:                |
 | 袭击胜利次数       | 玩家战胜袭击的次数。                               | minecraft:raid_win                        | :x:                |
@@ -108,7 +108,7 @@ lip install github.com/lwenk/LK-Stats
 | 自上次入眠         | 玩家自上次在床上睡眠以来经过的游戏时长             | minecraft:time_since_rest                 | :x:                |
 | 潜行时间           | 玩家潜行的时长。                                   | minecraft:sneak_time                      | :x:                |
 | 村民交互次数       | 玩家和村民交互（打开其 GUI）的次数。               | minecraft:talked_to_villager              | :x:                |
-| 击中标靶次数       | 玩家射中标靶的次数。                               | minecraft:target_hit                      | :x:                |
+| 击中标靶次数       | 玩家射中标靶的次数。                               | minecraft:target_hit                      | :white_check_mark: |
 | 游戏时长           | 玩家在游戏中经过的时长。                           | minecraft:play_time                       | :x:                |
 | 世界打开时间       | 玩家打开世界的总时长。                             | minecraft:total_world_time                | :x:                |
 | 躺在床上的次数     | 玩家在床上睡觉的次数。                             | minecraft:sleep_in_bed                    | :white_check_mark: |

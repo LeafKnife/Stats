@@ -53,17 +53,20 @@
 #include "mc/world/level/block/BasePressurePlateBlock.h"
 #include "mc/world/level/block/Block.h"
 #include "mc/world/level/block/CakeBlock.h"
+#include "mc/world/level/block/CampfireBlock.h"
 #include "mc/world/level/block/CauldronBlock.h"
 #include "mc/world/level/block/ComparatorBlock.h"
 #include "mc/world/level/block/CraftingTableBlock.h"
 #include "mc/world/level/block/DiodeBlock.h"
 #include "mc/world/level/block/FarmBlock.h"
+#include "mc/world/level/block/FlowerPotBlock.h"
 #include "mc/world/level/block/ItemFrameBlock.h"
 #include "mc/world/level/block/LiquidBlockDynamic.h"
 #include "mc/world/level/block/NoteBlock.h"
 #include "mc/world/level/block/RedStoneWireBlock.h"
 #include "mc/world/level/block/RedstoneTorchBlock.h"
 #include "mc/world/level/block/RespawnAnchorBlock.h"
+#include "mc/world/level/block/TargetBlock.h"
 #include "mc/world/level/block/actor/BarrelBlockActor.h"
 #include "mc/world/level/block/actor/BaseCommandBlock.h"
 #include "mc/world/level/block/actor/ChestBlockActor.h"
@@ -219,6 +222,76 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
+    FlowerPotBlockTryPlaceFlowerHook,
+    HookPriority::Normal,
+    FlowerPotBlock,
+    &FlowerPotBlock::_tryPlaceFlower,
+    bool,
+    ::Player&         player,
+    ::BlockPos const& blockPos
+) {
+    auto res = origin(player, blockPos);
+    // logger.info("FlowerPotBlockTryPlaceFlowerHook {} {} {}", player.getRealName(), blockPos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::pot_flower);
+    return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    CampfireBlockUseHook,
+    HookPriority::Normal,
+    CampfireBlock,
+    &CampfireBlock::$use,
+    bool,
+    ::Player&         player,
+    ::BlockPos const& pos,
+    uchar             face
+) {
+    auto res = origin(player, pos, face);
+    // logger.info("CampfireBlockUseHook {} {} {}", player.getRealName(), pos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::interact_with_campfire);
+    return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    TargetBlockOnProjectileHitHook,
+    HookPriority::Normal,
+    TargetBlock,
+    &TargetBlock::$onProjectileHit,
+    void,
+    ::BlockSource&    region,
+    ::BlockPos const& pos,
+    ::Actor const&    projectile
+) {
+    auto mob = projectile.getOwner();
+    logger.info(
+        "TargetBlockOnProjectileHitHook {} {} {} {}",
+        region.getBlock(pos).getTypeName(),
+        pos,
+        projectile.getTypeName(),
+        mob->getTypeName()
+    );
+    if (!mob->isType(::ActorType::Player)) return origin(region, pos, projectile);
+    Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
+    if (!player) return origin(region, pos, projectile);
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return origin(region, pos, projectile);
+    playerStats->addCustomStats(CustomType::target_hit);
+    return origin(region, pos, projectile);
+}
+
+LL_TYPE_INSTANCE_HOOK(
     BlockInteractedWithHook,
     HookPriority::Normal,
     BlockEventCoordinator,
@@ -290,6 +363,9 @@ void hook() {
     CakeRemoveSliceHook::hook();
     CauldronBlockUseInventoryHook::hook();
     CauldronBlockCleanHook::hook();
+    FlowerPotBlockTryPlaceFlowerHook::hook();
+    CampfireBlockUseHook::hook();
+    TargetBlockOnProjectileHitHook::hook();
     BlockInteractedWithHook::hook();
 }
 void unhook() {
@@ -301,6 +377,9 @@ void unhook() {
     CraftingTableUseHook::unhook();
     CauldronBlockUseInventoryHook::unhook();
     CauldronBlockCleanHook::unhook();
+    FlowerPotBlockTryPlaceFlowerHook::unhook();
+    CampfireBlockUseHook::unhook();
+    TargetBlockOnProjectileHitHook::unhook();
     BlockInteractedWithHook::unhook();
 }
 } // namespace Stats::event::hook
