@@ -28,7 +28,7 @@ lip install github.com/lwenk/LK-Stats
 | ---------------- | ------------------------------------------ | ------------------- | ------------------ |
 | CUSTOM           | 与玩家行为相关的大量通用统计信息           | minecraft:custom    | :x:                |
 | BLOCK_MINED      | 与玩家开采的方块数相关的统计信息           | minecraft:mined     | :white_check_mark: |
-| ITEM_BROKE       | 与玩家的物品耐久度相关的统计信息           | minecraft:broken    | :x:                |
+| ITEM_BROKE       | 与玩家的物品耐久度相关的统计信息           | minecraft:broken    | :white_check_mark: |
 | ITEM_CRAFTED     | 与合成、熔炼、交易等物品数量有关的统计信息 | minecraft:crafted   | :x:                |
 | ITEM_USED        | 与使用的方块或物品的数量有关的统计信息     | minecraft:used      | :x:                |
 | ITEM_PICKED_UP   | 与玩家捡起的掉落物品数量有关的统计信息     | minecraft:picked_up | :white_check_mark: |

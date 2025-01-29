@@ -512,6 +512,41 @@ LL_TYPE_INSTANCE_HOOK(
     // 营火~ 唱片机 工作台~ 监听不到
 }
 
+LL_TYPE_INSTANCE_HOOK(
+    ItemStackBaseHurtAndBreak,
+    HookPriority::Normal,
+    ItemStackBase,
+    &ItemStackBase::hurtAndBreak,
+    bool,
+    int      deltaDamage,
+    ::Actor* owner
+) {
+    if (!owner->hasType(::ActorType::Player)) return origin(deltaDamage, owner);
+    ItemStackBase* item = this;
+    auto           res  = origin(deltaDamage, owner);
+    // logger.info(
+    //     "ItemStackBaseHurtAndBreak {} {} {} {}",
+    //     this->getTypeName(),
+    //     deltaDamage,
+    //     owner->getTypeName(),
+    //     res
+    // );
+    if (!res) return res;
+    Player* player = owner->getWeakEntity().tryUnwrap<Player>();
+    if (!player) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    if (!item->isDamageableItem()) return res;
+    auto maxDamage = item->getMaxDamage();
+    auto damage    = item->getDamageValue();
+    if (damage + deltaDamage > maxDamage) {
+        playerStats->addStats(StatsDataType::broken, item->getTypeName());
+    }
+    return res;
+}
+
 void hook() {
     PlayerStartSleepHook::hook();
     PlayerDropItemHook1::hook();
@@ -529,6 +564,7 @@ void hook() {
     CampfireBlockUseHook::hook();
     TargetBlockOnProjectileHitHook::hook();
     BlockInteractedWithHook::hook();
+    ItemStackBaseHurtAndBreak::hook();
 }
 void unhook() {
     PlayerStartSleepHook::unhook();
@@ -547,5 +583,6 @@ void unhook() {
     CampfireBlockUseHook::unhook();
     TargetBlockOnProjectileHitHook::unhook();
     BlockInteractedWithHook::unhook();
+    ItemStackBaseHurtAndBreak::unhook();
 }
 } // namespace Stats::event::hook
