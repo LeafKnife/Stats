@@ -26,6 +26,9 @@
 #include "mc/world/actor/item/ItemActor.h"
 #include "mc/world/actor/player/BedSleepingResult.h"
 #include "mc/world/actor/player/Player.h"
+#include "mc/world/attribute/Attribute.h"
+#include "mc/world/attribute/AttributeInstance.h"
+#include "mc/world/attribute/SharedAttributes.h"
 #include "mc/world/containers/models/LevelContainerModel.h"
 #include "mc/world/events/BlockEventCoordinator.h"
 #include "mc/world/events/EventResult.h"
@@ -33,6 +36,7 @@
 #include "mc/world/events/PlayerOpenContainerEvent.h"
 #include "mc/world/gamemode/GameMode.h"
 #include "mc/world/gamemode/InteractionResult.h"
+#include "mc/world/inventory/CraftingContainer.h"
 #include "mc/world/inventory/network/crafting/CraftHandlerCrafting.h"
 #include "mc/world/inventory/transaction/ComplexInventoryTransaction.h"
 #include "mc/world/inventory/transaction/InventoryAction.h"
@@ -42,6 +46,7 @@
 #include "mc/world/item/CrossbowItem.h"
 #include "mc/world/item/ItemInstance.h"
 #include "mc/world/item/ItemStack.h"
+#include "mc/world/item/ItemStackBase.h"
 #include "mc/world/item/ShieldItem.h"
 #include "mc/world/item/TridentItem.h"
 #include "mc/world/level/BedrockSpawner.h"
@@ -51,14 +56,21 @@
 #include "mc/world/level/Level.h"
 #include "mc/world/level/block/BasePressurePlateBlock.h"
 #include "mc/world/level/block/Block.h"
+#include "mc/world/level/block/CakeBlock.h"
+#include "mc/world/level/block/CampfireBlock.h"
+#include "mc/world/level/block/CauldronBlock.h"
 #include "mc/world/level/block/ComparatorBlock.h"
+#include "mc/world/level/block/CraftingTableBlock.h"
 #include "mc/world/level/block/DiodeBlock.h"
 #include "mc/world/level/block/FarmBlock.h"
+#include "mc/world/level/block/FlowerPotBlock.h"
 #include "mc/world/level/block/ItemFrameBlock.h"
 #include "mc/world/level/block/LiquidBlockDynamic.h"
+#include "mc/world/level/block/NoteBlock.h"
 #include "mc/world/level/block/RedStoneWireBlock.h"
 #include "mc/world/level/block/RedstoneTorchBlock.h"
 #include "mc/world/level/block/RespawnAnchorBlock.h"
+#include "mc/world/level/block/TargetBlock.h"
 #include "mc/world/level/block/actor/BarrelBlockActor.h"
 #include "mc/world/level/block/actor/BaseCommandBlock.h"
 #include "mc/world/level/block/actor/ChestBlockActor.h"
@@ -80,7 +92,59 @@
 #include "mod/Stats/PlayerStats.h"
 
 namespace Stats::event::hook {
+auto& logger = Stats::MyMod().getSelf().getLogger();
 
+void mobHurtByPlayer(Mob* mob, Actor* damageSource, float damage, float afterDamage) {
+    Player* player = damageSource->getEntityContext().getWeakRef().tryUnwrap<Player>();
+    if (!player) return;
+    auto uuid        = player->getUuid();
+    auto playerStats = Stats::event::getPlayerStatsMap().find(uuid)->second;
+    if (!playerStats) return;
+    auto resistanceDamage = damage - afterDamage;
+    auto heath            = mob->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
+    auto absorption       = mob->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
+    resistanceDamage      = resistanceDamage > 0 ? resistanceDamage : -resistanceDamage;
+    playerStats->addCustomStats(CustomType::damage_dealt_resisted, static_cast<int>(resistanceDamage * 10));
+    float damage_taken = afterDamage > 0 ? afterDamage : -afterDamage;
+    if (absorption > 0) {
+        float damage_absobed = damage_taken;
+        if (damage_taken >= absorption) {
+            damage_taken   = damage_taken - absorption;
+            damage_absobed = absorption;
+        } else {
+            damage_taken = 0;
+        }
+        playerStats->addCustomStats(CustomType::damage_dealt_absorbed, static_cast<int>(damage_absobed * 10));
+    }
+    damage_taken = damage_taken < heath ? damage_taken : heath;
+    playerStats->addCustomStats(CustomType::damage_dealt, static_cast<int>(damage_taken * 10));
+}
+
+void playerHurt(Mob* mob, float damage, float afterDamage) {
+    Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
+    if (!player) return;
+    auto uuid        = player->getUuid();
+    auto playerStats = Stats::event::getPlayerStatsMap().find(uuid)->second;
+    if (!playerStats) return;
+    auto resistanceDamage = damage - afterDamage;
+    auto heath            = player->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
+    auto absorption       = player->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
+    resistanceDamage      = resistanceDamage > 0 ? resistanceDamage : -resistanceDamage;
+    playerStats->addCustomStats(CustomType::damage_resisted, static_cast<int>(resistanceDamage * 10));
+    float damage_taken = afterDamage > 0 ? afterDamage : -afterDamage;
+    if (absorption > 0) {
+        float damage_absobed = damage_taken;
+        if (damage_taken >= absorption) {
+            damage_taken   = damage_taken - absorption;
+            damage_absobed = absorption;
+        } else {
+            damage_taken = 0;
+        }
+        playerStats->addCustomStats(CustomType::damage_absorbed, static_cast<int>(damage_absobed * 10));
+    }
+    damage_taken = damage_taken < heath ? damage_taken : heath;
+    playerStats->addCustomStats(CustomType::damage_taken, static_cast<int>(damage_taken * 10));
+}
 LL_TYPE_INSTANCE_HOOK(
     PlayerStartSleepHook,
     HookPriority::Normal,
@@ -100,58 +164,16 @@ LL_TYPE_INSTANCE_HOOK(
     }
     return res;
 }
-
-LL_TYPE_INSTANCE_HOOK(
-    PlayerUseItemOnHook,
-    HookPriority::Normal,
-    GameMode,
-    &GameMode::$useItemOn,
-    InteractionResult,
-    ItemStack&      item,
-    BlockPos const& blockPos,
-    uchar           face,
-    Vec3 const&     clickPos,
-    Block const*    block,
-    bool            isFirstEvent
-) {
-    auto res = origin(item, blockPos, face, clickPos, block, isFirstEvent);
-    if (!isFirstEvent) return res;
-    auto& logger = Stats::MyMod().getSelf().getLogger();
-    logger
-        .info("PlayeruseItemuseItemHook {} {} {}", item.getTypeName(), isFirstEvent,
-        static_cast<int>(res.mResult));
-    return res;
-}
-
-LL_TYPE_INSTANCE_HOOK(
-    BlockInteractedWithHook,
-    HookPriority::Normal,
-    BlockEventCoordinator,
-    &BlockEventCoordinator::sendBlockInteractedWith,
-    void,
-    ::Player&         player,
-    ::BlockPos const& blockPos
-) {
-    origin(player, blockPos);
-    //auto& logger         = Stats::MyMod().getSelf().getLogger();
-    auto& block          = Stats::event::getBlockByBlockPos(blockPos, player.getDimensionId());
-    auto  blockType      = block.getTypeName();
-    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
-    auto  uuid           = player.getUuid();
-    auto  playerStats    = playerStatsMap.find(uuid)->second;
+LL_TYPE_INSTANCE_HOOK(PlayerEatHook, HookPriority::Normal, Player, &Player::eat, void, ItemStack const& instance) {
+    Player* player         = this;
+    auto    item           = &const_cast<ItemStack&>(instance);
+    auto    playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto    uuid           = player->getUuid();
+    auto    playerStats    = playerStatsMap.find(uuid)->second;
     if (!playerStats) return;
-    //logger.debug("BlockInteractedWith {} {} {}", player.getRealName(), blockType, blockPos);
-    auto it = CustomInteractBlockMap.find(blockType);
-    if (it != CustomInteractBlockMap.end()) {
-        return playerStats->addCustomStats(it->second);
-    }
-    if(blockType =="minecraft:flower_pot"){
-        //TODO
-    }
-    if(blockType == "minecraft:cauldron"){
-        //TODO
-    }
-    //营火 唱片机 工作台 监听不到
+    playerStats->addStats(StatsDataType::used, item->getTypeName());
+    origin(instance);
+    // logger.info("PlayerEatHook {} {}", player->getRealName(), item->getTypeName());
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -177,14 +199,350 @@ LL_TYPE_INSTANCE_HOOK(
     return res;
 }
 
+LL_TYPE_INSTANCE_HOOK(
+    PlayerBlockUsingShieldHook,
+    HookPriority::Normal,
+    Player,
+    &Player::_blockUsingShield,
+    bool,
+    ::ActorDamageSource const& source,
+    float                      damage
+) {
+    auto    res    = origin(source, damage);
+    Player* player = this;
+    // logger.info("PlayerBlockUsingShieldHook {} {} {}", player->getRealName(), damage, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::damage_blocked_by_shield, static_cast<int>(damage * 10));
+    return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    PlayerUseItemHook,
+    HookPriority::Normal,
+    Player,
+    &Player::$useItem,
+    void,
+    ::ItemStackBase& instance,
+    ::ItemUseMethod  itemUseMethod,
+    bool             consumeItem
+) {
+    Player* player         = this;
+    auto&   playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto    uuid           = player->getUuid();
+    auto    playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return origin(instance, itemUseMethod, consumeItem);
+    if (instance.isMusicDiscItem() && itemUseMethod == ItemUseMethod::Place)
+        playerStats->addCustomStats(CustomType::play_record);
+    // logger.info(
+    //     "PlayerUseItemHook {} {} {} {}",
+    //     player->getRealName(),
+    //     instance.getTypeName(),
+    //     static_cast<int>(itemUseMethod),
+    //     consumeItem
+    // );
+    return origin(instance, itemUseMethod, consumeItem);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    ServerPlayerOpenTradingHook,
+    HookPriority::Normal,
+    ServerPlayer,
+    &ServerPlayer::$openTrading,
+    void,
+    ::ActorUniqueID const& uniqueID,
+    bool                   useNewScreen
+) {
+    origin(uniqueID, useNewScreen);
+    Player* player = this;
+    // logger.info("PlayerOpenTradingHook {} {} {}", player->getRealName(), uniqueID.rawID, useNewScreen);
+    auto actor = ll::service::getLevel()->fetchEntity(uniqueID, false);
+
+    if (!actor->hasType(::ActorType::VillagerV2)) return;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::talked_to_villager);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    MobGetDamageAfterResistanceEffectHook,
+    HookPriority::Normal,
+    Mob,
+    &Mob::getDamageAfterResistanceEffect,
+    float,
+    ::ActorDamageSource const& source,
+    float                      damage
+) {
+    auto afterDamage = origin(source, damage);
+    Mob* mob         = this;
+
+    if (mob->hasType(::ActorType::Player)) {
+        playerHurt(mob, damage, afterDamage);
+    }
+    if (source.isEntitySource()) {
+        Actor* damageSource = nullptr;
+        if (!source.isEntitySource()) {
+            if (source.isChildEntitySource()) {
+                damageSource = ll::service::getLevel()->fetchEntity(source.getEntityUniqueID(), false);
+            } else {
+                damageSource = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
+            }
+            if (damageSource->hasType(::ActorType::Player)) {
+                mobHurtByPlayer(mob, damageSource, damage, afterDamage);
+            }
+        }
+    }
+    // logger.info("MobGetDamageAfterResistanceEffectHook {} {} {}", this->getTypeName(), damage * 100, afterDamage *
+    // 100);
+    return afterDamage;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    CraftingTableUseHook,
+    HookPriority::Normal,
+    CraftingTableBlock,
+    &CraftingTableBlock::$use,
+    bool,
+    ::Player&         player,
+    ::BlockPos const& pos,
+    uchar             face
+) {
+    auto res = origin(player, pos, face);
+    // logger.info("CraftingTableBlockUseHook {} {} {}", player.getRealName(), pos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::interact_with_crafting_table);
+    return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    NoteBlockAttackHook,
+    HookPriority::Normal,
+    NoteBlock,
+    &NoteBlock::$attack,
+    bool,
+    ::Player*         player,
+    ::BlockPos const& pos
+) {
+    auto res = origin(player, pos);
+    // logger.info("NoteBlockAttackHook {} {} {}", player->getRealName(), pos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::play_noteblock);
+    return res;
+}
+
+LL_TYPE_STATIC_HOOK(
+    CakeRemoveSliceHook,
+    HookPriority::Normal,
+    CakeBlock,
+    &CakeBlock::removeCakeSlice,
+    void,
+    ::Player&         player,
+    ::BlockSource&    region,
+    ::BlockPos const& pos,
+    ::Block const*    cakeBlock
+) {
+    origin(player, region, pos, cakeBlock);
+    // logger.info("CakeRemoveSliceHook {} {}", player.getRealName(), pos);
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::eat_cake_slice);
+    return;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    CauldronBlockUseInventoryHook,
+    HookPriority::Normal,
+    CauldronBlock,
+    &CauldronBlock::_useInventory,
+    void,
+    class Player&    player,
+    class ItemStack& current,
+    class ItemStack& replaceWith,
+    int              useCount
+) {
+    // logger.info(
+    //     "CauldronBlockUseInventoryHook {} {} {} {}",
+    //     player.getRealName(),
+    //     current.getTypeName(),
+    //     replaceWith.getTypeName(),
+    //     useCount
+    // );
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return origin(player, current, replaceWith, useCount);
+    if (current.getTypeName() == "minecraft:bucket") playerStats->addCustomStats(CustomType::use_cauldron);
+    if (current.getTypeName() == "minecraft:water_bucket") playerStats->addCustomStats(CustomType::fill_cauldron);
+    return origin(player, current, replaceWith, useCount);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    CauldronBlockCleanHook,
+    HookPriority::Normal,
+    CauldronBlock,
+    &CauldronBlock::_sendCauldronUsedEventToClient,
+    void,
+    class Player const&                          player,
+    short                                        itemId,
+    ::MinecraftEventing::POIBlockInteractionType interactionType
+) {
+    origin(player, itemId, interactionType);
+    // logger.info("CauldronBlockCleanHook {} {} {}", player.getRealName(), itemId, static_cast<int>(interactionType));
+    if (interactionType != ::MinecraftEventing::POIBlockInteractionType::ClearItem) return;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    if ((itemId >= -627 && itemId <= -613) || itemId == 218)
+        return playerStats->addCustomStats(CustomType::clean_shulker_box);
+    if (itemId >= 360 && itemId <= 363) return playerStats->addCustomStats(CustomType::clean_armor);
+    if (itemId == 600) return playerStats->addCustomStats(CustomType::clean_banner);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    FlowerPotBlockTryPlaceFlowerHook,
+    HookPriority::Normal,
+    FlowerPotBlock,
+    &FlowerPotBlock::_tryPlaceFlower,
+    bool,
+    ::Player&         player,
+    ::BlockPos const& blockPos
+) {
+    auto res = origin(player, blockPos);
+    // logger.info("FlowerPotBlockTryPlaceFlowerHook {} {} {}", player.getRealName(), blockPos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::pot_flower);
+    return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    CampfireBlockUseHook,
+    HookPriority::Normal,
+    CampfireBlock,
+    &CampfireBlock::$use,
+    bool,
+    ::Player&         player,
+    ::BlockPos const& pos,
+    uchar             face
+) {
+    auto res = origin(player, pos, face);
+    // logger.info("CampfireBlockUseHook {} {} {}", player.getRealName(), pos, res);
+    if (!res) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    playerStats->addCustomStats(CustomType::interact_with_campfire);
+    return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    TargetBlockOnProjectileHitHook,
+    HookPriority::Normal,
+    TargetBlock,
+    &TargetBlock::$onProjectileHit,
+    void,
+    ::BlockSource&    region,
+    ::BlockPos const& pos,
+    ::Actor const&    projectile
+) {
+    auto mob = projectile.getOwner();
+    // logger.info(
+    //     "TargetBlockOnProjectileHitHook {} {} {} {}",
+    //     region.getBlock(pos).getTypeName(),
+    //     pos,
+    //     projectile.getTypeName(),
+    //     mob->getTypeName()
+    // );
+    if (!mob->isType(::ActorType::Player)) return origin(region, pos, projectile);
+    Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
+    if (!player) return origin(region, pos, projectile);
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return origin(region, pos, projectile);
+    playerStats->addCustomStats(CustomType::target_hit);
+    return origin(region, pos, projectile);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    BlockInteractedWithHook,
+    HookPriority::Normal,
+    BlockEventCoordinator,
+    &BlockEventCoordinator::sendBlockInteractedWith,
+    void,
+    ::Player&         player,
+    ::BlockPos const& blockPos
+) {
+    origin(player, blockPos);
+    // auto& logger         = Stats::MyMod().getSelf().getLogger();
+    auto& block          = Stats::event::getBlockByBlockPos(blockPos, player.getDimensionId());
+    auto  blockType      = block.getTypeName();
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player.getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    // logger.debug("BlockInteractedWith {} {} {}", player.getRealName(), blockType, blockPos);
+    auto it = CustomInteractBlockMap.find(blockType);
+    if (it != CustomInteractBlockMap.end()) {
+        return playerStats->addCustomStats(it->second);
+    }
+    // 营火~ 唱片机 工作台~ 监听不到
+}
+
 void hook() {
     PlayerStartSleepHook::hook();
     PlayerDropItemHook1::hook();
+    PlayerEatHook::hook();
+    PlayerBlockUsingShieldHook::hook();
+    PlayerUseItemHook::hook();
+    ServerPlayerOpenTradingHook::hook();
+    MobGetDamageAfterResistanceEffectHook::hook();
+    CraftingTableUseHook::hook();
+    NoteBlockAttackHook::hook();
+    CakeRemoveSliceHook::hook();
+    CauldronBlockUseInventoryHook::hook();
+    CauldronBlockCleanHook::hook();
+    FlowerPotBlockTryPlaceFlowerHook::hook();
+    CampfireBlockUseHook::hook();
+    TargetBlockOnProjectileHitHook::hook();
     BlockInteractedWithHook::hook();
 }
 void unhook() {
     PlayerStartSleepHook::unhook();
     PlayerDropItemHook1::unhook();
+    PlayerEatHook::unhook();
+    PlayerBlockUsingShieldHook::unhook();
+    PlayerUseItemHook::unhook();
+    ServerPlayerOpenTradingHook::unhook();
+    MobGetDamageAfterResistanceEffectHook::unhook();
+    CraftingTableUseHook::unhook();
+    NoteBlockAttackHook::unhook();
+    CraftingTableUseHook::unhook();
+    CauldronBlockUseInventoryHook::unhook();
+    CauldronBlockCleanHook::unhook();
+    FlowerPotBlockTryPlaceFlowerHook::unhook();
+    CampfireBlockUseHook::unhook();
+    TargetBlockOnProjectileHitHook::unhook();
     BlockInteractedWithHook::unhook();
 }
 } // namespace Stats::event::hook
