@@ -48,13 +48,13 @@ lip install github.com/lwenk/LK-Stats
 | 吃掉的蛋糕片数     | 玩家吃下的蛋糕片数。                               | minecraft:eat_cake_slice                  | :white_check_mark: |
 | 炼药锅装水次数     | 玩家使用水桶将炼药锅装满的次数。                   | minecraft:fill_cauldron                   | :white_check_mark: |
 | 箱子打开次数       | 玩家打开箱子的次数。                               | minecraft:open_chest                      | :white_check_mark: |
-| 吸收的伤害         | 玩家吸收的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_absorbed                 | :x:                |
-| 盾牌抵挡的伤害     | 玩家使用盾牌抵挡的伤害总量，单位为 1（♥）的 1⁄10。 | minecraft:damage_blocked_by_shield        | :x:                |
-| 造成伤害           | 玩家造成的伤害总量，单位为 1（♥）的 1⁄10           | minecraft:damage_dealt                    | :x:                |
-| 造成伤害（被吸收） | 玩家造成但被吸收的伤害总量，单位为 1（♥）的 1⁄10。 | minecraft:damage_dealt_absorbed           | :x:                |
-| 造成伤害（被抵挡） | 玩家造成但被抵挡的伤害总量，单位为 1（♥）的 1⁄10。 | minecraft:damage_dealt_resisted           | :x:                |
-| 抵挡的伤害         | 玩家抵挡的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_resisted                 | :x:                |
-| 受到伤害           | 玩家承受的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_taken                    | :x:                |
+| 吸收的伤害         | 玩家吸收的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_absorbed                 | :white_check_mark: |
+| 盾牌抵挡的伤害     | 玩家使用盾牌抵挡的伤害总量，单位为 1（♥）的 1⁄10。 | minecraft:damage_blocked_by_shield        | :white_check_mark: |
+| 造成伤害           | 玩家造成的伤害总量，单位为 1（♥）的 1⁄10           | minecraft:damage_dealt                    | :white_check_mark: |
+| 造成伤害（被吸收） | 玩家造成但被吸收的伤害总量，单位为 1（♥）的 1⁄10。 | minecraft:damage_dealt_absorbed           | :white_check_mark: |
+| 造成伤害（被抵挡） | 玩家造成但被抵挡的伤害总量，单位为 1（♥）的 1⁄10。 | minecraft:damage_dealt_resisted           | :white_check_mark: |
+| 抵挡的伤害         | 玩家抵挡的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_resisted                 | :white_check_mark: |
+| 受到伤害           | 玩家承受的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_taken                    | :white_check_mark: |
 | 搜查发射器次数     | 玩家和发射器交互的次数。                           | minecraft:inspect_dispenser               | :white_check_mark: |
 | 坐船移动距离       | 玩家乘船移动的总距离。                             | minecraft:boat_one_cm                     | :x:                |
 | 鞘翅滑行距离       | 玩家使用鞘翅滑行的总距离。                         | minecraft:aviate_one_cm                   | :x:                |

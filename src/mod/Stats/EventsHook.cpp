@@ -26,6 +26,9 @@
 #include "mc/world/actor/item/ItemActor.h"
 #include "mc/world/actor/player/BedSleepingResult.h"
 #include "mc/world/actor/player/Player.h"
+#include "mc/world/attribute/Attribute.h"
+#include "mc/world/attribute/AttributeInstance.h"
+#include "mc/world/attribute/SharedAttributes.h"
 #include "mc/world/containers/models/LevelContainerModel.h"
 #include "mc/world/events/BlockEventCoordinator.h"
 #include "mc/world/events/EventResult.h"
@@ -43,6 +46,7 @@
 #include "mc/world/item/CrossbowItem.h"
 #include "mc/world/item/ItemInstance.h"
 #include "mc/world/item/ItemStack.h"
+#include "mc/world/item/ItemStackBase.h"
 #include "mc/world/item/ShieldItem.h"
 #include "mc/world/item/TridentItem.h"
 #include "mc/world/level/BedrockSpawner.h"
@@ -89,6 +93,58 @@
 
 namespace Stats::event::hook {
 auto& logger = Stats::MyMod().getSelf().getLogger();
+
+void mobHurtByPlayer(Mob* mob, Actor* damageSource, float damage, float afterDamage) {
+    Player* player = damageSource->getEntityContext().getWeakRef().tryUnwrap<Player>();
+    if (!player) return;
+    auto uuid        = player->getUuid();
+    auto playerStats = Stats::event::getPlayerStatsMap().find(uuid)->second;
+    if (!playerStats) return;
+    auto resistanceDamage = damage - afterDamage;
+    auto heath            = mob->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
+    auto absorption       = mob->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
+    resistanceDamage      = resistanceDamage > 0 ? resistanceDamage : -resistanceDamage;
+    playerStats->addCustomStats(CustomType::damage_dealt_resisted, static_cast<int>(resistanceDamage * 10));
+    float damage_taken = afterDamage > 0 ? afterDamage : -afterDamage;
+    if (absorption > 0) {
+        float damage_absobed = damage_taken;
+        if (damage_taken >= absorption) {
+            damage_taken   = damage_taken - absorption;
+            damage_absobed = absorption;
+        } else {
+            damage_taken = 0;
+        }
+        playerStats->addCustomStats(CustomType::damage_dealt_absorbed, static_cast<int>(damage_absobed * 10));
+    }
+    damage_taken = damage_taken < heath ? damage_taken : heath;
+    playerStats->addCustomStats(CustomType::damage_dealt, static_cast<int>(damage_taken * 10));
+}
+
+void playerHurt(Mob* mob, float damage, float afterDamage) {
+    Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
+    if (!player) return;
+    auto uuid        = player->getUuid();
+    auto playerStats = Stats::event::getPlayerStatsMap().find(uuid)->second;
+    if (!playerStats) return;
+    auto resistanceDamage = damage - afterDamage;
+    auto heath            = player->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
+    auto absorption       = player->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
+    resistanceDamage      = resistanceDamage > 0 ? resistanceDamage : -resistanceDamage;
+    playerStats->addCustomStats(CustomType::damage_resisted, static_cast<int>(resistanceDamage * 10));
+    float damage_taken = afterDamage > 0 ? afterDamage : -afterDamage;
+    if (absorption > 0) {
+        float damage_absobed = damage_taken;
+        if (damage_taken >= absorption) {
+            damage_taken   = damage_taken - absorption;
+            damage_absobed = absorption;
+        } else {
+            damage_taken = 0;
+        }
+        playerStats->addCustomStats(CustomType::damage_absorbed, static_cast<int>(damage_absobed * 10));
+    }
+    damage_taken = damage_taken < heath ? damage_taken : heath;
+    playerStats->addCustomStats(CustomType::damage_taken, static_cast<int>(damage_taken * 10));
+}
 LL_TYPE_INSTANCE_HOOK(
     PlayerStartSleepHook,
     HookPriority::Normal,
@@ -108,6 +164,40 @@ LL_TYPE_INSTANCE_HOOK(
     }
     return res;
 }
+LL_TYPE_INSTANCE_HOOK(PlayerEatHook, HookPriority::Normal, Player, &Player::eat, void, ItemStack const& instance) {
+    Player* player         = this;
+    auto    item           = &const_cast<ItemStack&>(instance);
+    auto    playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto    uuid           = player->getUuid();
+    auto    playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    playerStats->addStats(StatsDataType::used, item->getTypeName());
+    origin(instance);
+    // logger.info("PlayerEatHook {} {}", player->getRealName(), item->getTypeName());
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    PlayerDropItemHook1,
+    HookPriority::Normal,
+    Player,
+    &Player::$drop,
+    bool,
+    ItemStack const& item,
+    bool             randomly
+) {
+    auto res            = origin(item, randomly);
+    auto player         = this;
+    auto playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto uuid           = player->getUuid();
+    auto playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    if (res && !randomly) {
+        playerStats->addCustomStats(CustomType::drop);
+        playerStats->addStats(StatsDataType::dropped, item.getTypeName(), item.mCount);
+    }
+    // logger.info("PlayerDropItemHook1{} {} {} {}", player->getRealName(), item.getTypeName(), randomly, res);
+    return res;
+}
 
 LL_TYPE_INSTANCE_HOOK(
     PlayerBlockUsingShieldHook,
@@ -120,7 +210,7 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     auto    res    = origin(source, damage);
     Player* player = this;
-    //logger.info("PlayerBlockUsingShieldHook {} {} {}", player->getRealName(), damage, res);
+    // logger.info("PlayerBlockUsingShieldHook {} {} {}", player->getRealName(), damage, res);
     if (!res) return res;
     auto& playerStatsMap = Stats::event::getPlayerStatsMap();
     auto  uuid           = player->getUuid();
@@ -128,6 +218,39 @@ LL_TYPE_INSTANCE_HOOK(
     if (!playerStats) return res;
     playerStats->addCustomStats(CustomType::damage_blocked_by_shield, static_cast<int>(damage * 10));
     return res;
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    MobGetDamageAfterResistanceEffectHook,
+    HookPriority::Normal,
+    Mob,
+    &Mob::getDamageAfterResistanceEffect,
+    float,
+    ::ActorDamageSource const& source,
+    float                      damage
+) {
+    auto afterDamage = origin(source, damage);
+    Mob* mob         = this;
+
+    if (mob->hasType(::ActorType::Player)) {
+        playerHurt(mob, damage, afterDamage);
+    }
+    if (source.isEntitySource()) {
+        Actor* damageSource = nullptr;
+        if (!source.isEntitySource()) {
+            if (source.isChildEntitySource()) {
+                damageSource = ll::service::getLevel()->fetchEntity(source.getEntityUniqueID(), false);
+            } else {
+                damageSource = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
+            }
+            if (damageSource->hasType(::ActorType::Player)) {
+                mobHurtByPlayer(mob, damageSource, damage, afterDamage);
+            }
+        }
+    }
+    // logger.info("MobGetDamageAfterResistanceEffectHook {} {} {}", this->getTypeName(), damage * 100, afterDamage *
+    // 100);
+    return afterDamage;
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -337,46 +460,12 @@ LL_TYPE_INSTANCE_HOOK(
     // 营火~ 唱片机 工作台~ 监听不到
 }
 
-LL_TYPE_INSTANCE_HOOK(PlayerEatHook, HookPriority::Normal, Player, &Player::eat, void, ItemStack const& instance) {
-    Player* player         = this;
-    auto    item           = &const_cast<ItemStack&>(instance);
-    auto    playerStatsMap = Stats::event::getPlayerStatsMap();
-    auto    uuid           = player->getUuid();
-    auto    playerStats    = playerStatsMap.find(uuid)->second;
-    if (!playerStats) return;
-    playerStats->addStats(StatsDataType::used, item->getTypeName());
-    origin(instance);
-    // logger.info("PlayerEatHook {} {}", player->getRealName(), item->getTypeName());
-}
-
-LL_TYPE_INSTANCE_HOOK(
-    PlayerDropItemHook1,
-    HookPriority::Normal,
-    Player,
-    &Player::$drop,
-    bool,
-    ItemStack const& item,
-    bool             randomly
-) {
-    auto res            = origin(item, randomly);
-    auto player         = this;
-    auto playerStatsMap = Stats::event::getPlayerStatsMap();
-    auto uuid           = player->getUuid();
-    auto playerStats    = playerStatsMap.find(uuid)->second;
-    if (!playerStats) return res;
-    if (res && !randomly) {
-        playerStats->addCustomStats(CustomType::drop);
-        playerStats->addStats(StatsDataType::dropped, item.getTypeName(), item.mCount);
-    }
-    // logger.info("PlayerDropItemHook1{} {} {} {}", player->getRealName(), item.getTypeName(), randomly, res);
-    return res;
-}
-
 void hook() {
     PlayerStartSleepHook::hook();
     PlayerDropItemHook1::hook();
     PlayerEatHook::hook();
     PlayerBlockUsingShieldHook::hook();
+    MobGetDamageAfterResistanceEffectHook::hook();
     CraftingTableUseHook::hook();
     NoteBlockAttackHook::hook();
     CakeRemoveSliceHook::hook();
@@ -392,6 +481,7 @@ void unhook() {
     PlayerDropItemHook1::unhook();
     PlayerEatHook::unhook();
     PlayerBlockUsingShieldHook::unhook();
+    MobGetDamageAfterResistanceEffectHook::unhook();
     CraftingTableUseHook::unhook();
     NoteBlockAttackHook::unhook();
     CraftingTableUseHook::unhook();
