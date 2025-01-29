@@ -221,6 +221,28 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
+    ServerPlayerOpenTradingHook,
+    HookPriority::Normal,
+    ServerPlayer,
+    &ServerPlayer::$openTrading,
+    void,
+    ::ActorUniqueID const& uniqueID,
+    bool                   useNewScreen
+) {
+    origin(uniqueID, useNewScreen);
+    Player* player = this;
+    // logger.info("PlayerOpenTradingHook {} {} {}", player->getRealName(), uniqueID.rawID, useNewScreen);
+    auto actor = ll::service::getLevel()->fetchEntity(uniqueID, false);
+
+    if (!actor->hasType(::ActorType::VillagerV2)) return;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::talked_to_villager);
+}
+
+LL_TYPE_INSTANCE_HOOK(
     MobGetDamageAfterResistanceEffectHook,
     HookPriority::Normal,
     Mob,
@@ -465,6 +487,7 @@ void hook() {
     PlayerDropItemHook1::hook();
     PlayerEatHook::hook();
     PlayerBlockUsingShieldHook::hook();
+    ServerPlayerOpenTradingHook::hook();
     MobGetDamageAfterResistanceEffectHook::hook();
     CraftingTableUseHook::hook();
     NoteBlockAttackHook::hook();
@@ -481,6 +504,7 @@ void unhook() {
     PlayerDropItemHook1::unhook();
     PlayerEatHook::unhook();
     PlayerBlockUsingShieldHook::unhook();
+    ServerPlayerOpenTradingHook::unhook();
     MobGetDamageAfterResistanceEffectHook::unhook();
     CraftingTableUseHook::unhook();
     NoteBlockAttackHook::unhook();
