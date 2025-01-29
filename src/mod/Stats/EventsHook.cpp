@@ -235,8 +235,11 @@ LL_TYPE_INSTANCE_HOOK(
     auto    uuid           = player->getUuid();
     auto    playerStats    = playerStatsMap.find(uuid)->second;
     if (!playerStats) return origin(instance, itemUseMethod, consumeItem);
-    if (instance.isMusicDiscItem() && itemUseMethod == ItemUseMethod::Place)
+    if (instance.isMusicDiscItem() && itemUseMethod == ItemUseMethod::Place) {
         playerStats->addCustomStats(CustomType::play_record);
+        playerStats->addStats(StatsDataType::used, instance.getTypeName());
+        return origin(instance, itemUseMethod, consumeItem);
+    }
     // logger.info(
     //     "PlayerUseItemHook {} {} {} {}",
     //     player->getRealName(),
