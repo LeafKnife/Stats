@@ -94,7 +94,7 @@ lip install github.com/lwenk/LK-Stats
 | 物品附魔次数       | 玩家为物品使用附魔台附魔的次数。                   | minecraft:enchant_item                    | :x:                |
 | 跳跃次数           | 玩家进行跳跃的次数。                               | minecraft:jump                            | :white_check_mark: |
 | 生物击杀数         | 玩家击杀的生物总数。                               | minecraft:mob_kills                       | :white_check_mark: |
-| 播放唱片数         | 玩家用唱片机播放音乐唱片的次数。                   | minecraft:play_record                     | :x:                |
+| 播放唱片数         | 玩家用唱片机播放音乐唱片的次数。                   | minecraft:play_record                     | :white_check_mark: |
 | 音符盒播放次数     | 玩家击打音符盒的次数。                             | minecraft:play_noteblock                  | :white_check_mark: |
 | 音符盒调音次数     | 玩家和音符盒交互的次数。                           | minecraft:tune_noteblock                  | :white_check_mark: |
 | 死亡次数           | 玩家死亡的次数。                                   | minecraft:deaths                          | :white_check_mark: |

@@ -221,6 +221,33 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(
+    PlayerUseItemHook,
+    HookPriority::Normal,
+    Player,
+    &Player::$useItem,
+    void,
+    ::ItemStackBase& instance,
+    ::ItemUseMethod  itemUseMethod,
+    bool             consumeItem
+) {
+    Player* player         = this;
+    auto&   playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto    uuid           = player->getUuid();
+    auto    playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return origin(instance, itemUseMethod, consumeItem);
+    if (instance.isMusicDiscItem() && itemUseMethod == ItemUseMethod::Place)
+        playerStats->addCustomStats(CustomType::play_record);
+    // logger.info(
+    //     "PlayerUseItemHook {} {} {} {}",
+    //     player->getRealName(),
+    //     instance.getTypeName(),
+    //     static_cast<int>(itemUseMethod),
+    //     consumeItem
+    // );
+    return origin(instance, itemUseMethod, consumeItem);
+}
+
+LL_TYPE_INSTANCE_HOOK(
     ServerPlayerOpenTradingHook,
     HookPriority::Normal,
     ServerPlayer,
@@ -487,6 +514,7 @@ void hook() {
     PlayerDropItemHook1::hook();
     PlayerEatHook::hook();
     PlayerBlockUsingShieldHook::hook();
+    PlayerUseItemHook::hook();
     ServerPlayerOpenTradingHook::hook();
     MobGetDamageAfterResistanceEffectHook::hook();
     CraftingTableUseHook::hook();
@@ -504,6 +532,7 @@ void unhook() {
     PlayerDropItemHook1::unhook();
     PlayerEatHook::unhook();
     PlayerBlockUsingShieldHook::unhook();
+    PlayerUseItemHook::unhook();
     ServerPlayerOpenTradingHook::unhook();
     MobGetDamageAfterResistanceEffectHook::unhook();
     CraftingTableUseHook::unhook();
