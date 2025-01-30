@@ -100,8 +100,8 @@ lip install github.com/lwenk/LK-Stats
 | 死亡次数           | 玩家死亡的次数。                                   | minecraft:deaths                          | :white_check_mark: |
 | 盆栽种植数         | 玩家将植物种进花盆的次数。                         | minecraft:pot_flower                      | :white_check_mark: |
 | 玩家击杀数         | 玩家（在开启 PvP 的服务器中）击杀的玩家总数        | minecraft:player_kills                    | :white_check_mark: |
-| 触发袭击次数       | 玩家触发袭击的次数。                               | minecraft:raid_trigger                    | :x:                |
-| 袭击胜利次数       | 玩家战胜袭击的次数。                               | minecraft:raid_win                        | :x:                |
+| 触发袭击次数       | 玩家触发袭击的次数。                               | minecraft:raid_trigger                    | :white_check_mark: |
+| 袭击胜利次数       | 玩家战胜袭击的次数。                               | minecraft:raid_win                        | :white_check_mark: |
 | 潜影盒清洗次数     | 玩家使用炼药锅洗去潜影盒染色的次数。               | minecraft:clean_shulker_box               | :white_check_mark: |
 | 潜影盒打开次数     | 玩家打开潜影盒的次数。                             | minecraft:open_shulker_box                | :white_check_mark: |
 | 自上次死亡         | 玩家自上次死亡以来经过的游戏时长。                 | minecraft:time_since_death                | :x:                |
