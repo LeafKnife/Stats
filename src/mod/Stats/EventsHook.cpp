@@ -30,6 +30,9 @@
 #include "mc/world/attribute/AttributeInstance.h"
 #include "mc/world/attribute/SharedAttributes.h"
 #include "mc/world/containers/models/LevelContainerModel.h"
+#include "mc/world/effect/EffectDuration.h"
+#include "mc/world/effect/MobEffect.h"
+#include "mc/world/effect/MobEffectInstance.h"
 #include "mc/world/events/BlockEventCoordinator.h"
 #include "mc/world/events/EventResult.h"
 #include "mc/world/events/PlayerEventListener.h"
@@ -235,8 +238,11 @@ LL_TYPE_INSTANCE_HOOK(
     auto    uuid           = player->getUuid();
     auto    playerStats    = playerStatsMap.find(uuid)->second;
     if (!playerStats) return origin(instance, itemUseMethod, consumeItem);
-    if (instance.isMusicDiscItem() && itemUseMethod == ItemUseMethod::Place)
+    if (instance.isMusicDiscItem() && itemUseMethod == ItemUseMethod::Place) {
         playerStats->addCustomStats(CustomType::play_record);
+        playerStats->addStats(StatsDataType::used, instance.getTypeName());
+        return origin(instance, itemUseMethod, consumeItem);
+    }
     // logger.info(
     //     "PlayerUseItemHook {} {} {} {}",
     //     player->getRealName(),
@@ -267,6 +273,32 @@ LL_TYPE_INSTANCE_HOOK(
     auto  playerStats    = playerStatsMap.find(uuid)->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::talked_to_villager);
+}
+
+LL_TYPE_INSTANCE_HOOK(
+    ActorAddEffectHook,
+    HookPriority::Normal,
+    Actor,
+    &Actor::addEffect,
+    void,
+    ::MobEffectInstance const& effect
+) {
+    auto effectId      = effect.getId();
+    auto durationValue = effect.getDuration().mValue;
+    if (!this->hasType(::ActorType::Player)) return origin(effect);
+    Player* player = this->getWeakEntity().tryUnwrap<Player>();
+    if (!player) return origin(effect);
+    //logger.info("ActorAddEffect {} {} {}", player->getRealName(), effectId, durationValue);
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return origin(effect);
+    if (effectId == 29 && durationValue == 40 * 60 * 20) {
+        playerStats->addCustomStats(CustomType::raid_win);
+    } else if (effectId == 36 && durationValue == 30 * 20) {
+        playerStats->addCustomStats(CustomType::raid_trigger);
+    }
+    return origin(effect);
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -509,6 +541,41 @@ LL_TYPE_INSTANCE_HOOK(
     // 营火~ 唱片机 工作台~ 监听不到
 }
 
+LL_TYPE_INSTANCE_HOOK(
+    ItemStackBaseHurtAndBreak,
+    HookPriority::Normal,
+    ItemStackBase,
+    &ItemStackBase::hurtAndBreak,
+    bool,
+    int      deltaDamage,
+    ::Actor* owner
+) {
+    if (!owner->hasType(::ActorType::Player)) return origin(deltaDamage, owner);
+    ItemStackBase* item = this;
+    auto           res  = origin(deltaDamage, owner);
+    // logger.info(
+    //     "ItemStackBaseHurtAndBreak {} {} {} {}",
+    //     this->getTypeName(),
+    //     deltaDamage,
+    //     owner->getTypeName(),
+    //     res
+    // );
+    if (!res) return res;
+    Player* player = owner->getWeakEntity().tryUnwrap<Player>();
+    if (!player) return res;
+    auto& playerStatsMap = Stats::event::getPlayerStatsMap();
+    auto  uuid           = player->getUuid();
+    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    if (!playerStats) return res;
+    if (!item->isDamageableItem()) return res;
+    auto maxDamage = item->getMaxDamage();
+    auto damage    = item->getDamageValue();
+    if (damage + deltaDamage > maxDamage) {
+        playerStats->addStats(StatsDataType::broken, item->getTypeName());
+    }
+    return res;
+}
+
 void hook() {
     PlayerStartSleepHook::hook();
     PlayerDropItemHook1::hook();
@@ -516,6 +583,7 @@ void hook() {
     PlayerBlockUsingShieldHook::hook();
     PlayerUseItemHook::hook();
     ServerPlayerOpenTradingHook::hook();
+    ActorAddEffectHook::hook();
     MobGetDamageAfterResistanceEffectHook::hook();
     CraftingTableUseHook::hook();
     NoteBlockAttackHook::hook();
@@ -526,6 +594,7 @@ void hook() {
     CampfireBlockUseHook::hook();
     TargetBlockOnProjectileHitHook::hook();
     BlockInteractedWithHook::hook();
+    ItemStackBaseHurtAndBreak::hook();
 }
 void unhook() {
     PlayerStartSleepHook::unhook();
@@ -534,6 +603,7 @@ void unhook() {
     PlayerBlockUsingShieldHook::unhook();
     PlayerUseItemHook::unhook();
     ServerPlayerOpenTradingHook::unhook();
+    ActorAddEffectHook::unhook();
     MobGetDamageAfterResistanceEffectHook::unhook();
     CraftingTableUseHook::unhook();
     NoteBlockAttackHook::unhook();
@@ -544,5 +614,6 @@ void unhook() {
     CampfireBlockUseHook::unhook();
     TargetBlockOnProjectileHitHook::unhook();
     BlockInteractedWithHook::unhook();
+    ItemStackBaseHurtAndBreak::unhook();
 }
 } // namespace Stats::event::hook

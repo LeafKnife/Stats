@@ -1,9 +1,9 @@
 {
     "format_version": 2,
-    "tooth": "github.com/lwenk/LK-Stats",
-    "version": "0.1.2",
+    "tooth": "github.com/lwenk/Stats",
+    "version": "0.1.3",
     "info": {
-        "name": "LK-Stats",
+        "name": "Stats",
         "description": "BDS统计信息插件",
         "author": "LWenK",
         "tags": [
@@ -11,7 +11,7 @@
             "type:mod"
         ]
     },
-    "asset_url": "https://github.com/lwenk/LK-Stats/releases/download/v0.1.2/LK-Stats-windows-x64.zip",
+    "asset_url": "https://github.com/lwenk/Stats/releases/download/v0.1.3/LK-Stats-windows-x64.zip",
     "prerequisites": {
         "github.com/LiteLDev/LeviLamina": "1.0.x"
     },

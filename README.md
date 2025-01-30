@@ -7,12 +7,12 @@ Minecraft 基岩版服务器(BDS) 统计信息插件
 ### 使用 Lip
 
 ```sh
-lip install github.com/lwenk/LK-Stats
+lip install github.com/lwenk/Stats
 ```
 
 ### 手动安装
 
-1. 从[发布页面](https://github.com/lwenk/LK-Stats/releases)下载最新版本。
+1. 从[发布页面](https://github.com/lwenk/Stats/releases)下载最新版本。
 2. 解压`LK-Stats-windows-x64.zip`文件。
 3. 将`LK-Stats`文件夹复制到 BDS 安装目录下的 plugins 文件夹中。
 
@@ -28,7 +28,7 @@ lip install github.com/lwenk/LK-Stats
 | ---------------- | ------------------------------------------ | ------------------- | ------------------ |
 | CUSTOM           | 与玩家行为相关的大量通用统计信息           | minecraft:custom    | :x:                |
 | BLOCK_MINED      | 与玩家开采的方块数相关的统计信息           | minecraft:mined     | :white_check_mark: |
-| ITEM_BROKE       | 与玩家的物品耐久度相关的统计信息           | minecraft:broken    | :x:                |
+| ITEM_BROKE       | 与玩家的物品耐久度相关的统计信息           | minecraft:broken    | :white_check_mark: |
 | ITEM_CRAFTED     | 与合成、熔炼、交易等物品数量有关的统计信息 | minecraft:crafted   | :x:                |
 | ITEM_USED        | 与使用的方块或物品的数量有关的统计信息     | minecraft:used      | :x:                |
 | ITEM_PICKED_UP   | 与玩家捡起的掉落物品数量有关的统计信息     | minecraft:picked_up | :white_check_mark: |
@@ -100,8 +100,8 @@ lip install github.com/lwenk/LK-Stats
 | 死亡次数           | 玩家死亡的次数。                                   | minecraft:deaths                          | :white_check_mark: |
 | 盆栽种植数         | 玩家将植物种进花盆的次数。                         | minecraft:pot_flower                      | :white_check_mark: |
 | 玩家击杀数         | 玩家（在开启 PvP 的服务器中）击杀的玩家总数        | minecraft:player_kills                    | :white_check_mark: |
-| 触发袭击次数       | 玩家触发袭击的次数。                               | minecraft:raid_trigger                    | :x:                |
-| 袭击胜利次数       | 玩家战胜袭击的次数。                               | minecraft:raid_win                        | :x:                |
+| 触发袭击次数       | 玩家触发袭击的次数。                               | minecraft:raid_trigger                    | :white_check_mark: |
+| 袭击胜利次数       | 玩家战胜袭击的次数。                               | minecraft:raid_win                        | :white_check_mark: |
 | 潜影盒清洗次数     | 玩家使用炼药锅洗去潜影盒染色的次数。               | minecraft:clean_shulker_box               | :white_check_mark: |
 | 潜影盒打开次数     | 玩家打开潜影盒的次数。                             | minecraft:open_shulker_box                | :white_check_mark: |
 | 自上次死亡         | 玩家自上次死亡以来经过的游戏时长。                 | minecraft:time_since_death                | :x:                |
@@ -125,5 +125,4 @@ lip install github.com/lwenk/LK-Stats
 - [ ] 可可果种植在丛林原木上，或骨粉用于催熟作物、草和树苗等植物。
 - [ ] 药水、奶桶或任何食物（蛋糕除外）被消耗。
 - [ ] 空地图、铁桶、熔岩桶、水桶、奶桶、书与笔或药水变成一个新物品。
-- [ ] 当碗变成蘑菇煲或铁桶变成奶桶时，玩家的统计数据不会增加。
-- [ ] 音乐唱片放置在唱片机中。
+- [x] 音乐唱片放置在唱片机中。
