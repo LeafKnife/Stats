@@ -7,12 +7,12 @@ Minecraft 基岩版服务器(BDS) 统计信息插件
 ### 使用 Lip
 
 ```sh
-lip install github.com/lwenk/LK-Stats
+lip install github.com/lwenk/Stats
 ```
 
 ### 手动安装
 
-1. 从[发布页面](https://github.com/lwenk/LK-Stats/releases)下载最新版本。
+1. 从[发布页面](https://github.com/lwenk/Stats/releases)下载最新版本。
 2. 解压`LK-Stats-windows-x64.zip`文件。
 3. 将`LK-Stats`文件夹复制到 BDS 安装目录下的 plugins 文件夹中。
 
