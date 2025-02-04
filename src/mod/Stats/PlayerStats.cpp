@@ -3,9 +3,9 @@
 #include "ll/api/io/FileUtils.h"
 #include <string>
 
-namespace Stats {
+namespace stats {
 
-PlayerStats::PlayerStats(ServerPlayer const& player) {
+PlayerStats::PlayerStats(Player const& player) {
     mUuid     = player.getUuid();
     mXuid     = player.getXuid();
     mName     = player.getName();

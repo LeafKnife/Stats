@@ -1,5 +1,8 @@
 # LK-Stats
 
+![GitHub Tag](https://img.shields.io/github/v/tag/lwenk/Stats?include_prereleases&style=for-the-badge)
+<!-- ![GitHub License](https://img.shields.io/github/license/lwenk/Stats?style=for-the-badge) -->
+
 Minecraft 基岩版服务器(BDS) 统计信息插件
 
 ## 安装
@@ -13,7 +16,7 @@ lip install github.com/lwenk/Stats
 ### 手动安装
 
 1. 从[发布页面](https://github.com/lwenk/Stats/releases)下载最新版本。
-2. 解压`LK-Stats-windows-x64.zip`文件。
+2. 解压`Stats-windows-x64.zip`文件。
 3. 将`LK-Stats`文件夹复制到 BDS 安装目录下的 plugins 文件夹中。
 
 ## 使用
