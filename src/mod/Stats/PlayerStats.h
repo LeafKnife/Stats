@@ -1,7 +1,8 @@
 #pragma once
-#include "lib/nlohmann/json.hpp"
+
 #include "mod/Stats/CustomStatsType.h"
 
+#include "nlohmann/json_fwd.hpp"
 #include "mc/server/ServerPlayer.h"
 namespace stats {
 enum class StatsDataType { custom, mined, broken, crafted, used, picked_up, dropped, killed, killed_by };
