@@ -1,10 +1,9 @@
 #include "mod/MyMod.h"
-#include "mod/Stats/Events.h"
-#include <memory>
 
 #include "ll/api/mod/RegisterHelper.h"
+#include "mod/Stats/Stats.h"
 
-namespace Stats {
+namespace lk {
 
 MyMod& MyMod::getInstance() {
     static MyMod instance;
@@ -20,19 +19,17 @@ bool MyMod::load() {
 bool MyMod::enable() {
     getSelf().getLogger().debug("Enabling...");
     // Code for enabling the mod goes here.
-    Stats::event::listenEvents();
-    Stats::event::hook::hook();
+    stats::load();
     return true;
 }
 
 bool MyMod::disable() {
     getSelf().getLogger().debug("Disabling...");
-    Stats::event::removeEvents();
-    Stats::event::hook::unhook();
+    stats::unload();
     // Code for disabling the mod goes here.
     return true;
 }
 
-} // namespace my_mod
+} // namespace lk
 
-LL_REGISTER_MOD(Stats::MyMod, Stats::MyMod::getInstance());
+LL_REGISTER_MOD(lk::MyMod, lk::MyMod::getInstance());

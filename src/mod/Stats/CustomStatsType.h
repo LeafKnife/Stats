@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-namespace Stats {
+namespace stats {
 
 enum struct CustomType {
     animals_bred,

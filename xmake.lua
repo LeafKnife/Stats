@@ -12,6 +12,7 @@ else
 end
 
 add_requires("levibuildscript")
+add_requires("nlohmann_json v3.11.3")
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")

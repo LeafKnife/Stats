@@ -1,5 +1,8 @@
 # LK-Stats
 
+![GitHub Tag](https://img.shields.io/github/v/tag/lwenk/Stats?include_prereleases&style=for-the-badge)
+<!-- ![GitHub License](https://img.shields.io/github/license/lwenk/Stats?style=for-the-badge) -->
+
 Minecraft 基岩版服务器(BDS) 统计信息插件
 
 ## 安装
@@ -13,7 +16,7 @@ lip install github.com/lwenk/Stats
 ### 手动安装
 
 1. 从[发布页面](https://github.com/lwenk/Stats/releases)下载最新版本。
-2. 解压`LK-Stats-windows-x64.zip`文件。
+2. 解压`Stats-windows-x64.zip`文件。
 3. 将`LK-Stats`文件夹复制到 BDS 安装目录下的 plugins 文件夹中。
 
 ## 使用
@@ -118,11 +121,11 @@ lip install github.com/lwenk/Stats
 
 ### 物品使用统计信息
 
-- [ ] 锹、镐、斧、打火石、剪刀、锄、弓或剑通常会消耗耐久度。
+- [x] 锹、镐、斧、打火石、剪刀、锄、弓或剑通常会消耗耐久度。
 - [ ] 对钓鱼竿和胡萝卜钓竿按下使用键。
 - [x] 方块放置
-- [ ] 用画、物品展示框、雪球、鸡蛋、刷怪蛋、任何类型的矿车或船、末影之眼、末影珍珠、弓、任何类型的可投掷药水，附魔之瓶或钓鱼竿产生一个实体。
-- [ ] 可可果种植在丛林原木上，或骨粉用于催熟作物、草和树苗等植物。
-- [ ] 药水、奶桶或任何食物（蛋糕除外）被消耗。
+- [x] 用画、物品展示框、雪球、鸡蛋、刷怪蛋、任何类型的矿车或船、末影之眼、末影珍珠、弓、任何类型的可投掷药水，附魔之瓶或钓鱼竿产生一个实体。
+- [x] 可可果种植在丛林原木上，或骨粉用于催熟作物、草和树苗等植物。
+- [x] 药水、奶桶或任何食物（蛋糕除外）被消耗。
 - [ ] 空地图、铁桶、熔岩桶、水桶、奶桶、书与笔或药水变成一个新物品。
 - [x] 音乐唱片放置在唱片机中。
