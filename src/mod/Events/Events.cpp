@@ -9,7 +9,6 @@
 #include "ll/api/event/player/PlayerJoinEvent.h"
 #include "ll/api/event/player/PlayerJumpEvent.h"
 #include "ll/api/event/player/PlayerPickUpItemEvent.h"
-#include "ll/api/event/player/PlayerPlaceBlockEvent.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/common/ActorUniqueID.h"
 #include "mc/world/level/Level.h"
