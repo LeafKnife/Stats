@@ -1,11 +1,15 @@
 #include "mod/Stats/PlayerStats.h"
-#include "mod/Stats/CustomStatsType.h"
+
 #include "ll/api/io/FileUtils.h"
+#include "mod/Stats/CustomStatsType.h"
+#include "nlohmann/json.hpp"
+
 #include <string>
 
-namespace Stats {
 
-PlayerStats::PlayerStats(ServerPlayer const& player) {
+namespace stats {
+
+PlayerStats::PlayerStats(Player const& player) {
     mUuid     = player.getUuid();
     mXuid     = player.getXuid();
     mName     = player.getName();
@@ -85,4 +89,4 @@ void PlayerStats::addCustomStats(CustomType type, int value) {
     auto key           = CustomTypeMap.at(type);
     mData.custom[key] += value;
 };
-} // namespace Stats
+} // namespace stats
