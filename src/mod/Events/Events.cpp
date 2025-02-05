@@ -73,11 +73,11 @@ void listenEvents() {
         });
 
     // PlayerPlaceBlock
-    playerPlacedBlockListener = eventBus.emplaceListener<ll::event::player::PlayerPlacedBlockEvent>(
-        [](ll::event::player::PlayerPlacedBlockEvent& event) {
-            block::onBlockPlacedByPlayer(event.pos(), event.self());
-        }
-    );
+    // playerPlacedBlockListener = eventBus.emplaceListener<ll::event::player::PlayerPlacedBlockEvent>(
+    //     [](ll::event::player::PlayerPlacedBlockEvent& event) {
+    //         block::onBlockPlacedByPlayer(event.pos(), event.self());
+    //     }
+    // );
 
     mobDieListener =
         eventBus.emplaceListener<ll::event::entity::MobDieEvent>([](ll::event::entity::MobDieEvent& event) {
