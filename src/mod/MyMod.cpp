@@ -1,6 +1,7 @@
 #include "mod/MyMod.h"
 
 #include "ll/api/mod/RegisterHelper.h"
+#include "ll/api/i18n/I18n.h"
 #include "mod/Stats/Stats.h"
 
 namespace lk {
@@ -12,6 +13,7 @@ MyMod& MyMod::getInstance() {
 
 bool MyMod::load() {
     getSelf().getLogger().debug("Loading...");
+    auto res = ll::i18n::getInstance().load(getSelf().getLangDir());
     // Code for loading the mod goes here.
     return true;
 }

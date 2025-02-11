@@ -43,3 +43,9 @@ target("LK-Stats") -- Change this to your mod name.
     --     add_includedirs("src-client")
     --     add_files("src-client/**.cpp")
     -- end
+    after_build(function(target)
+        local langPath = path.join(os.projectdir(), "src/lang/")
+        local outputPath = path.join(os.projectdir(), "bin/" .. target:name())
+        os.mkdir(outputPath)
+        os.cp(langPath, outputPath)
+    end)

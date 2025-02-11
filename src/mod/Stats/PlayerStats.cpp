@@ -1,7 +1,7 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include "ll/api/io/FileUtils.h"
-#include "mod/Stats/CustomStatsType.h"
+
 #include "nlohmann/json.hpp"
 
 #include <string>
@@ -50,6 +50,39 @@ nlohmann::json        PlayerStats::getJson() {
     };
     return j;
 }
+// nlohmann::json PlayerStats::getJsonStatsData(StatsDataType type) {
+//     nlohmann::json j = nlohmann::json::object();
+//     switch (type) {
+//     case StatsDataType::custom:
+//         j = mData.custom;
+//         break;
+//     case StatsDataType::broken:
+//         j = mData.broken;
+//         break;
+//     case StatsDataType::crafted:
+//         j = mData.crafted;
+//         break;
+//     case StatsDataType::dropped:
+//         j = mData.dropped;
+//         break;
+//     case StatsDataType::picked_up:
+//         j = mData.picked_up;
+//         break;
+//     case StatsDataType::mined:
+//         j = mData.mined;
+//         break;
+//     case StatsDataType::used:
+//         j = mData.used;
+//         break;
+//     case StatsDataType::killed:
+//         j = mData.killed;
+//         break;
+//     case StatsDataType::killed_by:
+//         j = mData.killed_by;
+//         break;
+//     }
+//     return j;
+// }
 bool PlayerStats::saveData() {
     auto j = getJson();
     return ll::file_utils::writeFile(getPath(), j.dump());
