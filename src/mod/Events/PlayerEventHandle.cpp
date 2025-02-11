@@ -22,7 +22,8 @@ auto& playerStatsMap = getPlayerStatsMap();
 
 void onJoin(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    PlayerStats* playerStats = new PlayerStats(player);
+    //PlayerStats* playerStats = new PlayerStats(player);
+    auto playerStats = std::make_shared<PlayerStats>(player);
     playerStatsMap.emplace(playerStats->getUuid(), playerStats);
 }
 
@@ -33,7 +34,7 @@ void onLeft(Player& player) {
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::leave_game);
     playerStats->saveData();
-    delete playerStats;
+    // delete playerStats;
     playerStatsMap.erase(uuid);
 }
 

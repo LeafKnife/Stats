@@ -15,20 +15,18 @@ namespace stats::hook::mob {
 void onMobHurt(Mob* mob, ActorDamageSource const& source, float damage, float afterDamage) {
     if (mob->hasType(::ActorType::Player)) {
         Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
-        if(!player) return;
+        if (!player) return;
         event::player::onTakenDamage(player, damage, afterDamage);
     }
     if (source.isEntitySource()) {
         Actor* damageSource = nullptr;
         if (!source.isEntitySource()) {
-            if (source.isChildEntitySource()) {
-                damageSource = ll::service::getLevel()->fetchEntity(source.getEntityUniqueID(), false);
-            } else {
-                damageSource = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
-            }
+            // 玩家造成的伤害总量，单位为1（♥）的1⁄10，只统计近战攻击造成的伤害。
+            if(source.isChildEntitySource()) return;
+            damageSource = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
             if (damageSource->hasType(::ActorType::Player)) {
                 Player* player = damageSource->getEntityContext().getWeakRef().tryUnwrap<Player>();
-                if(!player) return;
+                if (!player) return;
                 event::player::onDealtDamage(mob, player, damage, afterDamage);
             }
         }

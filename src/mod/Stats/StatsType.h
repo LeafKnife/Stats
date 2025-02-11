@@ -4,6 +4,21 @@
 #include <string>
 
 namespace stats {
+enum class StatsDataType { custom, mined, broken, crafted, used, picked_up, dropped, killed, killed_by };
+
+static const std::map<StatsDataType, std::string> StatsDataTypeMap = {
+    {StatsDataType::custom,    "minecraft:custom"   },
+    {StatsDataType::mined,     "minecraft:mined"    },
+    {StatsDataType::broken,    "minecraft:broken"   },
+    {StatsDataType::crafted,   "minecraft:crafted"  },
+    {StatsDataType::used,      "minecraft:used"     },
+    {StatsDataType::picked_up, "minecraft:picked_up"},
+    {StatsDataType::dropped,   "minecraft:dropped"  },
+    {StatsDataType::killed,    "minecraft:killed"   },
+    {StatsDataType::killed_by, "minecraft:killed_by"},
+};
+
+typedef std::map<std::string, int> StatsDataMap;
 
 enum struct CustomType {
     animals_bred,
@@ -210,4 +225,4 @@ static const std::map<std::string, CustomType> CustomInteractBlockMap = {
     // 音符盒
     {"minecraft:noteblock",              CustomType::tune_noteblock                 }
 };
-} // namespace Stats
+} // namespace stats

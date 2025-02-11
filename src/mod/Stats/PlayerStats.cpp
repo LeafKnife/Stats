@@ -1,7 +1,7 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include "ll/api/io/FileUtils.h"
-#include "mod/Stats/CustomStatsType.h"
+
 #include "nlohmann/json.hpp"
 
 #include <string>

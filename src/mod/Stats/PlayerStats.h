@@ -1,13 +1,11 @@
 #pragma once
 
-#include "mod/Stats/CustomStatsType.h"
+#include "mod/Stats/StatsType.h"
 
 #include "nlohmann/json_fwd.hpp"
 #include "mc/server/ServerPlayer.h"
-namespace stats {
-enum class StatsDataType { custom, mined, broken, crafted, used, picked_up, dropped, killed, killed_by };
 
-typedef std::map<std::string, int> StatsDataMap;
+namespace stats {
 struct StatsData {
     StatsDataMap custom;
     StatsDataMap mined;
@@ -34,6 +32,7 @@ public:
     PlayerStats(Player const& player);
     mce::UUID      getUuid();
     nlohmann::json getJson();
+    //nlohmann::json getJsonStatsData(StatsDataType type);
     bool           saveData();
     void           addStats(StatsDataType type, std::string key, int value = 1);
     void           addCustomStats(CustomType type, int value = 1);
