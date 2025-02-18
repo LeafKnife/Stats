@@ -1,6 +1,7 @@
 # LK-Stats
 
 ![GitHub Tag](https://img.shields.io/github/v/tag/lwenk/Stats?include_prereleases&style=for-the-badge)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flwenk%2FStats.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flwenk%2FStats?ref=badge_shield)
 <!-- ![GitHub License](https://img.shields.io/github/license/lwenk/Stats?style=for-the-badge) -->
 
 Minecraft 基岩版服务器(BDS) 统计信息插件
@@ -129,3 +130,7 @@ lip install github.com/lwenk/Stats
 - [x] 药水、奶桶或任何食物（蛋糕除外）被消耗。
 - [ ] 空地图、铁桶、熔岩桶、水桶、奶桶、书与笔或药水变成一个新物品。
 - [x] 音乐唱片放置在唱片机中。
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flwenk%2FStats.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Flwenk%2FStats?ref=badge_large)
