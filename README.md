@@ -23,6 +23,12 @@ lip install github.com/lwenk/Stats
 
 启动服务器即可
 
+### 命令
+
+`/stats gui [StatsType]`  显示玩家统计信息表单(GUI)
+
+StatsType: custom, mined, broken, crafted, used, picked_up, dropped, killed, killed_by
+
 ## 开发进度
 
 ### 统计类型和名称
