@@ -23,7 +23,7 @@ using namespace ll::i18n_literals;
 
 namespace stats::command {
 struct StatsGui {
-    StatsType statsType;
+    StatsType StatsType;
 };
 
 void registerCommand() {
@@ -31,7 +31,7 @@ void registerCommand() {
                     .getOrCreateCommand("stats", "LK-Stats - " + "command.desc"_tr(), CommandPermissionLevel::Any);
     cmd.overload<StatsGui>()
         .text("gui")
-        .optional("statsType")
+        .optional("StatsType")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->hasType(::ActorType::Player)) {
@@ -39,7 +39,7 @@ void registerCommand() {
             }
             Player* player = (Player*)entity;
             // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.statsType);
-            switch (param.statsType) {
+            switch (param.StatsType) {
             case StatsType::custom:
                 form::sendStatsGui(*player, StatsDataType::custom);
                 break;

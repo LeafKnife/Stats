@@ -25,9 +25,16 @@ lip install github.com/lwenk/Stats
 
 ### 命令
 
-`/stats gui [StatsType]`  显示玩家统计信息表单(GUI)
+`/stats gui [StatsType]` 显示玩家统计信息表单(GUI)
 
-StatsType: custom, mined, broken, crafted, used, picked_up, dropped, killed, killed_by
+StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
+
+### 插件详情
+![FormCustom](/docs/images/stats-form-custom.png)
+![FormKill](/docs/images/stats-form-kill.png)
+![FormKilledBy](/docs/images/stats-form-killed_by.png)
+![FormMined](/docs/images/stats-form-mined.png)
+![FormUsed](/docs/images/stats-form-used.png)
 
 ## 开发进度
 

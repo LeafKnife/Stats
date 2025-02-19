@@ -12,7 +12,7 @@ namespace stats {
 PlayerStats::PlayerStats(Player const& player) {
     mUuid     = player.getUuid();
     mXuid     = player.getXuid();
-    mName     = player.getName();
+    mName     = player.getRealName();
     auto data = ll::file_utils::readFile(getPath());
     if (data && !data->empty()) {
         parseData(*data);
