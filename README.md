@@ -25,7 +25,8 @@ lip install github.com/lwenk/Stats
 
 ### 命令
 
-`/stats gui [StatsType]` 显示玩家统计信息表单(GUI)
+- `/stats gui [StatsType]` 显示玩家统计信息表单(GUI)
+- `/stats rank [StatsType]` 显示玩家统计信息排行榜
 
 StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
 
