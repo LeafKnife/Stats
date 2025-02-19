@@ -2,51 +2,49 @@
 
 #include "ll/api/io/FileUtils.h"
 
-#include "nlohmann/json.hpp"
+#include "mod/Stats/Stats.h"
 
+#include <algorithm>
+#include <memory>
+#include <nlohmann/json.hpp>
 #include <string>
 
 
 namespace stats {
 
 PlayerStats::PlayerStats(Player const& player) {
-    mUuid     = player.getUuid();
-    mXuid     = player.getXuid();
-    mName     = player.getName();
-    auto data = ll::file_utils::readFile(getPath());
-    if (data && !data->empty()) {
-        parseData(*data);
+    mUuid = player.getUuid();
+    mXuid = player.getXuid();
+    mName = player.getRealName();
+
+    auto                 cache = getStatsCache();
+    auto                 uuid  = mUuid.asString();
+    StatsCache::iterator it    = std::find_if(cache.begin(), cache.end(), [&uuid](const StatsCacheData& data) {
+        return data.first.uuid.compare(uuid) == 0;
+    });
+    if (it != cache.end()) {
+        mData = it->second;
     } else {
-        mData = StatsData();
+        mData           = std::make_shared<StatsData>();
+        PlayerInfo info = {mUuid.asString(), mXuid, mName};
+        cache.push_back(std::make_pair(info, mData));
         saveData();
     }
-};
-void PlayerStats::parseData(std::string const& data) {
-    auto j          = nlohmann::json::parse(data);
-    mData.custom    = j["minecraft:custom"];
-    mData.mined     = j["minecraft:mined"];
-    mData.broken    = j["minecraft:broken"];
-    mData.crafted   = j["minecraft:crafted"];
-    mData.used      = j["minecraft:used"];
-    mData.picked_up = j["minecraft:picked_up"];
-    mData.dropped   = j["minecraft:dropped"];
-    mData.killed    = j["minecraft:killed"];
-    mData.killed_by = j["minecraft:killed_by"];
 };
 mce::UUID             PlayerStats::getUuid() { return mUuid; };
 std::filesystem::path PlayerStats::getPath() { return ll::file_utils::u8path("stats/" + mUuid.asString() + ".json"); };
 nlohmann::json        PlayerStats::getJson() {
     nlohmann::json j = {
         {"playerInfo",          {{"uuid", mUuid.asString()}, {"xuid", mXuid}, {"name", mName}}},
-        {"minecraft:custom",    mData.custom                                                  },
-        {"minecraft:mined",     mData.mined                                                   },
-        {"minecraft:broken",    mData.broken                                                  },
-        {"minecraft:crafted",   mData.crafted                                                 },
-        {"minecraft:used",      mData.used                                                    },
-        {"minecraft:picked_up", mData.picked_up                                               },
-        {"minecraft:dropped",   mData.dropped                                                 },
-        {"minecraft:killed",    mData.killed                                                  },
-        {"minecraft:killed_by", mData.killed_by                                               },
+        {"minecraft:custom",    mData->custom                                                 },
+        {"minecraft:mined",     mData->mined                                                  },
+        {"minecraft:broken",    mData->broken                                                 },
+        {"minecraft:crafted",   mData->crafted                                                },
+        {"minecraft:used",      mData->used                                                   },
+        {"minecraft:picked_up", mData->picked_up                                              },
+        {"minecraft:dropped",   mData->dropped                                                },
+        {"minecraft:killed",    mData->killed                                                 },
+        {"minecraft:killed_by", mData->killed_by                                              },
     };
     return j;
 }
@@ -57,36 +55,36 @@ bool PlayerStats::saveData() {
 void PlayerStats::addStats(StatsDataType type, std::string key, int value) {
     switch (type) {
     case StatsDataType::custom:
-        mData.custom[key] += value;
+        mData->custom[key] += value;
         break;
     case StatsDataType::mined:
-        mData.mined[key] += value;
+        mData->mined[key] += value;
         break;
     case StatsDataType::broken:
-        mData.broken[key] += value;
+        mData->broken[key] += value;
         break;
     case StatsDataType::crafted:
-        mData.crafted[key] += value;
+        mData->crafted[key] += value;
         break;
     case StatsDataType::used:
-        mData.used[key] += value;
+        mData->used[key] += value;
         break;
     case StatsDataType::picked_up:
-        mData.picked_up[key] += value;
+        mData->picked_up[key] += value;
         break;
     case StatsDataType::dropped:
-        mData.dropped[key] += value;
+        mData->dropped[key] += value;
         break;
     case StatsDataType::killed:
-        mData.killed[key] += value;
+        mData->killed[key] += value;
         break;
     case StatsDataType::killed_by:
-        mData.killed_by[key] += value;
+        mData->killed_by[key] += value;
         break;
     }
 };
 void PlayerStats::addCustomStats(CustomType type, int value) {
-    auto key           = CustomTypeMap.at(type);
-    mData.custom[key] += value;
+    auto key            = CustomTypeMap.at(type);
+    mData->custom[key] += value;
 };
 } // namespace stats

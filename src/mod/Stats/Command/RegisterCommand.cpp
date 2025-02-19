@@ -23,7 +23,12 @@ using namespace ll::i18n_literals;
 
 namespace stats::command {
 struct StatsGui {
-    StatsType statsType;
+    StatsType StatsType;
+};
+
+struct StatsRank {
+    StatsType   StatsType;
+    std::string type;
 };
 
 void registerCommand() {
@@ -31,7 +36,7 @@ void registerCommand() {
                     .getOrCreateCommand("stats", "LK-Stats - " + "command.desc"_tr(), CommandPermissionLevel::Any);
     cmd.overload<StatsGui>()
         .text("gui")
-        .optional("statsType")
+        .optional("StatsType")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->hasType(::ActorType::Player)) {
@@ -39,7 +44,7 @@ void registerCommand() {
             }
             Player* player = (Player*)entity;
             // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.statsType);
-            switch (param.statsType) {
+            switch (param.StatsType) {
             case StatsType::custom:
                 form::sendStatsGui(*player, StatsDataType::custom);
                 break;
@@ -69,6 +74,49 @@ void registerCommand() {
                 break;
             default:
                 form::sendMainGui(*player);
+                break;
+            }
+        });
+
+    cmd.overload<StatsRank>()
+        .text("rank")
+        .required("StatsType")
+        .optional("type")
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsRank const& param) {
+            auto* entity = origin.getEntity();
+            if (entity == nullptr || !entity->hasType(::ActorType::Player)) {
+                output.error("command.error.notplayer"_tr());
+            }
+            Player* player = (Player*)entity;
+            // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.statsType);
+            switch (param.StatsType) {
+            case StatsType::mined:
+                form::sendRankGui(*player, StatsDataType::mined);
+                break;
+            case StatsType::broken:
+                form::sendRankGui(*player, StatsDataType::broken);
+                break;
+            case StatsType::crafted:
+                form::sendRankGui(*player, StatsDataType::crafted);
+                break;
+            case StatsType::used:
+                form::sendRankGui(*player, StatsDataType::used);
+                break;
+            case StatsType::picked_up:
+                form::sendRankGui(*player, StatsDataType::picked_up);
+                break;
+            case StatsType::dropped:
+                form::sendRankGui(*player, StatsDataType::dropped);
+                break;
+            case StatsType::killed:
+                form::sendRankGui(*player, StatsDataType::killed);
+                break;
+            case StatsType::killed_by:
+                form::sendRankGui(*player, StatsDataType::killed_by);
+                break;
+            default:
+                // form::sendRankGuiMain(*player);
+                output.error("TODO");
                 break;
             }
         });
