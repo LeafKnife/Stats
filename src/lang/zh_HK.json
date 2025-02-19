@@ -1,5 +1,6 @@
 {
     "gui.title.stats": "统计信息",
+    "gui.title.rank": "排行榜",
 
     "command.desc":"统计信息",
     "command.error.notplayer":"此命令仅限玩家执行",

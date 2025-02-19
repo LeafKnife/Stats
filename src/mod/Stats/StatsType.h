@@ -19,7 +19,22 @@ static const std::map<StatsDataType, std::string> StatsDataTypeMap = {
 };
 
 typedef std::map<std::string, int> StatsDataMap;
-
+struct PlayerInfo {
+    std::string uuid;
+    std::string xuid;
+    std::string name;
+};
+struct StatsData {
+    StatsDataMap custom;
+    StatsDataMap mined;
+    StatsDataMap broken;
+    StatsDataMap crafted;
+    StatsDataMap used;
+    StatsDataMap picked_up;
+    StatsDataMap dropped;
+    StatsDataMap killed;
+    StatsDataMap killed_by;
+};
 enum struct CustomType {
     animals_bred,
     clean_armor,
