@@ -36,7 +36,9 @@ void sendMainGui(Player& player) {
 void sendStatsGui(Player& player, StatsDataType type) {
     auto  uuid           = player.getUuid();
     auto& playerStatsMap = getPlayerStatsMap();
-    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    auto  findPlayer     = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     auto                   j          = playerStats->getJson();
     auto                   typeString = StatsDataTypeMap.at(type);
@@ -156,7 +158,7 @@ void sendRankGui(Player& player, StatsDataType statsType, std::string type) {
         break;
     }
     std::sort(data.begin(), data.end(), [](const StatsPair& a, const StatsPair& b) { return a.second > b.second; });
-    std::string content = type.empty() ? "" : std::string(ll::i18n::getInstance().get(type, {}))+"\n";
+    std::string content = type.empty() ? "" : std::string(ll::i18n::getInstance().get(type, {})) + "\n";
     for (auto it = data.begin(); it != data.end(); ++it) {
         std::string str  = "§6" + it->first + "§r : §a" + std::to_string(it->second) + "§r\n";
         content         += str;
