@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mc/server/ServerPlayer.h"
 #include "mc/world/actor/ActorDamageSource.h"
 #include "mc/world/actor/player/Player.h"
 #include "mc/world/effect/MobEffectInstance.h"
@@ -9,7 +10,7 @@ namespace stats {
 namespace event {
 namespace player {
 void onJoin(Player& player);
-void onLeft(Player& player);
+void onLeft(ServerPlayer& player);
 void onTakeItem(Player& player, ItemStack& item);
 void onDropItem(Player* player, ItemStack const& item);
 void onDied(Player& player, ActorDamageSource const& source);
@@ -17,7 +18,7 @@ void onKillMob(Player& player, Mob& mob);
 void onTakenDamage(Player* player, float damage, float afterDamage);
 void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage);
 void onCraftedItem();
-void onItemHurtAndBroken(Player* player,ItemStackBase* item,int deltaDamage);
+void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage);
 void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMethod, bool consumeItem);
 void onEffectAdded(Player* player, MobEffectInstance const& effect);
 void onStartSleep(Player* player);
@@ -27,7 +28,7 @@ void onJump(Player& player);
 void onMove();
 void onChangeContainerWith(
     Player&          player,
-    std::string blockType,
+    std::string      blockType,
     int              slot,
     ItemStack const& oldItem,
     ItemStack const& newItem

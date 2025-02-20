@@ -6,10 +6,11 @@
 #include "nlohmann/json.hpp"
 
 #include "mod/Stats/Stats.h"
+#include <numeric>
 #include <string>
 #include <string_view>
-#include <numeric>
 #include <vector>
+
 
 using namespace ll::i18n_literals;
 
@@ -35,7 +36,9 @@ void sendMainGui(Player& player) {
 void sendStatsGui(Player& player, StatsDataType type) {
     auto  uuid           = player.getUuid();
     auto& playerStatsMap = getPlayerStatsMap();
-    auto  playerStats    = playerStatsMap.find(uuid)->second;
+    auto  findPlayer     = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     auto                   j          = playerStats->getJson();
     auto                   typeString = StatsDataTypeMap.at(type);
@@ -59,87 +62,95 @@ void sendStatsGui(Player& player, StatsDataType type) {
         .sendTo(player);
 }
 
-void sendRankGui(Player& player, StatsDataType type) {
+inline int getStatsDataMapValue(StatsDataMap const& map, std::string type) {
+    int value;
+    if (type.empty()) {
+        value =
+            std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) { return total + p.second; });
+    } else {
+        auto mapValue = map.find(type);
+        if (mapValue != map.end()) {
+            value = mapValue->second;
+        } else {
+            value = 0;
+        }
+    }
+    return value;
+}
+
+void sendRankGui(Player& player, StatsDataType statsType, std::string type) {
     auto                   cache = getStatsCache();
     std::vector<StatsPair> data;
-    switch (type) {
+    switch (statsType) {
+    case StatsDataType::custom:
+        for (auto it : cache) {
+            auto        name  = it.first.name;
+            auto const& map   = it.second->custom;
+            auto        value = getStatsDataMapValue(map, type);
+            data.push_back(std::make_pair(name, value));
+        };
+        break;
     case StatsDataType::broken:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->broken;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto        name  = it.first.name;
+            auto const& map   = it.second->broken;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
     case StatsDataType::used:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->used;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto        name  = it.first.name;
+            auto const& map   = it.second->used;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
     case StatsDataType::dropped:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->dropped;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto        name  = it.first.name;
+            auto const& map   = it.second->dropped;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
     case StatsDataType::picked_up:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->picked_up;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto        name  = it.first.name;
+            auto const& map   = it.second->picked_up;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
     case StatsDataType::crafted:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->crafted;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto        name  = it.first.name;
+            auto const& map   = it.second->crafted;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
     case StatsDataType::mined:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->mined;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto        name  = it.first.name;
+            auto const& map   = it.second->mined;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
     case StatsDataType::killed:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->killed;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto const& map   = it.second->killed;
+            auto        name  = it.first.name;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
     case StatsDataType::killed_by:
         for (auto it : cache) {
-            auto  name  = it.first.name;
-            auto& map   = it.second->killed_by;
-            auto  value = std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) {
-                return total + p.second;
-            });
+            auto        name  = it.first.name;
+            auto const& map   = it.second->killed_by;
+            auto        value = getStatsDataMapValue(map, type);
             data.push_back(std::make_pair(name, value));
         };
         break;
@@ -147,19 +158,16 @@ void sendRankGui(Player& player, StatsDataType type) {
         break;
     }
     std::sort(data.begin(), data.end(), [](const StatsPair& a, const StatsPair& b) { return a.second > b.second; });
-    std::string content = "";
+    std::string content = type.empty() ? "" : std::string(ll::i18n::getInstance().get(type, {})) + "\n";
     for (auto it = data.begin(); it != data.end(); ++it) {
-        std::string str = "§6" + it->first + "§r : §a"
-                        + std::to_string(it->second) + "§r\n";
-        content += str;
+        std::string str  = "§6" + it->first + "§r : §a" + std::to_string(it->second) + "§r\n";
+        content         += str;
     }
-    auto                   typeString = StatsDataTypeMap.at(type);
-    auto fm = ll::form::SimpleForm();
+    auto typeString = StatsDataTypeMap.at(statsType);
+    auto fm         = ll::form::SimpleForm();
     fm.setTitle("gui.title.rank"_tr() + " - " + std::string(ll::i18n::getInstance().get(typeString, {})))
         .setContent(content)
         .sendTo(player);
 }
-
-void rendeRankContent() {}
 
 } // namespace stats::form

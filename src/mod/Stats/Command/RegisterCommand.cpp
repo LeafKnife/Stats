@@ -16,6 +16,7 @@
 #include "mod/Stats/Form/Form.h"
 #include "mod/Stats/StatsType.h"
 
+//#include "mod/MyMod.h"
 
 enum StatsType : int { custom = 1, mined, broken, crafted, used, picked_up, dropped, killed, killed_by };
 
@@ -88,31 +89,43 @@ void registerCommand() {
                 output.error("command.error.notplayer"_tr());
             }
             Player* player = (Player*)entity;
-            // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.statsType);
+            // lk::MyMod::getInstance().getSelf().getLogger().info(
+            //     "cmd rank {} {} {}",
+            //     player->getRealName(),
+            //     param.StatsType,
+            //     param.type.empty()
+            // );
             switch (param.StatsType) {
+            case StatsType::custom:
+                if (param.type.empty()) {
+                    output.error("ERROR");
+                } else {
+                    form::sendRankGui(*player, StatsDataType::custom, param.type);
+                }
+                break;
             case StatsType::mined:
-                form::sendRankGui(*player, StatsDataType::mined);
+                form::sendRankGui(*player, StatsDataType::mined, param.type);
                 break;
             case StatsType::broken:
-                form::sendRankGui(*player, StatsDataType::broken);
+                form::sendRankGui(*player, StatsDataType::broken, param.type);
                 break;
             case StatsType::crafted:
-                form::sendRankGui(*player, StatsDataType::crafted);
+                form::sendRankGui(*player, StatsDataType::crafted, param.type);
                 break;
             case StatsType::used:
-                form::sendRankGui(*player, StatsDataType::used);
+                form::sendRankGui(*player, StatsDataType::used, param.type);
                 break;
             case StatsType::picked_up:
-                form::sendRankGui(*player, StatsDataType::picked_up);
+                form::sendRankGui(*player, StatsDataType::picked_up, param.type);
                 break;
             case StatsType::dropped:
-                form::sendRankGui(*player, StatsDataType::dropped);
+                form::sendRankGui(*player, StatsDataType::dropped, param.type);
                 break;
             case StatsType::killed:
-                form::sendRankGui(*player, StatsDataType::killed);
+                form::sendRankGui(*player, StatsDataType::killed, param.type);
                 break;
             case StatsType::killed_by:
-                form::sendRankGui(*player, StatsDataType::killed_by);
+                form::sendRankGui(*player, StatsDataType::killed_by, param.type);
                 break;
             default:
                 // form::sendRankGuiMain(*player);
