@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 
 namespace stats {
 enum class StatsDataType { custom, mined, broken, crafted, used, picked_up, dropped, killed, killed_by };
@@ -18,7 +19,7 @@ static const std::map<StatsDataType, std::string> StatsDataTypeMap = {
     {StatsDataType::killed_by, "minecraft:killed_by"},
 };
 
-typedef std::map<std::string, int> StatsDataMap;
+typedef std::unordered_map<std::string, int> StatsDataMap;
 struct PlayerInfo {
     std::string uuid;
     std::string xuid;
