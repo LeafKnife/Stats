@@ -55,8 +55,10 @@ void onBlockInteracted(BlockPos const& pos, Player& player) {
 
 void onCraftingTableBlockUsed(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::interact_with_crafting_table);
     return;
@@ -64,8 +66,10 @@ void onCraftingTableBlockUsed(Player& player) {
 
 void onNoteBlockAttacked(Player* player) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::play_noteblock);
     return;
@@ -73,8 +77,10 @@ void onNoteBlockAttacked(Player* player) {
 
 void onCakeBlockRemovedSlice(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::eat_cake_slice);
     return;
@@ -82,11 +88,13 @@ void onCakeBlockRemovedSlice(Player& player) {
 
 void onCauldronBlockUseInventory(Player& player, ItemStack& currentItem, ItemStack& replaceItem, int useCount) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    //JE原版装"水"(用桶装水 岩浆 细雪) 取"水"(桶、空瓶 水瓶交互)
-    //此处后续待修改
+    // JE原版装"水"(用桶装水 岩浆 细雪) 取"水"(桶、空瓶 水瓶交互)
+    // 此处后续待修改
     if (currentItem.getTypeName() == "minecraft:bucket") {
         playerStats->addCustomStats(CustomType::use_cauldron);
     } else if (currentItem.getTypeName() == "minecraft:water_bucket") {
@@ -102,8 +110,10 @@ void onCauldronBlockClean(
 ) {
     if (player.isSimulatedPlayer()) return;
     if (interactionType != ::MinecraftEventing::POIBlockInteractionType::ClearItem) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     // 潜影盒
     if ((itemId >= -627 && itemId <= -613) || itemId == 218)
@@ -116,8 +126,10 @@ void onCauldronBlockClean(
 
 void onFlowerPotBlockPlaceFlower(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::pot_flower);
     return;
@@ -125,8 +137,10 @@ void onFlowerPotBlockPlaceFlower(Player& player) {
 
 void onCampfireBlockUsed(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::interact_with_campfire);
     return;
@@ -137,12 +151,14 @@ void onProjectileHitTargetBlock(Actor const& projectile) {
     if (!mob->hasType(::ActorType::Player)) return;
     Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
     if (!player) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::target_hit);
     return;
 }
 } // namespace block
 } // namespace event
-} // namespace Stats
+} // namespace stats

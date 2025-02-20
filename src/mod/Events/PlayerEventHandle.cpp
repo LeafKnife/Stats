@@ -22,15 +22,16 @@ auto& playerStatsMap = getPlayerStatsMap();
 
 void onJoin(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    //PlayerStats* playerStats = new PlayerStats(player);
+    // PlayerStats* playerStats = new PlayerStats(player);
     auto playerStats = std::make_shared<PlayerStats>(player);
     playerStatsMap.emplace(playerStats->getUuid(), playerStats);
 }
 
-void onLeft(Player& player) {
-    if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+void onLeft(ServerPlayer& player) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::leave_game);
     playerStats->saveData();
@@ -40,16 +41,20 @@ void onLeft(Player& player) {
 
 void onTakeItem(Player& player, ItemStack& item) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addStats(StatsDataType::picked_up, item.getTypeName(), item.mCount);
 }
 
 void onDropItem(Player* player, ItemStack const& item) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::drop);
     playerStats->addStats(StatsDataType::dropped, item.getTypeName(), item.mCount);
@@ -57,8 +62,10 @@ void onDropItem(Player* player, ItemStack const& item) {
 
 void onDied(Player& player, ActorDamageSource const& source) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::deaths);
     // resetCustomSinceTime TODO
@@ -74,8 +81,10 @@ void onDied(Player& player, ActorDamageSource const& source) {
 
 void onKillMob(Player& player, Mob& mob) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     if (mob.hasType(::ActorType::Player)) {
         playerStats->addCustomStats(CustomType::player_kills);
@@ -87,8 +96,10 @@ void onKillMob(Player& player, Mob& mob) {
 
 void onTakenDamage(Player* player, float damage, float afterDamage) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
     auto  heath          = player->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
@@ -114,8 +125,10 @@ void onTakenDamage(Player* player, float damage, float afterDamage) {
 
 void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
     auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
@@ -143,8 +156,10 @@ void onCraftedItem();
 
 void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     if (!item->isDamageableItem()) return;
     if (!item->isArmorItem()) playerStats->addStats(StatsDataType::used, item->getTypeName());
@@ -162,8 +177,10 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     //  - 当盔甲按使用键装备时，当皮革盔甲在炼药锅中清洗时，以及上面提到的例子。
     if (!consumeItem) return;
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     switch (itemUseMethod) {
     case ItemUseMethod::Eat:
@@ -203,16 +220,20 @@ void onEffectAdded(Player* player, MobEffectInstance const& effect) {
 
 void onStartSleep(Player* player) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::sleep_in_bed);
 }
 
 void onBlockUsingShield(Player* player, float damage) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::damage_blocked_by_shield, static_cast<int>(damage * 10));
     return;
@@ -220,16 +241,20 @@ void onBlockUsingShield(Player* player, float damage) {
 
 void onOpenTrading(Player* player) {
     if (player->isSimulatedPlayer()) return;
-    auto uuid        = player->getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::talked_to_villager);
 }
 
 void onJump(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::jump);
 }
@@ -244,8 +269,10 @@ void onChangeContainerWith(
     ItemStack const& newItem
 ) {
     if (player.isSimulatedPlayer()) return;
-    auto uuid        = player.getUuid();
-    auto playerStats = playerStatsMap.find(uuid)->second;
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     if (blockType == "minecraft:furnace" || blockType == "minecraft:lit_furnace" || blockType == "minecraft:smoker") {
         if (slot != 2) return;
