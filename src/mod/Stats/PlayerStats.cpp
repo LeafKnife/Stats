@@ -1,8 +1,11 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include "ll/api/io/FileUtils.h"
+#include "ll/api/service/Bedrock.h"
+#include "mc/world/level/Level.h"
 
 #include "mod/Stats/Stats.h"
+#include "mod/Stats/StatsType.h"
 
 #include <algorithm>
 #include <memory>
@@ -13,9 +16,10 @@
 namespace stats {
 
 PlayerStats::PlayerStats(Player const& player) {
-    mUuid = player.getUuid();
-    mXuid = player.getXuid();
-    mName = player.getRealName();
+    mUuid              = player.getUuid();
+    mXuid              = player.getXuid();
+    mName              = player.getRealName();
+    mSneakingStartTick = -1;
 
     auto                 cache = getStatsCache();
     auto                 uuid  = mUuid.asString();
@@ -86,5 +90,13 @@ void PlayerStats::addStats(StatsDataType type, std::string key, int value) {
 void PlayerStats::addCustomStats(CustomType type, int value) {
     auto key            = CustomTypeMap.at(type);
     mData->custom[key] += value;
+};
+
+void PlayerStats::startSneaking() { mSneakingStartTick = ll::service::getLevel()->getCurrentTick().tickID; };
+void PlayerStats::addSneakTick() {
+    if (mSneakingStartTick == -1) return;
+    auto record = ll::service::getLevel()->getCurrentTick().tickID - mSneakingStartTick;
+    addCustomStats(CustomType::sneak_time, record);
+    mSneakingStartTick = -1;
 };
 } // namespace stats

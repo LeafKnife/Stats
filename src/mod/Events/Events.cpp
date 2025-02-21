@@ -9,6 +9,7 @@
 #include "ll/api/event/player/PlayerJoinEvent.h"
 #include "ll/api/event/player/PlayerJumpEvent.h"
 #include "ll/api/event/player/PlayerPickUpItemEvent.h"
+#include "ll/api/event/player/PlayerSneakEvent.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/common/ActorUniqueID.h"
 #include "mc/world/level/Level.h"
@@ -26,6 +27,8 @@ ll::event::ListenerPtr playerDestroyBlockListener;
 ll::event::ListenerPtr playerPickUpItemListener;
 ll::event::ListenerPtr playerDieListener;
 ll::event::ListenerPtr playerJumpListener;
+ll::event::ListenerPtr playerSneakingListener;
+ll::event::ListenerPtr playerSneakedListener;
 ll::event::ListenerPtr playerPlacedBlockListener;
 ll::event::ListenerPtr mobDieListener;
 } // namespace
@@ -71,6 +74,15 @@ void listenEvents() {
             player::onJump(event.self());
         });
 
+    playerSneakingListener =
+        eventBus.emplaceListener<ll::event::player::PlayerSneakingEvent>([](ll::event::PlayerSneakingEvent& event) {
+            player::onSneaking(event.self());
+        });
+
+    playerSneakedListener =
+        eventBus.emplaceListener<ll::event::PlayerSneakedEvent>([](ll::event::PlayerSneakedEvent& event) {
+            player::onSneaked(event.self());
+        });
     // PlayerPlaceBlock
     // playerPlacedBlockListener = eventBus.emplaceListener<ll::event::player::PlayerPlacedBlockEvent>(
     //     [](ll::event::player::PlayerPlacedBlockEvent& event) {
@@ -101,6 +113,8 @@ void removeEvents() {
     eventBus.removeListener(playerDisconnectListener);
     eventBus.removeListener(playerDestroyBlockListener);
     eventBus.removeListener(playerPickUpItemListener);
+    eventBus.removeListener(playerSneakingListener);
+    eventBus.removeListener(playerSneakedListener);
     eventBus.removeListener(playerDieListener);
     eventBus.removeListener(playerJumpListener);
     eventBus.removeListener(playerPlacedBlockListener);

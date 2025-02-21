@@ -40,6 +40,24 @@ void onLeft(ServerPlayer& player) {
     playerStatsMap.erase(uuid);
 }
 
+void onSneaking(Player& player) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->startSneaking();
+}
+
+void onSneaked(Player& player) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->addSneakTick();
+}
+
 void onTakeItem(Player& player, ItemStack& item) {
     if (player.isSimulatedPlayer()) return;
     auto uuid       = player.getUuid();

@@ -11,6 +11,8 @@ namespace event {
 namespace player {
 void onJoin(Player& player);
 void onLeft(ServerPlayer& player);
+void onSneaking(Player& player);
+void onSneaked(Player& player);
 void onTakeItem(Player& player, ItemStack& item);
 void onDropItem(Player* player, ItemStack const& item);
 void onDied(Player& player, ActorDamageSource const& source);
