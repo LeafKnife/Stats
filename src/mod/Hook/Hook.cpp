@@ -13,12 +13,10 @@ void hook() {
 
     mob::hookMobGetDamageAfterResistanceEffect();
 
-    block::hookBlockInteractedWith();
+    block::hookBlockUse();
     block::hookCakeRemoveSlice();
-    block::hookCampfireBlockUse();
     block::hookCauldronBlockUseInventory();
     block::hookCauldronBlockClean();
-    block::hookCraftingTableUse();
     block::hookFlowerPotBlockPlaceFlower();
     block::hookNoteBlockAttack();
     block::hookProjectileHitTargetBlock();

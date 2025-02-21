@@ -1,27 +1,31 @@
 #include "mod/Hook/Hook.h"
 
 #include "ll/api/memory/Hook.h"
-#include "mc/world/events/BlockEventCoordinator.h"
+#include "mc/deps/core/math/Vec3.h"
+#include "mc/world/actor/player/Player.h"
+#include "mc/world/level/block/Block.h"
 
 #include "mod/Events/BlockEventHandle.h"
 
 namespace stats::hook::block {
 LL_TYPE_INSTANCE_HOOK(
-    BlockInteractedWithHook,
+    BlockUseHook,
     HookPriority::Normal,
-    BlockEventCoordinator,
-    &BlockEventCoordinator::sendBlockInteractedWith,
-    void,
-    ::Player&         player,
-    ::BlockPos const& blockPos
+    ::Block,
+    &Block::use,
+    bool,
+    ::Player&               player,
+    ::BlockPos const&       pos,
+    uchar                   face,
+    ::std::optional<::Vec3> hit
 ) {
-    event::block::onBlockInteracted(blockPos, player);
-    return origin(player, blockPos);
-    // 营火~ 唱片机 工作台~ 监听不到
+    auto r = origin(player, pos, face, hit);
+    if (!r) return r;
+    //getLogger().info("Hook {} {} {}", player.getRealName(), getTypeName(), r);
+    event::block::onBlockUsed(pos, player);
+    return r;
 }
 
-void hookBlockInteractedWith(){
-    BlockInteractedWithHook::hook();
-}
+void hookBlockUse() { BlockUseHook::hook(); }
 
 } // namespace stats::hook::block

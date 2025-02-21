@@ -23,12 +23,10 @@ void hookMobGetDamageAfterResistanceEffect();
 }
 
 namespace block {
-void hookBlockInteractedWith();
+void hookBlockUse();
 void hookCakeRemoveSlice();
-void hookCampfireBlockUse();
 void hookCauldronBlockUseInventory();
 void hookCauldronBlockClean();
-void hookCraftingTableUse();
 void hookFlowerPotBlockPlaceFlower();
 void hookNoteBlockAttack();
 void hookProjectileHitTargetBlock();
