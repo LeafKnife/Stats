@@ -1,6 +1,7 @@
 # LK-Stats
 
 ![GitHub Tag](https://img.shields.io/github/v/tag/lwenk/Stats?include_prereleases&style=for-the-badge)
+
 <!-- ![GitHub License](https://img.shields.io/github/license/lwenk/Stats?style=for-the-badge) -->
 
 Minecraft 基岩版服务器(BDS) 统计信息插件
@@ -31,6 +32,7 @@ lip install github.com/lwenk/Stats
 StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
 
 ### 插件详情
+
 ![FormCustom](/docs/images/stats-form-custom.png)
 ![FormKill](/docs/images/stats-form-kill.png)
 ![FormKilledBy](/docs/images/stats-form-killed_by.png)
@@ -126,12 +128,12 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 潜行时间           | 玩家潜行的时长。                                   | minecraft:sneak_time                      | :x:                |
 | 村民交互次数       | 玩家和村民交互（打开其 GUI）的次数。               | minecraft:talked_to_villager              | :white_check_mark: |
 | 击中标靶次数       | 玩家射中标靶的次数。                               | minecraft:target_hit                      | :white_check_mark: |
-| 游戏时长           | 玩家在游戏中经过的时长。                           | minecraft:play_time                       | :x:                |
-| 世界打开时间       | 玩家打开世界的总时长。                             | minecraft:total_world_time                | :x:                |
+| 游戏时长           | 玩家在游戏中经过的时长。                           | minecraft:play_time                       | :white_check_mark: |
+| 世界打开时间       | 玩家打开世界的总时长。                             | minecraft:total_world_time                | :white_check_mark: |
 | 躺在床上的次数     | 玩家在床上睡觉的次数。                             | minecraft:sleep_in_bed                    | :white_check_mark: |
 | 村民交易次数       | 玩家和村民进行交易的次数。                         | minecraft:traded_with_villager            | :x:                |
 | 陷阱箱触发次数     | 玩家打开陷阱箱的次数。                             | minecraft:trigger_trapped_chest           | :white_check_mark: |
-| 从炼药锅取水次数   | 玩家从炼药锅中装取水、熔岩和细雪的次数。[1]        | minecraft:use_cauldron                    | :white_check_mark: |
+| 从炼药锅取水次数   | 玩家从炼药锅中装取水、熔岩和细雪的次数。           | minecraft:use_cauldron                    | :white_check_mark: |
 
 ### 物品使用统计信息
 
