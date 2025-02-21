@@ -33,6 +33,7 @@ void onLeft(ServerPlayer& player) {
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::play_time, player.mTickCount);
     playerStats->addCustomStats(CustomType::leave_game);
     playerStats->saveData();
     // delete playerStats;

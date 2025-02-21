@@ -2,10 +2,14 @@
 
 #include "ll/api/form/SimpleForm.h"
 #include "ll/api/i18n/I18n.h"
+#include "ll/api/service/Bedrock.h"
+#include "mc/world/level/Level.h"
 #include "mod/Stats/StatsType.h"
 #include "nlohmann/json.hpp"
 
 #include "mod/Stats/Stats.h"
+#include <cstdint>
+#include <memory>
 #include <numeric>
 #include <string>
 #include <string_view>
@@ -49,6 +53,12 @@ void sendStatsGui(Player& player, StatsDataType type) {
         std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
             return a.second > b.second;
         });
+    } else {
+        auto levelTick = std::make_pair(
+            "minecraft:total_world_time",
+            static_cast<int64_t>(ll::service::getLevel()->getCurrentServerTick().tickID)
+        );
+        dataVector.push_back(levelTick);
     }
     for (auto it = dataVector.begin(); it != dataVector.end(); ++it) {
 
