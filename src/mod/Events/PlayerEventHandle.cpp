@@ -1,15 +1,18 @@
 #include "mod/Events/PlayerEventHandle.h"
 
-#include "ll/api/service/Bedrock.h"
-#include "mc/common/ActorUniqueID.h"
-#include "mc/world/attribute/AttributeInstance.h"
-#include "mc/world/attribute/SharedAttributes.h"
-#include "mc/world/effect/EffectDuration.h"
-#include "mc/world/item/ItemStack.h"
-#include "mc/world/item/ItemStackBase.h"
-#include "mc/world/item/ItemUseMethod.h"
-#include "mc/world/level/Level.h"
-#include "mc/world/level/block/Block.h"
+#include <ll/api/service/Bedrock.h>
+#include <mc/legacy/ActorUniqueID.h>
+#include <mc/world/attribute/AttributeInstance.h>
+#include <mc/world/attribute/AttributeModificationContext.h>
+#include <mc/world/attribute/MutableAttributeWithContext.h>
+#include <mc/world/attribute/SharedAttributes.h>
+#include <mc/world/effect/EffectDuration.h>
+#include <mc/world/item/ItemStack.h>
+#include <mc/world/item/ItemStackBase.h>
+#include <mc/world/item/ItemUseMethod.h>
+#include <mc/world/item/components/ComponentItem.h>
+#include <mc/world/level/Level.h>
+#include <mc/world/level/block/Block.h>
 
 #include "mod/Stats/Stats.h"
 
@@ -87,7 +90,7 @@ void onDied(Player& player, ActorDamageSource const& source) {
     // resetCustomSinceTime TODO
     if (!source.isEntitySource()) return;
     Actor* actor = nullptr;
-    actor        = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
+    actor        = ll::service::getLevel()->fetchEntity(source.getEntityUniqueID(), false);
     if (!actor) return;
     if (source.isChildEntitySource()) {
         actor = actor->getOwner();
@@ -116,8 +119,8 @@ void onTakenDamage(Player* player, float damage, float afterDamage) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
-    auto  heath          = player->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
-    auto  absorption     = player->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
+    auto  heath          = player->getMutableAttribute(SharedAttributes::HEALTH()).mInstance->mCurrentValue;
+    auto  absorption     = player->getMutableAttribute(SharedAttributes::ABSORPTION()).mInstance->mCurrentValue;
     float damage_taken   = afterDamage > 0 ? afterDamage : -afterDamage;
     float damage_absobed = 0;
     if (absorption > 0) {
@@ -144,8 +147,10 @@ void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
-    auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
-    auto  absorption     = mob->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
+    // auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
+    // auto  absorption     = mob->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
+    auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH()).mInstance->mCurrentValue;
+    auto  absorption     = mob->getMutableAttribute(SharedAttributes::ABSORPTION()).mInstance->mCurrentValue;
     float damage_taken   = afterDamage > 0 ? afterDamage : -afterDamage;
     float damage_absobed = 0;
     if (absorption > 0) {
@@ -193,6 +198,7 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
+    auto id = instance.getId();
     switch (itemUseMethod) {
     case ItemUseMethod::Eat:
     case ItemUseMethod::Consume:
@@ -203,7 +209,10 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
         break;
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
-        if (instance.isMusicDiscItem()) playerStats->addCustomStats(CustomType::play_record);
+        //if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
+        if((id>=567&&id<=578)||id==657||id==663||id==673||id==736||(id>=782&&id<=784)){
+            playerStats->addCustomStats(CustomType::play_record);
+        }
         break;
     case ItemUseMethod::Interact:
         // 交互只记录骨粉，其他与实体交互均不记录
@@ -217,8 +226,8 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
 
 
 void onEffectAdded(Player* player, MobEffectInstance const& effect) {
-    auto effectId      = effect.getId();
-    auto durationValue = effect.getDuration().mValue;
+    auto effectId      = effect.mId;
+    auto durationValue = effect.mDuration->mValue;
     auto uuid          = player->getUuid();
     auto playerStats   = playerStatsMap.find(uuid)->second;
     if (!playerStats) return;

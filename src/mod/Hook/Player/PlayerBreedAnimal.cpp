@@ -1,13 +1,13 @@
-#include "mc/platform/UUID.h"
+#include <mc/platform/UUID.h>
 #include "mod/Hook/Hook.h"
 
-#include "ll/api/memory/Hook.h"
-#include "mc/common/ActorUniqueID.h"
-#include "mc/deps/ecs/WeakEntityRef.h"
-#include "mc/world/actor/Actor.h"
-#include "mc/world/actor/Mob.h"
-#include "mc/world/actor/ai/goal/BreedGoal.h"
-#include "mc/world/actor/player/Player.h"
+#include <ll/api/memory/Hook.h>
+#include <mc/legacy/ActorUniqueID.h>
+#include <mc/deps/ecs/WeakEntityRef.h>
+#include <mc/world/actor/Actor.h>
+#include <mc/world/actor/Mob.h>
+#include <mc/world/actor/ai/goal/BreedGoal.h>
+#include <mc/world/actor/player/Player.h>
 
 #include "mod/Events/PlayerEventHandle.h"
 
@@ -37,8 +37,8 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(BreedGoalStopHook, HookPriority::Normal, BreedGoal, &BreedGoal::$stop, void) {
-    Mob& mob          = mUnk76ece7.as<Mob&>();
-    Mob& partner      = mUnk828cc9.as<::WeakEntityRef>().mWeakEntity.tryUnwrap<Mob>();
+    Mob& mob          = mOwner;
+    Mob& partner      = mPartner->tryUnwrap<Mob>();
     auto mob1UniqueId = mob.getOrCreateUniqueID().rawID;
     auto mob2UniqueId = partner.getOrCreateUniqueID().rawID;
     auto find1        = breedCacheMap.find(mob1UniqueId);
