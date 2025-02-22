@@ -1,18 +1,18 @@
 #include "mod/Events/Events.h"
 
-#include "ll/api/event/EventBus.h"
-#include "ll/api/event/ListenerBase.h"
-#include "ll/api/event/entity/MobDieEvent.h"
-#include "ll/api/event/player/PlayerDestroyBlockEvent.h"
-#include "ll/api/event/player/PlayerDieEvent.h"
-#include "ll/api/event/player/PlayerDisconnectEvent.h"
-#include "ll/api/event/player/PlayerJoinEvent.h"
-#include "ll/api/event/player/PlayerJumpEvent.h"
-#include "ll/api/event/player/PlayerPickUpItemEvent.h"
-#include "ll/api/event/player/PlayerSneakEvent.h"
-#include "ll/api/service/Bedrock.h"
-#include "mc/common/ActorUniqueID.h"
-#include "mc/world/level/Level.h"
+#include <ll/api/event/EventBus.h>
+#include <ll/api/event/ListenerBase.h>
+#include <ll/api/event/entity/MobDieEvent.h>
+#include <ll/api/event/player/PlayerDestroyBlockEvent.h>
+#include <ll/api/event/player/PlayerDieEvent.h>
+#include <ll/api/event/player/PlayerDisconnectEvent.h>
+#include <ll/api/event/player/PlayerJoinEvent.h>
+#include <ll/api/event/player/PlayerJumpEvent.h>
+#include <ll/api/event/player/PlayerPickUpItemEvent.h>
+#include <ll/api/event/player/PlayerSneakEvent.h>
+#include <ll/api/service/Bedrock.h>
+#include <mc/legacy/ActorUniqueID.h>
+#include <mc/world/level/Level.h>
 
 #include "mod/Events/BlockEventHandle.h"
 #include "mod/Events/PlayerEventHandle.h"

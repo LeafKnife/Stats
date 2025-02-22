@@ -1,10 +1,10 @@
 #include "mod/Events/BlockEventHandle.h"
 
-#include "ll/api/service/Bedrock.h"
-#include "mc/deps/ecs/WeakEntityRef.h"
-#include "mc/world/level/BlockSource.h"
-#include "mc/world/level/Level.h"
-#include "mc/world/level/dimension/Dimension.h"
+#include <ll/api/service/Bedrock.h>
+#include <mc/deps/ecs/WeakEntityRef.h>
+#include <mc/world/level/BlockSource.h>
+#include <mc/world/level/Level.h>
+#include <mc/world/level/dimension/Dimension.h>
 
 #include "mod/Stats/Stats.h"
 
@@ -16,7 +16,7 @@ auto& playerStatsMap = getPlayerStatsMap();
 }
 
 const Block& getBlockByBlockPos(BlockPos const& pos, DimensionType id) {
-    auto  dimension = ll::service::getLevel()->getDimension(id);
+    auto  dimension = ll::service::getLevel()->getDimension(id).lock();
     auto& block     = dimension->getBlockSourceFromMainChunkSource().getBlock(pos);
     return block;
 }

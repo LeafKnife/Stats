@@ -2,7 +2,7 @@
 
 #include "ll/api/memory/Hook.h"
 #include "ll/api/service/Bedrock.h"
-#include "mc/common/ActorUniqueID.h"
+#include "mc/legacy/ActorUniqueID.h"
 #include "mc/deps/ecs/WeakEntityRef.h"
 #include "mc/world/actor/ActorDamageSource.h"
 #include "mc/world/actor/Mob.h"
