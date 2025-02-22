@@ -1,8 +1,8 @@
 #include "mod/Stats/PlayerStats.h"
 
-#include "ll/api/io/FileUtils.h"
-#include "ll/api/service/Bedrock.h"
-#include "mc/world/level/Level.h"
+#include <ll/api/io/FileUtils.h>
+#include <ll/api/service/Bedrock.h>
+#include <mc/world/level/Level.h>
 
 #include "mod/Stats/Stats.h"
 #include "mod/Stats/StatsType.h"

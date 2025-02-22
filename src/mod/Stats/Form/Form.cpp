@@ -1,15 +1,14 @@
 #include "mod/Stats/Form/Form.h"
 
-#include "ll/api/form/SimpleForm.h"
-#include "ll/api/i18n/I18n.h"
-#include "ll/api/service/Bedrock.h"
-#include "mc/world/level/Level.h"
-#include "mod/Stats/StatsType.h"
-#include "nlohmann/json.hpp"
-
 #include "mod/Stats/Stats.h"
 #include <cstdint>
+#include <ll/api/form/SimpleForm.h>
+#include <ll/api/i18n/I18n.h>
+#include <ll/api/service/Bedrock.h>
+#include <mc/world/level/Level.h>
 #include <memory>
+#include <mod/Stats/StatsType.h>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -56,8 +55,10 @@ void sendStatsGui(Player& player, StatsDataType type) {
             return a.second > b.second;
         });
     } else {
-        for (auto& pair : dataMap) {
-            if (pair.first == "minecraft:play_time") pair.second += player.mTickCount;
+        auto playtime                  = dataMap["minecraft:play_time"];
+        dataMap["minecraft:play_time"] = playtime + player.mTickCount;
+        for (const auto& pair : dataMap) {
+            // if (pair.first == "minecraft:play_time") pair.second += player.mTickCount;
             dataVector.push_back(std::make_pair(pair.first, pair.second));
         }
         auto levelTick =
