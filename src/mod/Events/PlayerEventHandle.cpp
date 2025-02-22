@@ -209,7 +209,7 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
         break;
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
-        if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
+        //if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
         break;
     case ItemUseMethod::Interact:
         // 交互只记录骨粉，其他与实体交互均不记录
