@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mc/platform/UUID.h"
-#include "mc/server/ServerPlayer.h"
-#include "mc/world/actor/ActorDamageSource.h"
-#include "mc/world/actor/player/Player.h"
-#include "mc/world/effect/MobEffectInstance.h"
-#include "mc/world/item/ItemStackBase.h"
+#include <mc/platform/UUID.h>
+#include <mc/server/ServerPlayer.h>
+#include <mc/world/actor/ActorDamageSource.h>
+#include <mc/world/actor/player/Player.h>
+#include <mc/world/effect/MobEffectInstance.h>
+#include <mc/world/item/ItemStackBase.h>
 
 namespace stats {
 namespace event {

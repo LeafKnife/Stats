@@ -1,10 +1,10 @@
 #include "mod/Hook/Hook.h"
 
-#include "ll/api/memory/Hook.h"
+#include <ll/api/memory/Hook.h>
 
 #include "mod/Events/BlockEventHandle.h"
 
-#include "mc/world/level/block/FlowerPotBlock.h"
+#include <mc/world/level/block/FlowerPotBlock.h>
 
 namespace stats::hook::block {
 LL_TYPE_INSTANCE_HOOK(

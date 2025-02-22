@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mc/server/ServerPlayer.h"
+#include <mc/world/actor/player/Player.h>
 #include "mod/Stats/StatsType.h"
 #include <memory>
 #include <nlohmann/json_fwd.hpp>

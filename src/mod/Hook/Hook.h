@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ll/api/io/Logger.h"
+#include <ll/api/io/Logger.h>
 
 namespace stats {
 namespace hook {

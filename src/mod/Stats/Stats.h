@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mc/world/actor/player/Player.h"
+#include <mc/platform/UUID.h>
 #include "mod/Stats/PlayerStats.h"
 #include "mod/Stats/StatsType.h"
 

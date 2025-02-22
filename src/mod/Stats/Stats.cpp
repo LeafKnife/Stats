@@ -6,7 +6,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "ll/api/io/FileUtils.h"
+#include <ll/api/io/FileUtils.h>
 
 #include "mod/Events/Events.h"
 #include "mod/Hook/Hook.h"
@@ -46,6 +46,10 @@ StatsCacheData parseStatsData(const std::string& data) {
 void loadStatsCache() {
     auto        statsPath = ll::file_utils::u8path("./stats");
     std::string extension = ".json";
+    auto        existPath = std::filesystem::exists(statsPath);
+    if (!existPath) {
+        std::filesystem::create_directory(statsPath);
+    }
     for (const auto& entry : std::filesystem::directory_iterator(statsPath)) {
         // 检查文件是否为所需后缀
         if (entry.path().extension() == extension) {

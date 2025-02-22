@@ -1,11 +1,10 @@
-#include "mc/world/item/ItemStack.h"
 #include "mod/Events/BlockEventHandle.h"
-#include "mod/Hook/Hook.h"
-
-#include "ll/api/memory/Hook.h"
-#include "mc/world/containers/models/LevelContainerModel.h"
-
 #include "mod/Events/PlayerEventHandle.h"
+#include "mod/Hook/Hook.h"
+#include <ll/api/memory/Hook.h>
+#include <mc/world/containers/models/LevelContainerModel.h>
+#include <mc/world/item/ItemStack.h>
+
 
 namespace stats::hook::container {
 LL_TYPE_INSTANCE_HOOK(
@@ -21,11 +20,11 @@ LL_TYPE_INSTANCE_HOOK(
     if (*reinterpret_cast<void***>(this) != LevelContainerModel::$vftable())
         return origin(slotNumber, oldItem, newItem);
 
-    Player&   player   = mUnk84d147.as<Player&>();
-    BlockPos& blockPos = mUnk74419a.as<BlockPos>();
-    auto      slot     = slotNumber + this->_getContainerOffset();
-    auto&     block    = event::block::getBlockByBlockPos(blockPos, player.getDimensionId());
-    auto blockType = block.getTypeName();
+    Player&   player    = mUnk84d147.as<Player&>();
+    BlockPos& blockPos  = mUnk74419a.as<BlockPos>();
+    auto      slot      = slotNumber + this->_getContainerOffset();
+    auto&     block     = event::block::getBlockByBlockPos(blockPos, player.getDimensionId());
+    auto      blockType = block.getTypeName();
     event::player::onChangeContainerWith(player, blockType, slot, oldItem, newItem);
     // getLogger().info(
     //     "hook1 {} {} {} {} {} {} {}",
@@ -40,7 +39,5 @@ LL_TYPE_INSTANCE_HOOK(
     origin(slotNumber, oldItem, newItem);
 }
 
-void hookLevelContainerChanged(){
-     LevelContainerChangeHook::hook();
-}
+void hookLevelContainerChanged() { LevelContainerChangeHook::hook(); }
 } // namespace stats::hook::container

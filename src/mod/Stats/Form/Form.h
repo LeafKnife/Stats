@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mc/world/actor/player/Player.h"
+#include <mc/world/actor/player/Player.h>
 #include "mod/Stats/StatsType.h"
 
 namespace stats::form {

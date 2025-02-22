@@ -1,7 +1,7 @@
 #include "mod/MyMod.h"
 
-#include "ll/api/mod/RegisterHelper.h"
-#include "ll/api/i18n/I18n.h"
+#include <ll/api/mod/RegisterHelper.h>
+#include <ll/api/i18n/I18n.h>
 #include "mod/Stats/Stats.h"
 
 namespace lk {
