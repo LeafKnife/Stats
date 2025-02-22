@@ -1,6 +1,6 @@
 #include "mod/Hook/Hook.h"
 
-#include "ll/api/memory/Hook.h"
+#include <ll/api/memory/Hook.h>
 
 #include "mod/Events/PlayerEventHandle.h"
 

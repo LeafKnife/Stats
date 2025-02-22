@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ll/api/mod/NativeMod.h"
+#include <ll/api/mod/NativeMod.h>
 
 namespace lk {
 

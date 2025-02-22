@@ -2,15 +2,15 @@
 
 #include <string>
 
-#include "ll/api/Expected.h"
-#include "ll/api/command/CommandHandle.h"
-#include "ll/api/command/CommandRegistrar.h"
-#include "ll/api/i18n/I18n.h"
-#include "mc/server/commands/CommandOrigin.h"
-#include "mc/server/commands/CommandOutput.h"
-#include "mc/server/commands/CommandPermissionLevel.h"
-#include "mc/world/actor/Actor.h"
-#include "mc/world/actor/player/Player.h"
+#include <ll/api/Expected.h>
+#include <ll/api/command/CommandHandle.h>
+#include <ll/api/command/CommandRegistrar.h>
+#include <ll/api/i18n/I18n.h>
+#include <mc/server/commands/CommandOrigin.h>
+#include <mc/server/commands/CommandOutput.h>
+#include <mc/server/commands/CommandPermissionLevel.h>
+#include <mc/world/actor/Actor.h>
+#include <mc/world/actor/player/Player.h>
 
 
 #include "mod/Stats/Form/Form.h"

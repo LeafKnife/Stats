@@ -1,9 +1,9 @@
 #include "mod/Hook/Hook.h"
 
-#include "ll/api/memory/Hook.h"
-#include "mc/deps/core/math/Vec3.h"
-#include "mc/world/actor/player/Player.h"
-#include "mc/world/level/block/Block.h"
+#include <ll/api/memory/Hook.h>
+#include <mc/deps/core/math/Vec3.h>
+#include <mc/world/actor/player/Player.h>
+#include <mc/world/level/block/Block.h>
 
 #include "mod/Events/BlockEventHandle.h"
 

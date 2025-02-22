@@ -1,9 +1,9 @@
 #pragma once
 
-#include "mc/events/MinecraftEventing.h"
-#include "mc/world/actor/player/Player.h"
-#include "mc/world/item/ItemStack.h"
-#include "mc/world/level/Block/Block.h"
+#include <mc/events/MinecraftEventing.h>
+#include <mc/world/actor/player/Player.h>
+#include <mc/world/item/ItemStack.h>
+#include <mc/world/level/Block/Block.h>
 
 namespace stats {
 namespace event {
