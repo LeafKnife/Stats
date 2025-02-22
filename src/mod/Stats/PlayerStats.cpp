@@ -1,8 +1,11 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include "ll/api/io/FileUtils.h"
+#include "ll/api/service/Bedrock.h"
+#include "mc/world/level/Level.h"
 
 #include "mod/Stats/Stats.h"
+#include "mod/Stats/StatsType.h"
 
 #include <algorithm>
 #include <memory>
@@ -13,9 +16,10 @@
 namespace stats {
 
 PlayerStats::PlayerStats(Player const& player) {
-    mUuid = player.getUuid();
-    mXuid = player.getXuid();
-    mName = player.getRealName();
+    mUuid              = player.getUuid();
+    mXuid              = player.getXuid();
+    mName              = player.getRealName();
+    mSneakingStartTick = 0;
 
     auto                 cache = getStatsCache();
     auto                 uuid  = mUuid.asString();
@@ -52,7 +56,7 @@ bool PlayerStats::saveData() {
     auto j = getJson();
     return ll::file_utils::writeFile(getPath(), j.dump());
 };
-void PlayerStats::addStats(StatsDataType type, std::string key, int value) {
+void PlayerStats::addStats(StatsDataType type, std::string key, uint64_t value) {
     switch (type) {
     case StatsDataType::custom:
         mData->custom[key] += value;
@@ -83,8 +87,16 @@ void PlayerStats::addStats(StatsDataType type, std::string key, int value) {
         break;
     }
 };
-void PlayerStats::addCustomStats(CustomType type, int value) {
+void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
     auto key            = CustomTypeMap.at(type);
     mData->custom[key] += value;
+};
+
+void PlayerStats::startSneaking() { mSneakingStartTick = ll::service::getLevel()->getCurrentTick().tickID; };
+void PlayerStats::addSneakTick() {
+    if (mSneakingStartTick == 0) return;
+    auto record = ll::service::getLevel()->getCurrentTick().tickID - mSneakingStartTick;
+    addCustomStats(CustomType::sneak_time, record);
+    mSneakingStartTick = 0;
 };
 } // namespace stats

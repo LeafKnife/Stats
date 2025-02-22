@@ -26,7 +26,9 @@ void onBlockDestroyedByPlayer(BlockPos const& pos, Player& player) {
     if (player.isCreative()) return;
     auto  uuid        = player.getUuid();
     auto& bl          = getBlockByBlockPos(pos, player.getDimensionId());
-    auto  playerStats = playerStatsMap.find(uuid)->second;
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addStats(StatsDataType::mined, bl.getTypeName());
 }
@@ -35,32 +37,25 @@ void onBlockPlacedByPlayer(BlockPos const& pos, Player& player) {
     if (player.isSimulatedPlayer()) return;
     auto& bl          = getBlockByBlockPos(pos, player.getDimensionId());
     auto  uuid        = player.getUuid();
-    auto  playerStats = playerStatsMap.find(uuid)->second;
-    if (!playerStats) return;
-    playerStats->addStats(StatsDataType::used, bl.getTypeName());
-}
-
-void onBlockInteracted(BlockPos const& pos, Player& player) {
-    if (player.isSimulatedPlayer()) return;
-    auto& block       = getBlockByBlockPos(pos, player.getDimensionId());
-    auto  blockType   = block.getTypeName();
-    auto  uuid        = player.getUuid();
-    auto  playerStats = playerStatsMap.find(uuid)->second;
-    if (!playerStats) return;
-    auto it = CustomInteractBlockMap.find(blockType);
-    if (it == CustomInteractBlockMap.end()) return;
-    playerStats->addCustomStats(it->second);
-    return;
-}
-
-void onCraftingTableBlockUsed(Player& player) {
-    if (player.isSimulatedPlayer()) return;
-    auto uuid       = player.getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    playerStats->addCustomStats(CustomType::interact_with_crafting_table);
+    playerStats->addStats(StatsDataType::used, bl.getTypeName());
+}
+
+void onBlockUsed(BlockPos const& pos, Player& player) {
+    if (player.isSimulatedPlayer()) return;
+    auto& block       = getBlockByBlockPos(pos, player.getDimensionId());
+    auto  blockType   = block.getTypeName();
+    auto  uuid        = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    auto it = CustomInteractBlockMap.find(blockType);
+    if (it == CustomInteractBlockMap.end()) return;
+    playerStats->addCustomStats(it->second);
     return;
 }
 
@@ -132,17 +127,6 @@ void onFlowerPotBlockPlaceFlower(Player& player) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::pot_flower);
-    return;
-}
-
-void onCampfireBlockUsed(Player& player) {
-    if (player.isSimulatedPlayer()) return;
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
-    if (!playerStats) return;
-    playerStats->addCustomStats(CustomType::interact_with_campfire);
     return;
 }
 

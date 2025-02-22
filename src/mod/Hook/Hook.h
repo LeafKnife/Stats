@@ -16,6 +16,7 @@ void hookPlayerDropItem();
 void hookPlayerStartSleep();
 void hookServerPlayerOpenTrading();
 void hookPlayerUseItem();
+void hookPlayerBreedAnimal();
 } // namespace player
 
 namespace mob {
@@ -23,21 +24,19 @@ void hookMobGetDamageAfterResistanceEffect();
 }
 
 namespace block {
-void hookBlockInteractedWith();
+void hookBlockUse();
 void hookCakeRemoveSlice();
-void hookCampfireBlockUse();
 void hookCauldronBlockUseInventory();
 void hookCauldronBlockClean();
-void hookCraftingTableUse();
 void hookFlowerPotBlockPlaceFlower();
 void hookNoteBlockAttack();
 void hookProjectileHitTargetBlock();
 } // namespace block
 
 namespace item {
-//void hookFishingRodUsed();
+// void hookFishingRodUsed();
 void hookItemStackBaseHurtAndBroken();
-}
+} // namespace item
 
 namespace container {
 void hookLevelContainerChanged();

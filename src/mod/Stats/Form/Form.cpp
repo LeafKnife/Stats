@@ -2,11 +2,14 @@
 
 #include "ll/api/form/SimpleForm.h"
 #include "ll/api/i18n/I18n.h"
+#include "ll/api/service/Bedrock.h"
+#include "mc/world/level/Level.h"
 #include "mod/Stats/StatsType.h"
 #include "nlohmann/json.hpp"
 
 #include "mod/Stats/Stats.h"
-#include <numeric>
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,7 +19,7 @@ using namespace ll::i18n_literals;
 
 namespace stats::form {
 namespace {
-typedef std::pair<std::string, int> StatsPair;
+typedef std::pair<std::string, uint64_t> StatsPair;
 } // namespace
 void sendMainGui(Player& player) {
     auto fm = ll::form::SimpleForm();
@@ -44,10 +47,24 @@ void sendStatsGui(Player& player, StatsDataType type) {
     auto                   typeString = StatsDataTypeMap.at(type);
     std::string            content    = "";
     auto                   dataMap    = j[typeString].get<StatsDataMap>();
-    std::vector<StatsPair> dataVector(dataMap.begin(), dataMap.end());
+    std::vector<StatsPair> dataVector;
     if (type != StatsDataType::custom) {
+        for (const auto& pair : dataMap) {
+            dataVector.push_back(std::make_pair(pair.first, pair.second));
+        }
         std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
             return a.second > b.second;
+        });
+    } else {
+        for (auto& pair : dataMap) {
+            if (pair.first == "minecraft:play_time") pair.second += player.mTickCount;
+            dataVector.push_back(std::make_pair(pair.first, pair.second));
+        }
+        auto levelTick =
+            std::make_pair("minecraft:total_world_time", ll::service::getLevel()->getCurrentServerTick().tickID);
+        dataVector.push_back(levelTick);
+        std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
+            return a.first < b.first;
         });
     }
     for (auto it = dataVector.begin(); it != dataVector.end(); ++it) {
@@ -62,8 +79,8 @@ void sendStatsGui(Player& player, StatsDataType type) {
         .sendTo(player);
 }
 
-inline int getStatsDataMapValue(StatsDataMap const& map, std::string type) {
-    int value;
+inline uint64_t getStatsDataMapValue(StatsDataMap const& map, std::string type) {
+    uint64_t value;
     if (type.empty()) {
         value =
             std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) { return total + p.second; });

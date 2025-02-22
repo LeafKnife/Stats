@@ -33,14 +33,32 @@ void onLeft(ServerPlayer& player) {
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::play_time, player.mTickCount);
     playerStats->addCustomStats(CustomType::leave_game);
     playerStats->saveData();
     // delete playerStats;
     playerStatsMap.erase(uuid);
 }
 
+void onSneaking(Player& player) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->startSneaking();
+}
+
+void onSneaked(Player& player) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->addSneakTick();
+}
+
 void onTakeItem(Player& player, ItemStack& item) {
-    if (player.isSimulatedPlayer()) return;
     auto uuid       = player.getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -50,7 +68,6 @@ void onTakeItem(Player& player, ItemStack& item) {
 }
 
 void onDropItem(Player* player, ItemStack const& item) {
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -61,7 +78,6 @@ void onDropItem(Player* player, ItemStack const& item) {
 }
 
 void onDied(Player& player, ActorDamageSource const& source) {
-    if (player.isSimulatedPlayer()) return;
     auto uuid       = player.getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -80,7 +96,6 @@ void onDied(Player& player, ActorDamageSource const& source) {
 }
 
 void onKillMob(Player& player, Mob& mob) {
-    if (player.isSimulatedPlayer()) return;
     auto uuid       = player.getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -95,7 +110,6 @@ void onKillMob(Player& player, Mob& mob) {
 }
 
 void onTakenDamage(Player* player, float damage, float afterDamage) {
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -124,7 +138,6 @@ void onTakenDamage(Player* player, float damage, float afterDamage) {
 }
 
 void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -155,7 +168,6 @@ void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
 void onCraftedItem();
 
 void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage) {
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -176,7 +188,6 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     //  - 无论是命名、驯服、喂养、繁殖、上鞍、拴住、剪毛、染色、挤奶还是收集炖菜
     //  - 当盔甲按使用键装备时，当皮革盔甲在炼药锅中清洗时，以及上面提到的例子。
     if (!consumeItem) return;
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -219,7 +230,6 @@ void onEffectAdded(Player* player, MobEffectInstance const& effect) {
 }
 
 void onStartSleep(Player* player) {
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -229,7 +239,6 @@ void onStartSleep(Player* player) {
 }
 
 void onBlockUsingShield(Player* player, float damage) {
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -240,7 +249,6 @@ void onBlockUsingShield(Player* player, float damage) {
 }
 
 void onOpenTrading(Player* player) {
-    if (player->isSimulatedPlayer()) return;
     auto uuid       = player->getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -250,7 +258,6 @@ void onOpenTrading(Player* player) {
 }
 
 void onJump(Player& player) {
-    if (player.isSimulatedPlayer()) return;
     auto uuid       = player.getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -268,7 +275,6 @@ void onChangeContainerWith(
     ItemStack const& oldItem,
     ItemStack const& newItem
 ) {
-    if (player.isSimulatedPlayer()) return;
     auto uuid       = player.getUuid();
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -282,6 +288,14 @@ void onChangeContainerWith(
         }
     }
     return;
+}
+
+void onBreedAnimal(mce::UUID uuid) {
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::animals_bred);
 }
 } // namespace player
 } // namespace event
