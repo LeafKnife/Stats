@@ -14,7 +14,6 @@
 #include <mc/world/level/Level.h>
 #include <mc/world/level/block/Block.h>
 
-
 #include "mod/Stats/Stats.h"
 
 namespace stats {
@@ -199,6 +198,7 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
+    auto id = instance.getId();
     switch (itemUseMethod) {
     case ItemUseMethod::Eat:
     case ItemUseMethod::Consume:
@@ -210,6 +210,9 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
         //if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
+        if((id>=567&&id<=578)||id==657||id==663||id==673||id==736||(id>=782&&id<=784)){
+            playerStats->addCustomStats(CustomType::play_record);
+        }
         break;
     case ItemUseMethod::Interact:
         // 交互只记录骨粉，其他与实体交互均不记录
