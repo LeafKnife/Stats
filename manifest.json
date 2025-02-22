@@ -2,5 +2,9 @@
     "name": "${modName}",
     "entry": "${modFile}",
     "version": "${modVersion}",
-    "type": "native"
+    "type": "native",
+    "extraInfo": {
+        "sentryDsn": "https://e1c169e68f7c2410b69ea92d5ebc45c9@o4508856229101568.ingest.us.sentry.io/4508856384946176",
+        "sentryUploadType": "all"
+    }
 }

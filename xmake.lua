@@ -24,9 +24,14 @@ option("target_type")
     set_values("server", "client")
 option_end()
 
+option("publish")
+    set_default(false)
+    set_showmenu(true)
+option_end()
+
 target("LK-Stats") -- Change this to your mod name.
     add_rules("@levibuildscript/linkrule")
-    add_rules("@levibuildscript/modpacker")
+    -- add_rules("@levibuildscript/modpacker")
     add_cxflags( "/EHa", "/utf-8", "/W4", "/w44265", "/w44289", "/w44296", "/w45263", "/w44738", "/w45204")
     add_defines("NOMINMAX", "UNICODE")
     add_packages("levilamina")
@@ -43,6 +48,33 @@ target("LK-Stats") -- Change this to your mod name.
     --     add_includedirs("src-client")
     --     add_files("src-client/**.cpp")
     -- end
+    on_load(function (target)
+        local tag = os.iorun("git describe --tags --abbrev=0 --always")
+        local major, minor, patch, suffix = tag:match("v(%d+)%.(%d+)%.(%d+)(.*)")
+        if not major then
+            print("Failed to parse version tag, using 0.0.0")
+            major, minor, patch = 0, 0, 0
+        end
+        local versionStr =  major.."."..minor.."."..patch
+        if suffix then
+            prerelease = suffix:match("-(.*)")
+            if prerelease then
+                prerelease = prerelease:gsub("\n", "")
+            end
+            if prerelease then
+                versionStr = versionStr.."-"..prerelease
+            end
+        end
+        if not has_config("publish") then
+            local hash = os.iorun("git rev-parse --short HEAD")
+            versionStr = versionStr.."+"..hash:gsub("\n", "")
+        end
+
+        target:add("rules", "@levibuildscript/modpacker",{
+               modVersion = versionStr
+           })
+    end)
+
     after_build(function(target)
         local langPath = path.join(os.projectdir(), "src/lang/")
         local outputPath = path.join(os.projectdir(), "bin/" .. target:name())
