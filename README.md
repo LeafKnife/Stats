@@ -59,7 +59,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 
 | 统计名称           | 描述                                               | 命名空间                                  | 已完成             |
 | ------------------ | -------------------------------------------------- | ----------------------------------------- | ------------------ |
-| 繁殖动物次数       | 玩家通过给成对的动物喂食来使之繁殖的次数。         | minecraft:animals_bred                    | :x:                |
+| 繁殖动物次数       | 玩家通过给成对的动物喂食来使之繁殖的次数。         | minecraft:animals_bred                    | :white_check_mark: |
 | 清洗盔甲次数       | 玩家使用炼药锅洗去皮革盔甲染色的次数。             | minecraft:clean_armor                     | :white_check_mark: |
 | 清洗旗帜次数       | 玩家使用炼药锅洗去旗帜上的图案的次数。             | minecraft:clean_banner                    | :white_check_mark: |
 | 木桶打开次数       | 玩家打开木桶的次数。                               | minecraft:open_barrel                     | :white_check_mark: |

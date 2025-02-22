@@ -47,17 +47,25 @@ void sendStatsGui(Player& player, StatsDataType type) {
     auto                   typeString = StatsDataTypeMap.at(type);
     std::string            content    = "";
     auto                   dataMap    = j[typeString].get<StatsDataMap>();
-    std::vector<StatsPair> dataVector(dataMap.begin(), dataMap.end());
+    std::vector<StatsPair> dataVector;
     if (type != StatsDataType::custom) {
+        for (const auto& pair : dataMap) {
+            dataVector.push_back(std::make_pair(pair.first, pair.second));
+        }
         std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
             return a.second > b.second;
         });
     } else {
-        auto levelTick = std::make_pair(
-            "minecraft:total_world_time",
-            ll::service::getLevel()->getCurrentServerTick().tickID
-        );
+        for (auto& pair : dataMap) {
+            if (pair.first == "minecraft:play_time") pair.second += player.mTickCount;
+            dataVector.push_back(std::make_pair(pair.first, pair.second));
+        }
+        auto levelTick =
+            std::make_pair("minecraft:total_world_time", ll::service::getLevel()->getCurrentServerTick().tickID);
         dataVector.push_back(levelTick);
+        std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
+            return a.first < b.first;
+        });
     }
     for (auto it = dataVector.begin(); it != dataVector.end(); ++it) {
 
