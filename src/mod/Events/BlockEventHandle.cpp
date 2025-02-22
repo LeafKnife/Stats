@@ -26,7 +26,9 @@ void onBlockDestroyedByPlayer(BlockPos const& pos, Player& player) {
     if (player.isCreative()) return;
     auto  uuid        = player.getUuid();
     auto& bl          = getBlockByBlockPos(pos, player.getDimensionId());
-    auto  playerStats = playerStatsMap.find(uuid)->second;
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addStats(StatsDataType::mined, bl.getTypeName());
 }
@@ -35,7 +37,9 @@ void onBlockPlacedByPlayer(BlockPos const& pos, Player& player) {
     if (player.isSimulatedPlayer()) return;
     auto& bl          = getBlockByBlockPos(pos, player.getDimensionId());
     auto  uuid        = player.getUuid();
-    auto  playerStats = playerStatsMap.find(uuid)->second;
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addStats(StatsDataType::used, bl.getTypeName());
 }
@@ -45,7 +49,9 @@ void onBlockUsed(BlockPos const& pos, Player& player) {
     auto& block       = getBlockByBlockPos(pos, player.getDimensionId());
     auto  blockType   = block.getTypeName();
     auto  uuid        = player.getUuid();
-    auto  playerStats = playerStatsMap.find(uuid)->second;
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (!playerStats) return;
     auto it = CustomInteractBlockMap.find(blockType);
     if (it == CustomInteractBlockMap.end()) return;

@@ -10,7 +10,6 @@
 #include "mod/Stats/Stats.h"
 #include <cstdint>
 #include <memory>
-#include <numeric>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -20,7 +19,7 @@ using namespace ll::i18n_literals;
 
 namespace stats::form {
 namespace {
-typedef std::pair<std::string, int> StatsPair;
+typedef std::pair<std::string, uint64_t> StatsPair;
 } // namespace
 void sendMainGui(Player& player) {
     auto fm = ll::form::SimpleForm();
@@ -56,7 +55,7 @@ void sendStatsGui(Player& player, StatsDataType type) {
     } else {
         auto levelTick = std::make_pair(
             "minecraft:total_world_time",
-            static_cast<int64_t>(ll::service::getLevel()->getCurrentServerTick().tickID)
+            ll::service::getLevel()->getCurrentServerTick().tickID
         );
         dataVector.push_back(levelTick);
     }
@@ -72,8 +71,8 @@ void sendStatsGui(Player& player, StatsDataType type) {
         .sendTo(player);
 }
 
-inline int getStatsDataMapValue(StatsDataMap const& map, std::string type) {
-    int value;
+inline uint64_t getStatsDataMapValue(StatsDataMap const& map, std::string type) {
+    uint64_t value;
     if (type.empty()) {
         value =
             std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) { return total + p.second; });

@@ -10,6 +10,7 @@ void hook() {
     player::hookPlayerStartSleep();
     player::hookServerPlayerOpenTrading();
     player::hookPlayerUseItem();
+    player::hookPlayerBreedAnimal();
 
     mob::hookMobGetDamageAfterResistanceEffect();
 
@@ -21,7 +22,7 @@ void hook() {
     block::hookNoteBlockAttack();
     block::hookProjectileHitTargetBlock();
 
-    //item::hookFishingRodUsed();
+    // item::hookFishingRodUsed();
     item::hookItemStackBaseHurtAndBroken();
 
     container::hookLevelContainerChanged();

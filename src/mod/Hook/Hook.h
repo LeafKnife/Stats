@@ -16,6 +16,7 @@ void hookPlayerDropItem();
 void hookPlayerStartSleep();
 void hookServerPlayerOpenTrading();
 void hookPlayerUseItem();
+void hookPlayerBreedAnimal();
 } // namespace player
 
 namespace mob {
@@ -33,9 +34,9 @@ void hookProjectileHitTargetBlock();
 } // namespace block
 
 namespace item {
-//void hookFishingRodUsed();
+// void hookFishingRodUsed();
 void hookItemStackBaseHurtAndBroken();
-}
+} // namespace item
 
 namespace container {
 void hookLevelContainerChanged();

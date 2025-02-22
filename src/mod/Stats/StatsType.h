@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <unordered_map>
@@ -19,7 +20,7 @@ static const std::map<StatsDataType, std::string> StatsDataTypeMap = {
     {StatsDataType::killed_by, "minecraft:killed_by"},
 };
 
-typedef std::unordered_map<std::string, int> StatsDataMap;
+typedef std::unordered_map<std::string, uint64_t> StatsDataMap;
 struct PlayerInfo {
     std::string uuid;
     std::string xuid;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mc/platform/UUID.h"
 #include "mc/server/ServerPlayer.h"
 #include "mc/world/actor/ActorDamageSource.h"
 #include "mc/world/actor/player/Player.h"
@@ -35,6 +36,7 @@ void onChangeContainerWith(
     ItemStack const& oldItem,
     ItemStack const& newItem
 );
+void onBreedAnimal(mce::UUID uuid);
 } // namespace player
 } // namespace event
 } // namespace stats
