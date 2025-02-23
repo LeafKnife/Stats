@@ -25,6 +25,7 @@ void hookMobGetDamageAfterResistanceEffect();
 
 namespace block {
 void hookBlockUse();
+void hookBlockOnFallOn();
 void hookCakeRemoveSlice();
 void hookCauldronBlockUseInventory();
 void hookCauldronBlockClean();
@@ -41,5 +42,9 @@ void hookItemStackBaseHurtAndBroken();
 namespace container {
 void hookLevelContainerChanged();
 }
+
+// namespace test {
+// void hookTest();
+// }
 } // namespace hook
 } // namespace stats

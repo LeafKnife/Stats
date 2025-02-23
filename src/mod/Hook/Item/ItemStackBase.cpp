@@ -2,7 +2,6 @@
 
 #include <ll/api/memory/Hook.h>
 #include <mc/deps/ecs/WeakEntityRef.h>
-#include <mc/world/item/FishingRodItem.h>
 #include <mc/world/item/ItemStackBase.h>
 
 #include "mod/Events/PlayerEventHandle.h"

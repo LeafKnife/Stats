@@ -1,9 +1,9 @@
-#include <mc/platform/UUID.h>
 #include "mod/Hook/Hook.h"
+#include <mc/platform/UUID.h>
 
 #include <ll/api/memory/Hook.h>
-#include <mc/legacy/ActorUniqueID.h>
 #include <mc/deps/ecs/WeakEntityRef.h>
+#include <mc/legacy/ActorUniqueID.h>
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/Mob.h>
 #include <mc/world/actor/ai/goal/BreedGoal.h>
@@ -31,6 +31,7 @@ LL_TYPE_INSTANCE_HOOK(
     auto uuid     = getUuid();
     auto r        = origin(actor, location);
     if (!r) return r;
+    //getLogger().info("{} {} {} {}", text, actor.getTypeName(), actor.getOrCreateUniqueID().rawID, r);
     if (text != "Feed") return r;
     breedCacheMap[uniqueId] = uuid;
     return r;

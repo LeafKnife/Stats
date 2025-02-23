@@ -83,7 +83,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 骑炽足兽移动距离   | 玩家用鞍骑炽足兽移动的总距离。                     | minecraft:strider_one_cm                  | :x:                |
 | 已攀爬距离         | 玩家通过梯子或藤蔓向上移动的总距离。               | minecraft:climb_one_cm                    | :x:                |
 | 潜行距离           | 玩家潜行时移动的总距离。                           | minecraft:crouch_one_cm                   | :x:                |
-| 摔落高度           | 玩家坠落的总距离，跳跃不计算在内。                 | minecraft:fall_one_cm                     | :x:                |
+| 摔落高度           | 玩家坠落的总距离，跳跃不计算在内。                 | minecraft:fall_one_cm                     | :white_check_mark: |
 | 飞行距离           | 玩家同时向上、向前移动的总距离                     | minecraft:fly_one_cm                      | :x:                |
 | 疾跑距离           | 玩家疾跑的总距离。                                 | minecraft:sprint_one_cm                   | :x:                |
 | 游泳距离           | 玩家游泳的总距离                                   | minecraft:swim_one_cm                     | :x:                |
@@ -125,7 +125,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 潜影盒打开次数     | 玩家打开潜影盒的次数。                             | minecraft:open_shulker_box                | :white_check_mark: |
 | 自上次死亡         | 玩家自上次死亡以来经过的游戏时长。                 | minecraft:time_since_death                | :x:                |
 | 自上次入眠         | 玩家自上次在床上睡眠以来经过的游戏时长             | minecraft:time_since_rest                 | :x:                |
-| 潜行时间           | 玩家潜行的时长。                                   | minecraft:sneak_time                      | :x:                |
+| 潜行时间           | 玩家潜行的时长。                                   | minecraft:sneak_time                      | :white_check_mark: |
 | 村民交互次数       | 玩家和村民交互（打开其 GUI）的次数。               | minecraft:talked_to_villager              | :white_check_mark: |
 | 击中标靶次数       | 玩家射中标靶的次数。                               | minecraft:target_hit                      | :white_check_mark: |
 | 游戏时长           | 玩家在游戏中经过的时长。                           | minecraft:play_time                       | :white_check_mark: |
