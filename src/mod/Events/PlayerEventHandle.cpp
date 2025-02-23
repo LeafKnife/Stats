@@ -229,8 +229,9 @@ void onEffectAdded(Player* player, MobEffectInstance const& effect) {
     auto effectId      = effect.mId;
     auto durationValue = effect.mDuration->mValue;
     auto uuid          = player->getUuid();
-    auto playerStats   = playerStatsMap.find(uuid)->second;
-    if (!playerStats) return;
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
     if (effectId == 29 && durationValue == 40 * 60 * 20) {
         playerStats->addCustomStats(CustomType::raid_win);
     } else if (effectId == 36 && durationValue == 30 * 20) {
