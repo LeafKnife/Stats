@@ -125,7 +125,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 潜影盒打开次数     | 玩家打开潜影盒的次数。                             | minecraft:open_shulker_box                | :white_check_mark: |
 | 自上次死亡         | 玩家自上次死亡以来经过的游戏时长。                 | minecraft:time_since_death                | :x:                |
 | 自上次入眠         | 玩家自上次在床上睡眠以来经过的游戏时长             | minecraft:time_since_rest                 | :x:                |
-| 潜行时间           | 玩家潜行的时长。                                   | minecraft:sneak_time                      | :x:                |
+| 潜行时间           | 玩家潜行的时长。                                   | minecraft:sneak_time                      | :white_check_mark: |
 | 村民交互次数       | 玩家和村民交互（打开其 GUI）的次数。               | minecraft:talked_to_villager              | :white_check_mark: |
 | 击中标靶次数       | 玩家射中标靶的次数。                               | minecraft:target_hit                      | :white_check_mark: |
 | 游戏时长           | 玩家在游戏中经过的时长。                           | minecraft:play_time                       | :white_check_mark: |
