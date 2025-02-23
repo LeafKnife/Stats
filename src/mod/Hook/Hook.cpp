@@ -15,6 +15,7 @@ void hook() {
     mob::hookMobGetDamageAfterResistanceEffect();
 
     block::hookBlockUse();
+    block::hookBlockOnFallOn();
     block::hookCakeRemoveSlice();
     block::hookCauldronBlockUseInventory();
     block::hookCauldronBlockClean();
@@ -26,6 +27,8 @@ void hook() {
     item::hookItemStackBaseHurtAndBroken();
 
     container::hookLevelContainerChanged();
+
+    // test::hookTest();
 }
 
 void unhook() {}

@@ -1,5 +1,6 @@
 #include "mod/Events/BlockEventHandle.h"
 
+#include <cstdint>
 #include <ll/api/service/Bedrock.h>
 #include <mc/deps/ecs/WeakEntityRef.h>
 #include <mc/world/level/BlockSource.h>
@@ -7,6 +8,7 @@
 #include <mc/world/level/dimension/Dimension.h>
 
 #include "mod/Stats/Stats.h"
+#include "mod/Stats/StatsType.h"
 
 namespace stats {
 namespace event {
@@ -24,9 +26,9 @@ const Block& getBlockByBlockPos(BlockPos const& pos, DimensionType id) {
 void onBlockDestroyedByPlayer(BlockPos const& pos, Player& player) {
     if (player.isSimulatedPlayer()) return;
     if (player.isCreative()) return;
-    auto  uuid        = player.getUuid();
-    auto& bl          = getBlockByBlockPos(pos, player.getDimensionId());
-    auto findPlayer = playerStatsMap.find(uuid);
+    auto  uuid       = player.getUuid();
+    auto& bl         = getBlockByBlockPos(pos, player.getDimensionId());
+    auto  findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
@@ -35,9 +37,9 @@ void onBlockDestroyedByPlayer(BlockPos const& pos, Player& player) {
 
 void onBlockPlacedByPlayer(BlockPos const& pos, Player& player) {
     if (player.isSimulatedPlayer()) return;
-    auto& bl          = getBlockByBlockPos(pos, player.getDimensionId());
-    auto  uuid        = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
+    auto& bl         = getBlockByBlockPos(pos, player.getDimensionId());
+    auto  uuid       = player.getUuid();
+    auto  findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
@@ -46,10 +48,10 @@ void onBlockPlacedByPlayer(BlockPos const& pos, Player& player) {
 
 void onBlockUsed(BlockPos const& pos, Player& player) {
     if (player.isSimulatedPlayer()) return;
-    auto& block       = getBlockByBlockPos(pos, player.getDimensionId());
-    auto  blockType   = block.getTypeName();
-    auto  uuid        = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
+    auto& block      = getBlockByBlockPos(pos, player.getDimensionId());
+    auto  blockType  = block.getTypeName();
+    auto  uuid       = player.getUuid();
+    auto  findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
@@ -142,6 +144,18 @@ void onProjectileHitTargetBlock(Actor const& projectile) {
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::target_hit);
     return;
+}
+void onFallOn(Actor& actor, float fallDistance) {
+    if (!actor.hasType(::ActorType::Player)) return;
+    Player* player = actor.getEntityContext().getWeakRef().tryUnwrap<Player>();
+    if (!player) return;
+    auto uuid       = player->getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    uint64_t value = static_cast<uint64_t>(fallDistance * 100);
+    playerStats->addCustomStats(CustomType::fall_one_cm, value);
 }
 } // namespace block
 } // namespace event

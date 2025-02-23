@@ -22,6 +22,7 @@ void onCauldronBlockClean(
 );
 void onFlowerPotBlockPlaceFlower(Player& player);
 void onProjectileHitTargetBlock(Actor const& projectile);
+void onFallOn(Actor& actor,float fallDistance);
 } // namespace block
 } // namespace event
 } // namespace Stats

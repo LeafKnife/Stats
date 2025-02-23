@@ -83,7 +83,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 骑炽足兽移动距离   | 玩家用鞍骑炽足兽移动的总距离。                     | minecraft:strider_one_cm                  | :x:                |
 | 已攀爬距离         | 玩家通过梯子或藤蔓向上移动的总距离。               | minecraft:climb_one_cm                    | :x:                |
 | 潜行距离           | 玩家潜行时移动的总距离。                           | minecraft:crouch_one_cm                   | :x:                |
-| 摔落高度           | 玩家坠落的总距离，跳跃不计算在内。                 | minecraft:fall_one_cm                     | :x:                |
+| 摔落高度           | 玩家坠落的总距离，跳跃不计算在内。                 | minecraft:fall_one_cm                     | :white_check_mark: |
 | 飞行距离           | 玩家同时向上、向前移动的总距离                     | minecraft:fly_one_cm                      | :x:                |
 | 疾跑距离           | 玩家疾跑的总距离。                                 | minecraft:sprint_one_cm                   | :x:                |
 | 游泳距离           | 玩家游泳的总距离                                   | minecraft:swim_one_cm                     | :x:                |
