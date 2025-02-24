@@ -144,7 +144,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 
 ## 贡献
 
-如果您有任何问题，请开启一个 [issue]() 来讨论  
+如果您有任何问题，请开启一个 [issue](https://github.com/lwenk/Stats/issues) 来讨论  
 欢迎 PR
 
 ## 许可
