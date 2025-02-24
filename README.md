@@ -31,14 +31,6 @@ lip install github.com/lwenk/Stats
 
 StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
 
-### 插件详情
-
-![FormCustom](/docs/images/stats-form-custom.png)
-![FormKill](/docs/images/stats-form-kill.png)
-![FormKilledBy](/docs/images/stats-form-killed_by.png)
-![FormMined](/docs/images/stats-form-mined.png)
-![FormUsed](/docs/images/stats-form-used.png)
-
 ## 开发进度
 
 ### 统计类型和名称
@@ -145,3 +137,16 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 - [x] 药水、奶桶或任何食物（蛋糕除外）被消耗。
 - [ ] 空地图、铁桶、熔岩桶、水桶、奶桶、书与笔或药水变成一个新物品。
 - [x] 音乐唱片放置在唱片机中。
+
+## 更新日志
+
+查看 [CHANGELOG](CHANGELOG.md) 文件获取更多信息。
+
+## 贡献
+
+如果您有任何问题，请开启一个 [issue]() 来讨论  
+欢迎 PR
+
+## 许可
+
+AGPL-3.0 © LWenK
