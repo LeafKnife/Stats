@@ -84,7 +84,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 水下行走距离       | 玩家在水下直立行走的总距离。                       | minecraft:walk_under_water_one_cm         | :x:                |
 | 搜查投掷器次数     | 玩家和投掷器交互的次数。                           | minecraft:inspect_dropper                 | :white_check_mark: |
 | 末影箱打开次数     | 玩家打开末影箱的次数。                             | minecraft:open_enderchest                 | :white_check_mark: |
-| 捕鱼数             | 玩家捕到的鱼的总数。                               | minecraft:fish_caught                     | :x:                |
+| 捕鱼数             | 玩家捕到的鱼的总数。                               | minecraft:fish_caught                     | :white_check_mark: |
 | 游戏退出次数       | 玩家点击“保存并退回到标题画面”按钮的次数。         | minecraft:leave_game                      | :white_check_mark: |
 | 搜查漏斗次数       | 玩家和漏斗交互的次数。                             | minecraft:inspect_hopper                  | :white_check_mark: |
 | 与铁砧交互次数     | 玩家和铁砧交互的次数。                             | minecraft:interact_with_anvil             | :white_check_mark: |

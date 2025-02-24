@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+### 新增
+
+- 统计玩家捕鱼次数
+
 ## [0.2.1] - 2025-02-23
 
 ### 新增

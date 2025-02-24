@@ -10,7 +10,9 @@ void hook() {
     player::hookPlayerStartSleep();
     player::hookServerPlayerOpenTrading();
     player::hookPlayerUseItem();
+    player::hookPlayerInteractActor();
     player::hookPlayerBreedAnimal();
+    player::hookPlayerUseBucketItemOnFish();
 
     mob::hookMobGetDamageAfterResistanceEffect();
 

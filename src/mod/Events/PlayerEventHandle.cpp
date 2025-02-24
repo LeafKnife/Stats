@@ -15,6 +15,7 @@
 #include <mc/world/level/block/Block.h>
 
 #include "mod/Stats/Stats.h"
+#include "mod/Stats/StatsType.h"
 
 namespace stats {
 namespace event {
@@ -209,8 +210,8 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
         break;
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
-        //if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
-        if((id>=567&&id<=578)||id==657||id==663||id==673||id==736||(id>=782&&id<=784)){
+        // if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
+        if ((id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
             playerStats->addCustomStats(CustomType::play_record);
         }
         break;
@@ -229,7 +230,7 @@ void onEffectAdded(Player* player, MobEffectInstance const& effect) {
     auto effectId      = effect.mId;
     auto durationValue = effect.mDuration->mValue;
     auto uuid          = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
+    auto findPlayer    = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (effectId == 29 && durationValue == 40 * 60 * 20) {
@@ -306,6 +307,13 @@ void onBreedAnimal(mce::UUID uuid) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::animals_bred);
+}
+void onFishCaught(mce::UUID uuid) {
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::fish_caught);
 }
 } // namespace player
 } // namespace event

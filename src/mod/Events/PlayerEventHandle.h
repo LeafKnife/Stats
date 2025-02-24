@@ -37,6 +37,7 @@ void onChangeContainerWith(
     ItemStack const& newItem
 );
 void onBreedAnimal(mce::UUID uuid);
+void onFishCaught(mce::UUID uuid);
 } // namespace player
 } // namespace event
 } // namespace stats
