@@ -13,6 +13,8 @@ void hook() {
     player::hookPlayerInteractActor();
     player::hookPlayerBreedAnimal();
     player::hookPlayerUseBucketItemOnFish();
+    player::hookPlayerRiding();
+    player::hookPlayerAuthInput();
 
     mob::hookMobGetDamageAfterResistanceEffect();
 

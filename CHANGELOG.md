@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 新增
 
 - 统计玩家捕鱼次数
+- 统计玩家移动距离(滑行、疾跑、游泳等)
 
 ## [0.2.1] - 2025-02-23
 

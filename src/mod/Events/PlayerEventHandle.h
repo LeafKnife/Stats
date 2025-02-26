@@ -4,6 +4,7 @@
 #include <mc/server/ServerPlayer.h>
 #include <mc/world/actor/ActorDamageSource.h>
 #include <mc/world/actor/player/Player.h>
+#include <mc/network/packet/PlayerAuthInputPacket.h>
 #include <mc/world/effect/MobEffectInstance.h>
 #include <mc/world/item/ItemStackBase.h>
 
@@ -14,6 +15,9 @@ void onJoin(Player& player);
 void onLeft(ServerPlayer& player);
 void onSneaking(Player& player);
 void onSneaked(Player& player);
+void onStartRiding(mce::UUID uuid, Actor& vehicle, bool forceRiding);
+void onStopRiding(mce::UUID uuid, Actor& vehicle);
+void onAuthInput(ServerPlayer& player,PlayerAuthInputPacket const& packet);
 void onTakeItem(Player& player, ItemStack& item);
 void onDropItem(Player* player, ItemStack const& item);
 void onDied(Player& player, ActorDamageSource const& source);

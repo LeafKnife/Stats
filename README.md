@@ -67,21 +67,21 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 抵挡的伤害         | 玩家抵挡的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_resisted                 | :white_check_mark: |
 | 受到伤害           | 玩家承受的伤害总量，单位为 1（♥）的 1⁄10。         | minecraft:damage_taken                    | :white_check_mark: |
 | 搜查发射器次数     | 玩家和发射器交互的次数。                           | minecraft:inspect_dispenser               | :white_check_mark: |
-| 坐船移动距离       | 玩家乘船移动的总距离。                             | minecraft:boat_one_cm                     | :x:                |
-| 鞘翅滑行距离       | 玩家使用鞘翅滑行的总距离。                         | minecraft:aviate_one_cm                   | :x:                |
-| 骑马移动距离       | 玩家骑马移动的总距离。                             | minecraft:horse_one_cm                    | :x:                |
-| 坐矿车移动距离     | 玩家乘矿车移动的总距离。                           | minecraft:minecart_one_cm                 | :x:                |
-| 骑猪移动距离       | 玩家用鞍骑猪移动的总距离。                         | minecraft:pig_one_cm                      | :x:                |
-| 骑炽足兽移动距离   | 玩家用鞍骑炽足兽移动的总距离。                     | minecraft:strider_one_cm                  | :x:                |
-| 已攀爬距离         | 玩家通过梯子或藤蔓向上移动的总距离。               | minecraft:climb_one_cm                    | :x:                |
-| 潜行距离           | 玩家潜行时移动的总距离。                           | minecraft:crouch_one_cm                   | :x:                |
+| 坐船移动距离       | 玩家乘船移动的总距离。                             | minecraft:boat_one_cm                     | :white_check_mark: |
+| 鞘翅滑行距离       | 玩家使用鞘翅滑行的总距离。                         | minecraft:aviate_one_cm                   | :white_check_mark: |
+| 骑马移动距离       | 玩家骑马移动的总距离。                             | minecraft:horse_one_cm                    | :white_check_mark: |
+| 坐矿车移动距离     | 玩家乘矿车移动的总距离。                           | minecraft:minecart_one_cm                 | :white_check_mark: |
+| 骑猪移动距离       | 玩家用鞍骑猪移动的总距离。                         | minecraft:pig_one_cm                      | :white_check_mark: |
+| 骑炽足兽移动距离   | 玩家用鞍骑炽足兽移动的总距离。                     | minecraft:strider_one_cm                  | :white_check_mark: |
+| 已攀爬距离         | 玩家通过梯子或藤蔓向上移动的总距离。               | minecraft:climb_one_cm                    | :white_check_mark: |
+| 潜行距离           | 玩家潜行时移动的总距离。                           | minecraft:crouch_one_cm                   | :white_check_mark: |
 | 摔落高度           | 玩家坠落的总距离，跳跃不计算在内。                 | minecraft:fall_one_cm                     | :white_check_mark: |
-| 飞行距离           | 玩家同时向上、向前移动的总距离                     | minecraft:fly_one_cm                      | :x:                |
-| 疾跑距离           | 玩家疾跑的总距离。                                 | minecraft:sprint_one_cm                   | :x:                |
-| 游泳距离           | 玩家游泳的总距离                                   | minecraft:swim_one_cm                     | :x:                |
-| 行走距离           | 玩家行走的总距离。                                 | minecraft:walk_one_cm                     | :x:                |
-| 水面行走距离       | 玩家在水面上下游动的总距离。                       | minecraft:walk_on_water_one_cm            | :x:                |
-| 水下行走距离       | 玩家在水下直立行走的总距离。                       | minecraft:walk_under_water_one_cm         | :x:                |
+| 飞行距离           | 玩家同时向上、向前移动的总距离                     | minecraft:fly_one_cm                      | :white_check_mark: |
+| 疾跑距离           | 玩家疾跑的总距离。                                 | minecraft:sprint_one_cm                   | :white_check_mark: |
+| 游泳距离           | 玩家游泳的总距离                                   | minecraft:swim_one_cm                     | :white_check_mark: |
+| 行走距离           | 玩家行走的总距离。                                 | minecraft:walk_one_cm                     | :white_check_mark: |
+| 水面行走距离       | 玩家在水面上下游动的总距离。                       | minecraft:walk_on_water_one_cm            | :white_check_mark: |
+| 水下行走距离       | 玩家在水下直立行走的总距离。                       | minecraft:walk_under_water_one_cm         | :white_check_mark: |
 | 搜查投掷器次数     | 玩家和投掷器交互的次数。                           | minecraft:inspect_dropper                 | :white_check_mark: |
 | 末影箱打开次数     | 玩家打开末影箱的次数。                             | minecraft:open_enderchest                 | :white_check_mark: |
 | 捕鱼数             | 玩家捕到的鱼的总数。                               | minecraft:fish_caught                     | :white_check_mark: |

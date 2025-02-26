@@ -19,6 +19,8 @@ void hookPlayerUseItem();
 void hookPlayerInteractActor();
 void hookPlayerBreedAnimal();
 void hookPlayerUseBucketItemOnFish();
+void hookPlayerRiding();
+void hookPlayerAuthInput();
 } // namespace player
 
 namespace mob {
