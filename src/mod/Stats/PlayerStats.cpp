@@ -1,6 +1,5 @@
 #include "mod/Stats/PlayerStats.h"
 
-#include <cmath>
 #include <cstdint>
 #include <ll/api/io/FileUtils.h>
 #include <ll/api/service/Bedrock.h>
