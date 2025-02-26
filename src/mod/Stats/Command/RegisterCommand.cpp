@@ -16,7 +16,6 @@
 #include "mod/Stats/Form/Form.h"
 #include "mod/Stats/StatsType.h"
 
-//#include "mod/MyMod.h"
 
 enum StatsType : int { custom = 1, mined, broken, crafted, used, picked_up, dropped, killed, killed_by };
 
@@ -34,7 +33,12 @@ struct StatsRank {
 
 void registerCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance()
-                    .getOrCreateCommand("stats", "LK-Stats - " + "command.desc"_tr(), CommandPermissionLevel::Any);
+                    .getOrCreateCommand(
+                        "command.stats.name"_tr(),
+                        "LK-Stats - " + "command.stats.desc"_tr(),
+                        CommandPermissionLevel::Any
+                    )
+                    .alias("command.stats.alias"_tr());
     cmd.overload<StatsGui>()
         .text("gui")
         .optional("StatsType")

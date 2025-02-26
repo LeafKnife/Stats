@@ -1,7 +1,10 @@
 #include "mod/Events/PlayerEventHandle.h"
 
+#include <cmath>
 #include <ll/api/service/Bedrock.h>
+#include <mc/deps/core/math/Vec3.h>
 #include <mc/legacy/ActorUniqueID.h>
+#include <mc/network/packet/PlayerAuthInputPacket.h>
 #include <mc/world/attribute/AttributeInstance.h>
 #include <mc/world/attribute/AttributeModificationContext.h>
 #include <mc/world/attribute/MutableAttributeWithContext.h>
@@ -15,6 +18,7 @@
 #include <mc/world/level/block/Block.h>
 
 #include "mod/Stats/Stats.h"
+#include "mod/Stats/StatsType.h"
 
 namespace stats {
 namespace event {
@@ -58,7 +62,85 @@ void onSneaked(Player& player) {
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    playerStats->addSneakTick();
+    playerStats->stopSneaking();
+}
+
+void onStartRiding(mce::UUID uuid, Actor& vehicle, bool forceRiding) {
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->mDistanceCache.ride = 0;
+}
+void onStopRiding(mce::UUID uuid, Actor& vehicle) {
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    auto value = playerStats->mDistanceCache.ride;
+    if (vehicle.hasCategory(::ActorCategory::BoatRideable)) {
+        playerStats->addCustomStats(CustomType::boat_one_cm, value);
+    } else if (vehicle.hasCategory(::ActorCategory::MinecartRidable)) {
+        playerStats->addCustomStats(CustomType::minecart_one_cm, value);
+    } else if (vehicle.hasType(::ActorType::Horse)) {
+        playerStats->addCustomStats(CustomType::horse_one_cm, value);
+    } else if (vehicle.hasType(::ActorType::Pig)) {
+        playerStats->addCustomStats(CustomType::pig_one_cm, value);
+    } else if (vehicle.hasType(::ActorType::Strider)) {
+        playerStats->addCustomStats(CustomType::strider_one_cm, value);
+    }
+    playerStats->mDistanceCache.ride = 0;
+}
+
+void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    auto pos   = const_cast<Vec3&>(player.getPosition());
+    auto dimId = player.getDimensionId().id;
+    if (playerStats->mLastDimensionId != dimId) {
+        playerStats->mLastDimensionId = dimId;
+        playerStats->mLastPos         = pos;
+        return;
+    }
+    // packet.mPosDelta
+    auto value = static_cast<uint64_t>(std::round(player.getPosition().distanceToSqr(playerStats->mLastPos) * 100));
+    playerStats->mLastPos = pos;
+
+    if (player.isRiding()) {
+        playerStats->mDistanceCache.ride += value;
+    } else {
+        playerStats->mDistanceCache.ride = 0;
+    }
+    if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::Sneaking)) {
+        // 潜行
+        playerStats->mDistanceCache.sneak += value;
+    } else if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::Sprinting)) {
+        // 疾跑
+        playerStats->addCustomStats(CustomType::sprint_one_cm, value);
+    } else if (playerStats->mDistanceCache.isGliding) {
+        playerStats->addCustomStats(CustomType::aviate_one_cm, value);
+    } else if (player.isFlying()) {
+        playerStats->addCustomStats(CustomType::fly_one_cm, value);
+    } else if (player.onClimbableBlock()) {
+        playerStats->addCustomStats(CustomType::climb_one_cm, value);
+    } else if (player.isOnGround() && player.isInWater()) {
+        playerStats->addCustomStats(CustomType::walk_under_water_one_cm, value);
+    } else if (player.isSwimming()) {
+        playerStats->addCustomStats(CustomType::swim_one_cm, value);
+    } else if (player.isOverWater() && !player.isOnGround()) {
+        playerStats->addCustomStats(CustomType::walk_on_water_one_cm, value);
+    } else if (player.isOnGround()) {
+        playerStats->addCustomStats(CustomType::walk_one_cm, value);
+    }
+
+    if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::StartGliding)) {
+        playerStats->mDistanceCache.isGliding = true;
+    } else if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::StopGliding)) {
+        playerStats->mDistanceCache.isGliding = false;
+    }
 }
 
 void onTakeItem(Player& player, ItemStack& item) {
@@ -209,8 +291,8 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
         break;
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
-        //if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
-        if((id>=567&&id<=578)||id==657||id==663||id==673||id==736||(id>=782&&id<=784)){
+        // if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
+        if ((id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
             playerStats->addCustomStats(CustomType::play_record);
         }
         break;
@@ -229,7 +311,7 @@ void onEffectAdded(Player* player, MobEffectInstance const& effect) {
     auto effectId      = effect.mId;
     auto durationValue = effect.mDuration->mValue;
     auto uuid          = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
+    auto findPlayer    = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (effectId == 29 && durationValue == 40 * 60 * 20) {
@@ -306,6 +388,13 @@ void onBreedAnimal(mce::UUID uuid) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::animals_bred);
+}
+void onFishCaught(mce::UUID uuid) {
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->addCustomStats(CustomType::fish_caught);
 }
 } // namespace player
 } // namespace event

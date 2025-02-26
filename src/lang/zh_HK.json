@@ -2,7 +2,9 @@
     "gui.title.stats": "统计信息",
     "gui.title.rank": "排行榜",
 
-    "command.desc":"统计信息",
+    "command.stats.name":"stats",
+    "command.stats.alias":"lks",
+    "command.stats.desc":"统计信息",
     "command.error.notplayer":"此命令仅限玩家执行",
 
     "minecraft:custom": "通用",

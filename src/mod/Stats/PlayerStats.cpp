@@ -1,5 +1,6 @@
 #include "mod/Stats/PlayerStats.h"
 
+#include <cstdint>
 #include <ll/api/io/FileUtils.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
@@ -20,6 +21,8 @@ PlayerStats::PlayerStats(Player const& player) {
     mXuid              = player.getXuid();
     mName              = player.getRealName();
     mSneakingStartTick = 0;
+    mLastPos           = const_cast<Vec3&>(player.getPosition());
+    mLastDimensionId   = player.getDimensionId().id;
 
     auto                 cache = getStatsCache();
     auto                 uuid  = mUuid.asString();
@@ -57,6 +60,7 @@ bool PlayerStats::saveData() {
     return ll::file_utils::writeFile(getPath(), j.dump());
 };
 void PlayerStats::addStats(StatsDataType type, std::string key, uint64_t value) {
+    value = value > 0 ? value : 0;
     switch (type) {
     case StatsDataType::custom:
         mData->custom[key] += value;
@@ -88,15 +92,21 @@ void PlayerStats::addStats(StatsDataType type, std::string key, uint64_t value) 
     }
 };
 void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
+    value = value > 0 ? value : 0;
     auto key            = CustomTypeMap.at(type);
     mData->custom[key] += value;
 };
 
-void PlayerStats::startSneaking() { mSneakingStartTick = ll::service::getLevel()->getCurrentTick().tickID; };
-void PlayerStats::addSneakTick() {
+void PlayerStats::startSneaking() {
+    mSneakingStartTick   = ll::service::getLevel()->getCurrentTick().tickID;
+    mDistanceCache.sneak = 0;
+};
+void PlayerStats::stopSneaking() {
     if (mSneakingStartTick == 0) return;
     auto record = ll::service::getLevel()->getCurrentTick().tickID - mSneakingStartTick;
     addCustomStats(CustomType::sneak_time, record);
-    mSneakingStartTick = 0;
+    addCustomStats(CustomType::crouch_one_cm, mDistanceCache.sneak);
+    mSneakingStartTick   = 0;
+    mDistanceCache.sneak = 0;
 };
 } // namespace stats
