@@ -43,8 +43,5 @@ namespace container {
 void hookLevelContainerChanged();
 }
 
-// namespace test {
-// void hookTest();
-// }
 } // namespace hook
 } // namespace stats

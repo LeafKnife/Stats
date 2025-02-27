@@ -29,8 +29,6 @@ void hook() {
     item::hookItemStackBaseHurtAndBroken();
 
     container::hookLevelContainerChanged();
-
-    // test::hookTest();
 }
 
 void unhook() {}

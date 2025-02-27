@@ -10,6 +10,7 @@
 #include <ll/api/event/player/PlayerJumpEvent.h>
 #include <ll/api/event/player/PlayerPickUpItemEvent.h>
 #include <ll/api/event/player/PlayerSneakEvent.h>
+#include <ll/api/event/player/PlayerSprintEvent.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/legacy/ActorUniqueID.h>
 #include <mc/world/level/Level.h>
@@ -29,6 +30,8 @@ ll::event::ListenerPtr playerDieListener;
 ll::event::ListenerPtr playerJumpListener;
 ll::event::ListenerPtr playerSneakingListener;
 ll::event::ListenerPtr playerSneakedListener;
+ll::event::ListenerPtr playerSprintingListener;
+ll::event::ListenerPtr playerSprintedListener;
 ll::event::ListenerPtr playerPlacedBlockListener;
 ll::event::ListenerPtr mobDieListener;
 } // namespace
@@ -84,6 +87,16 @@ void listenEvents() {
             player::onSneaked(event.self());
         });
 
+    playerSprintingListener =
+        eventBus.emplaceListener<ll::event::PlayerSprintingEvent>([](ll::event::PlayerSprintingEvent& event) {
+            player::onSprinting(event.self());
+        });
+
+    playerSprintedListener =
+        eventBus.emplaceListener<ll::event::PlayerSprintedEvent>([](ll::event::PlayerSprintedEvent& event) {
+            player::onSprinted(event.self());
+        });
+
     mobDieListener =
         eventBus.emplaceListener<ll::event::entity::MobDieEvent>([](ll::event::entity::MobDieEvent& event) {
             auto& mob    = event.self();
@@ -109,6 +122,8 @@ void removeEvents() {
     eventBus.removeListener(playerPickUpItemListener);
     eventBus.removeListener(playerSneakingListener);
     eventBus.removeListener(playerSneakedListener);
+    eventBus.removeListener(playerSprintingListener);
+    eventBus.removeListener(playerSprintedListener);
     eventBus.removeListener(playerDieListener);
     eventBus.removeListener(playerJumpListener);
     eventBus.removeListener(playerPlacedBlockListener);
