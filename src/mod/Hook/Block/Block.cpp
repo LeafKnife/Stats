@@ -26,7 +26,6 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     auto r = origin(player, pos, face, hit);
     if (!r) return r;
-    // getLogger().info("Hook {} {} {}", player.getRealName(), getTypeName(), r);
     event::block::onBlockUsed(pos, player);
     return r;
 }
@@ -44,12 +43,6 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     
     if (fallDistance < 1.0f) return origin(region, pos, entity, fallDistance);
-    // getLogger().info(
-    //     "BlockOnFallOnHook {} {} {}",
-    //     fallDistance,
-    //     entity.getTypeName(),
-    //     getTypeName()
-    // );
     event::block::onFallOn(entity, fallDistance);
     return origin(region, pos, entity, fallDistance);
 }

@@ -83,12 +83,6 @@ void listenEvents() {
         eventBus.emplaceListener<ll::event::PlayerSneakedEvent>([](ll::event::PlayerSneakedEvent& event) {
             player::onSneaked(event.self());
         });
-    // PlayerPlaceBlock
-    // playerPlacedBlockListener = eventBus.emplaceListener<ll::event::player::PlayerPlacedBlockEvent>(
-    //     [](ll::event::player::PlayerPlacedBlockEvent& event) {
-    //         block::onBlockPlacedByPlayer(event.pos(), event.self());
-    //     }
-    // );
 
     mobDieListener =
         eventBus.emplaceListener<ll::event::entity::MobDieEvent>([](ll::event::entity::MobDieEvent& event) {

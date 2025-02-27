@@ -45,8 +45,6 @@ LL_TYPE_INSTANCE_HOOK(
     auto afterDamage = origin(source, damage);
     Mob* mob         = this;
     onMobHurt(mob, source, damage, afterDamage);
-    // logger.info("MobGetDamageAfterResistanceEffectHook {} {} {}", this->getTypeName(), damage * 100, afterDamage *
-    // 100);
     return afterDamage;
 }
 

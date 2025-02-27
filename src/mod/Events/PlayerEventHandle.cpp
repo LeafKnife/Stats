@@ -229,8 +229,6 @@ void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
-    // auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
-    // auto  absorption     = mob->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
     auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH()).mInstance->mCurrentValue;
     auto  absorption     = mob->getMutableAttribute(SharedAttributes::ABSORPTION()).mInstance->mCurrentValue;
     float damage_taken   = afterDamage > 0 ? afterDamage : -afterDamage;
@@ -291,7 +289,7 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
         break;
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
-        // if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
+        // 暂时先用ID, 装addon不知道会不会有问题？
         if ((id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
             playerStats->addCustomStats(CustomType::play_record);
         }

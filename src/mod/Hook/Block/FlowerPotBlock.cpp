@@ -17,7 +17,6 @@ LL_TYPE_INSTANCE_HOOK(
     ::BlockPos const& blockPos
 ) {
     auto res = origin(player, blockPos);
-    // logger.info("FlowerPotBlockTryPlaceFlowerHook {} {} {}", player.getRealName(), blockPos, res);
     if (!res) return res;
     event::block::onFlowerPotBlockPlaceFlower(player);
     return res;

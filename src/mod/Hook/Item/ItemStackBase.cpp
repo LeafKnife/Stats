@@ -19,13 +19,6 @@ LL_TYPE_INSTANCE_HOOK(
     if (!owner->hasType(::ActorType::Player)) return origin(deltaDamage, owner);
     ItemStackBase* item = this;
     auto           res  = origin(deltaDamage, owner);
-    // logger.info(
-    //     "ItemStackBaseHurtAndBreak {} {} {} {}",
-    //     this->getTypeName(),
-    //     deltaDamage,
-    //     owner->getTypeName(),
-    //     res
-    // );
     if (!res) return res;
     Player* player = owner->getEntityContext().getWeakRef().tryUnwrap<Player>();
     if (!player) return res;

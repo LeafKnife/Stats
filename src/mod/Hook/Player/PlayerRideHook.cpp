@@ -3,7 +3,6 @@
 #include <ll/api/memory/Hook.h>
 #include <mc/deps/ecs/WeakEntityRef.h>
 #include <mc/legacy/ActorUniqueID.h>
-#include <stdexcept>
 
 #include "mod/Events/PlayerEventHandle.h"
 
@@ -20,8 +19,6 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     auto r = origin(vehicle, forceRiding);
     if (!r) return r;
-    getLogger()
-        .info("StartRidingAfter {} {} {} {}", r, getRealName(), vehicle.getOrCreateUniqueID().rawID, forceRiding);
     event::player::onStartRiding(getUuid(), vehicle, forceRiding);
     return r;
 }

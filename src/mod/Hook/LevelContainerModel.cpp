@@ -26,16 +26,6 @@ LL_TYPE_INSTANCE_HOOK(
     auto&     block     = event::block::getBlockByBlockPos(blockPos, player.getDimensionId());
     auto      blockType = block.getTypeName();
     event::player::onChangeContainerWith(player, blockType, slot, oldItem, newItem);
-    // getLogger().info(
-    //     "hook1 {} {} {} {} {} {} {}",
-    //     player.getRealName(),
-    //     block.getTypeName(),
-    //     slot,
-    //     oldItem.getTypeName(),
-    //     oldItem.mCount,
-    //     newItem.getTypeName(),
-    //     newItem.mCount
-    // );
     origin(slotNumber, oldItem, newItem);
 }
 

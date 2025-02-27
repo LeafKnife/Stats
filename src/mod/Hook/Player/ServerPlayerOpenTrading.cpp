@@ -20,7 +20,6 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     origin(uniqueID, useNewScreen);
     Player* player = this;
-    // logger.info("PlayerOpenTradingHook {} {} {}", player->getRealName(), uniqueID.rawID, useNewScreen);
     auto actor = ll::service::getLevel()->fetchEntity(uniqueID, false);
 
     if (!actor->hasType(::ActorType::VillagerV2)) return;
