@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家捕鱼次数
 - 统计玩家移动距离(滑行、疾跑、游泳等)
 
+### 修复
+
+- 玩家造成伤害无法被记录的异常情况
+
 ## [0.2.1] - 2025-02-23
 
 ### 新增
