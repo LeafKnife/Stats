@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 修复
 
 - 玩家造成伤害无法被记录的异常情况
+- mob_kills拼写错误
 
 ## [0.2.1] - 2025-02-23
 

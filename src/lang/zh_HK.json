@@ -70,7 +70,7 @@
     "minecraft:drop": "物品掉落",
     "minecraft:enchant_item": "物品附魔次数",
     "minecraft:jump": "跳跃次数",
-    "minecraft:mobs_kills": "生物击杀数",
+    "minecraft:mob_kills": "生物击杀数",
     "minecraft:play_record": "播放唱片数",
     "minecraft:play_noteblock": "音符盒播放次数",
     "minecraft:tune_noteblock": "音符盒调音次数",
