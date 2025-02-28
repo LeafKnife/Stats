@@ -307,7 +307,6 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    auto id = instance.getId();
     switch (itemUseMethod) {
     case ItemUseMethod::Eat:
     case ItemUseMethod::Consume:
@@ -319,7 +318,11 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
         // 暂时先用ID, 装addon不知道会不会有问题？
-        if ((id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
+        // if (auto id = instance.getId();
+        //     (id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
+        //     playerStats->addCustomStats(CustomType::play_record);
+        // }
+        if(instance.getItem()->isMusicDisk()){
             playerStats->addCustomStats(CustomType::play_record);
         }
         break;
