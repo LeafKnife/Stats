@@ -18,13 +18,6 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     Player* player         = this;
     
-    // getLogger().info(
-    //     "PlayerUseItemHook {} {} {} {}",
-    //     player->getRealName(),
-    //     instance.getTypeName(),
-    //     static_cast<int>(itemUseMethod),
-    //     consumeItem
-    // );
     event::player::onUsedItem(player, instance, itemUseMethod, consumeItem);
     return origin(instance, itemUseMethod, consumeItem);
 }

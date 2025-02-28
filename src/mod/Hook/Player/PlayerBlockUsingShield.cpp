@@ -16,7 +16,6 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     auto    res    = origin(source, damage);
     Player* player = this;
-    // logger.info("PlayerBlockUsingShieldHook {} {} {}", player->getRealName(), damage, res);
     if (!res) return res;
     event::player::onBlockUsingShield(player, damage);
     return res;

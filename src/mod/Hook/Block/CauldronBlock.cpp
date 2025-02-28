@@ -17,13 +17,6 @@ LL_TYPE_INSTANCE_HOOK(
     class ItemStack& replaceWith,
     int              useCount
 ) {
-    // logger.info(
-    //     "CauldronBlockUseInventoryHook {} {} {} {}",
-    //     player.getRealName(),
-    //     current.getTypeName(),
-    //     replaceWith.getTypeName(),
-    //     useCount
-    // );
     event::block::onCauldronBlockUseInventory(player, current, replaceWith, useCount);
     return origin(player, current, replaceWith, useCount);
 }

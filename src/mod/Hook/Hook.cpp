@@ -1,7 +1,5 @@
 #include "mod/Hook/Hook.h"
 
-#include "mod/MyMod.h"
-
 namespace stats::hook {
 void hook() {
     player::hookPlayerAddEffect();
@@ -31,11 +29,7 @@ void hook() {
     item::hookItemStackBaseHurtAndBroken();
 
     container::hookLevelContainerChanged();
-
-    // test::hookTest();
 }
 
 void unhook() {}
-
-ll::io::Logger& getLogger() { return lk::MyMod::getInstance().getSelf().getLogger(); }
 } // namespace stats::hook

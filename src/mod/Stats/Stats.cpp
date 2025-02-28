@@ -10,6 +10,7 @@
 
 #include "mod/Events/Events.h"
 #include "mod/Hook/Hook.h"
+#include "mod/MyMod.h"
 #include "mod/Stats/Command/RegisterCommand.h"
 #include "mod/Stats/StatsType.h"
 
@@ -20,6 +21,7 @@ PlayerStatsMap playerStatsMap;
 StatsCache     statsCache;
 } // namespace
 
+ll::io::Logger& getLogger() { return lk::MyMod::getInstance().getSelf().getLogger(); }
 PlayerStatsMap& getPlayerStatsMap() { return playerStatsMap; }
 StatsCache&     getStatsCache() { return statsCache; }
 
@@ -70,5 +72,19 @@ void load() {
 void unload() {
     event::removeEvents();
     hook::unhook();
+}
+
+void printLogo() {
+    auto& logger = getLogger();
+    logger.info(R"(                                                                         )");
+    logger.info(R"(     ██╗     ██╗  ██╗     ███████╗████████╗ █████╗ ████████╗███████╗     )");
+    logger.info(R"(     ██║     ██║ ██╔╝     ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝     )");
+    logger.info(R"(     ██║     █████╔╝█████╗███████╗   ██║   ███████║   ██║   ███████╗     )");
+    logger.info(R"(     ██║     ██╔═██╗╚════╝╚════██║   ██║   ██╔══██║   ██║   ╚════██║     )");
+    logger.info(R"(     ███████╗██║  ██╗     ███████║   ██║   ██║  ██║   ██║   ███████║     )");
+    logger.info(R"(     ╚══════╝╚═╝  ╚═╝     ╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝     )");
+    logger.info(R"(                                                                         )");
+    ///logger.info(R"(     ----------------   LeafKnife Statistics Plugin  ---------------     )");
+    logger.info("Repository: https://github.com/lwenk/Stats");
 }
 } // namespace stats

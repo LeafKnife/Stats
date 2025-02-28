@@ -1,13 +1,9 @@
 #pragma once
 
-#include <ll/api/io/Logger.h>
-
 namespace stats {
 namespace hook {
 void hook();
 void unhook();
-
-ll::io::Logger& getLogger();
 
 namespace player {
 void hookPlayerAddEffect();
@@ -47,8 +43,5 @@ namespace container {
 void hookLevelContainerChanged();
 }
 
-// namespace test {
-// void hookTest();
-// }
 } // namespace hook
 } // namespace stats

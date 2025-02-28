@@ -1,6 +1,7 @@
 #include "mod/Events/PlayerEventHandle.h"
 
 #include <cmath>
+#include <cstddef>
 #include <ll/api/service/Bedrock.h>
 #include <mc/deps/core/math/Vec3.h>
 #include <mc/legacy/ActorUniqueID.h>
@@ -17,6 +18,7 @@
 #include <mc/world/level/Level.h>
 #include <mc/world/level/block/Block.h>
 
+#include "mod/Stats/PlayerStats.h"
 #include "mod/Stats/Stats.h"
 #include "mod/Stats/StatsType.h"
 
@@ -65,6 +67,23 @@ void onSneaked(Player& player) {
     playerStats->stopSneaking();
 }
 
+void onSprinting(Player& player) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->mDistanceCache.isSprinting = true;
+}
+void onSprinted(Player& player) {
+    auto uuid       = player.getUuid();
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    playerStats->mDistanceCache.isSprinting = false;
+}
+
 void onStartRiding(mce::UUID uuid, Actor& vehicle, bool forceRiding) {
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
@@ -106,36 +125,46 @@ void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
         return;
     }
     // packet.mPosDelta
-    auto value = static_cast<uint64_t>(std::round(player.getPosition().distanceToSqr(playerStats->mLastPos) * 100));
-    playerStats->mLastPos = pos;
 
     if (player.isRiding()) {
+        auto value = static_cast<uint64_t>(std::round(player.getPosition().distanceTo(playerStats->mLastPos) * 100));
         playerStats->mDistanceCache.ride += value;
+        playerStats->mLastPos             = pos;
     } else {
+        // 部分情况下可能检测不到玩家停止骑行
         playerStats->mDistanceCache.ride = 0;
-    }
-    if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::Sneaking)) {
-        // 潜行
-        playerStats->mDistanceCache.sneak += value;
-    } else if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::Sprinting)) {
-        // 疾跑
-        playerStats->addCustomStats(CustomType::sprint_one_cm, value);
-    } else if (playerStats->mDistanceCache.isGliding) {
-        playerStats->addCustomStats(CustomType::aviate_one_cm, value);
-    } else if (player.isFlying()) {
-        playerStats->addCustomStats(CustomType::fly_one_cm, value);
-    } else if (player.onClimbableBlock()) {
-        playerStats->addCustomStats(CustomType::climb_one_cm, value);
-    } else if (player.isOnGround() && player.isInWater()) {
-        playerStats->addCustomStats(CustomType::walk_under_water_one_cm, value);
-    } else if (player.isSwimming()) {
-        playerStats->addCustomStats(CustomType::swim_one_cm, value);
-    } else if (player.isOverWater() && !player.isOnGround()) {
-        playerStats->addCustomStats(CustomType::walk_on_water_one_cm, value);
-    } else if (player.isOnGround()) {
-        playerStats->addCustomStats(CustomType::walk_one_cm, value);
-    }
 
+        if (player.isInWater()) {
+            auto value = static_cast<uint64_t>(std::floor(packet.mPosDelta->length() * 100));
+            if (player.isSwimming()) {
+                playerStats->addCustomStats(CustomType::swim_one_cm, value);
+            } else if (player._isHeadInWater()) {
+                playerStats->addCustomStats(CustomType::walk_on_water_one_cm, value);
+            } else {
+                playerStats->addCustomStats(CustomType::walk_under_water_one_cm, value);
+            }
+        } else if (player.isFlying()) {
+            auto value = static_cast<uint64_t>(std::floor(packet.mPosDelta->length() * 100));
+            playerStats->addCustomStats(CustomType::fly_one_cm, value);
+        } else if (player.isOnGround()) {
+            auto posOffset = Vec3{0, -0.0784, 0};
+            auto value     = static_cast<uint64_t>(std::floor(packet.mPosDelta->distanceTo(posOffset) * 100));
+            if (playerStats->mDistanceCache.isSneaking) {
+                playerStats->mDistanceCache.sneak += value;
+            } else if (playerStats->mDistanceCache.isSprinting) {
+                playerStats->addCustomStats(CustomType::sprint_one_cm, value);
+            } else {
+                playerStats->addCustomStats(CustomType::walk_one_cm, value);
+            }
+        } else if (player.onClimbableBlock()) {
+            auto valueY = packet.mPosDelta->y + 0.0784;
+            auto value2 = static_cast<uint64_t>(std::floor(valueY > 0 ? valueY * 100 : 0));
+            playerStats->addCustomStats(CustomType::climb_one_cm, value2);
+        } else if (playerStats->mDistanceCache.isGliding) {
+            auto value = static_cast<uint64_t>(std::floor(packet.mPosDelta->length() * 100));
+            playerStats->addCustomStats(CustomType::aviate_one_cm, value);
+        }
+    }
     if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::StartGliding)) {
         playerStats->mDistanceCache.isGliding = true;
     } else if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::StopGliding)) {
@@ -229,8 +258,6 @@ void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
-    // auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH())->getCurrentValue();
-    // auto  absorption     = mob->getMutableAttribute(SharedAttributes::ABSORPTION())->getCurrentValue();
     auto  heath          = mob->getMutableAttribute(SharedAttributes::HEALTH()).mInstance->mCurrentValue;
     auto  absorption     = mob->getMutableAttribute(SharedAttributes::ABSORPTION()).mInstance->mCurrentValue;
     float damage_taken   = afterDamage > 0 ? afterDamage : -afterDamage;
@@ -280,7 +307,6 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    auto id = instance.getId();
     switch (itemUseMethod) {
     case ItemUseMethod::Eat:
     case ItemUseMethod::Consume:
@@ -291,8 +317,12 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
         break;
     case ItemUseMethod::Place:
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
-        // if (instance.getComponentItem()->isMusicDisk()) playerStats->addCustomStats(CustomType::play_record);
-        if ((id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
+        // 暂时先用ID, 装addon不知道会不会有问题？
+        // if (auto id = instance.getId();
+        //     (id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
+        //     playerStats->addCustomStats(CustomType::play_record);
+        // }
+        if(instance.getItem()->isMusicDisk()){
             playerStats->addCustomStats(CustomType::play_record);
         }
         break;

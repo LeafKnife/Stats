@@ -60,7 +60,7 @@ bool PlayerStats::saveData() {
     return ll::file_utils::writeFile(getPath(), j.dump());
 };
 void PlayerStats::addStats(StatsDataType type, std::string key, uint64_t value) {
-    value = value > 0 ? value : 0;
+    if (value <= 0) return;
     switch (type) {
     case StatsDataType::custom:
         mData->custom[key] += value;
@@ -90,23 +90,29 @@ void PlayerStats::addStats(StatsDataType type, std::string key, uint64_t value) 
         mData->killed_by[key] += value;
         break;
     }
+    auto typeName = StatsDataTypeMap.at(type);
+    // getLogger().debug("AddStats {} {} key:{} value:{}", mName, typeName, key, value);
 };
 void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
-    value = value > 0 ? value : 0;
-    auto key            = CustomTypeMap.at(type);
+    if (value <= 0) return;
+    auto key = CustomTypeMap.at(type);
+    // getLogger().debug("AddCustomStats {} key:{} value:{}", mName, key, value);
+
     mData->custom[key] += value;
 };
 
 void PlayerStats::startSneaking() {
-    mSneakingStartTick   = ll::service::getLevel()->getCurrentTick().tickID;
-    mDistanceCache.sneak = 0;
+    mSneakingStartTick        = ll::service::getLevel()->getCurrentTick().tickID;
+    mDistanceCache.isSneaking = true;
+    mDistanceCache.sneak      = 0;
 };
 void PlayerStats::stopSneaking() {
     if (mSneakingStartTick == 0) return;
     auto record = ll::service::getLevel()->getCurrentTick().tickID - mSneakingStartTick;
     addCustomStats(CustomType::sneak_time, record);
     addCustomStats(CustomType::crouch_one_cm, mDistanceCache.sneak);
-    mSneakingStartTick   = 0;
-    mDistanceCache.sneak = 0;
+    mSneakingStartTick        = 0;
+    mDistanceCache.isSneaking = false;
+    mDistanceCache.sneak      = 0;
 };
 } // namespace stats

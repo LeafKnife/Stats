@@ -16,7 +16,6 @@ LL_TYPE_INSTANCE_HOOK(
     ::BlockPos const& pos
 ) {
     auto res = origin(player, pos);
-    // logger.info("NoteBlockAttackHook {} {} {}", player->getRealName(), pos, res);
     if (!res) return res;
     event::block::onNoteBlockAttacked(player);
     return res;

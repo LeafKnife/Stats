@@ -14,10 +14,11 @@ namespace stats {
 
 class PlayerStats {
     struct MoveCache {
-        uint64_t ride      = 0;
-        uint64_t sneak     = 0;
-        uint64_t climb     = 0;
-        bool     isGliding = false;
+        uint64_t ride        = 0;
+        uint64_t sneak       = 0;
+        bool     isGliding   = false;
+        bool     isSneaking  = false;
+        bool     isSprinting = false;
     };
 
 private:
