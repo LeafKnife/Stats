@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.2.2] - 2025-02-28
+
 ### 新增
 
+- 适配LeviLamina v1.1.0(BDS1.20.60)
 - 统计玩家捕鱼次数
 - 统计玩家移动距离(滑行、疾跑、游泳等)
 
@@ -114,7 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/lwenk/Stats/compare/v0.2.1...dev
+[未发布]: https://github.com/lwenk/Stats/compare/v0.2.2...dev
+[0.2.2]: https://github.com/lwenk/Stats/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/lwenk/Stats/compare/v0.1.12...v0.2.1
 [0.1.12]: https://github.com/lwenk/Stats/compare/v0.1.9...v0.1.12
 [0.1.9]: https://github.com/lwenk/Stats/compare/v0.1.7...v0.1.9
