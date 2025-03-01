@@ -279,7 +279,27 @@ void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
     playerStats->addCustomStats(CustomType::damage_dealt, static_cast<int>(damage_taken * 10));
 }
 
-void onCraftedItem();
+void onCraftedItem(mce::UUID uuid, std::string itemType, int amount, SharedTypes::Legacy::ContainerType type) {
+    auto findPlayer = playerStatsMap.find(uuid);
+    if (findPlayer == playerStatsMap.end()) return;
+    auto playerStats = findPlayer->second;
+    if (!playerStats) return;
+    switch (type) {
+    case SharedTypes::Legacy::ContainerType::Trade:
+        playerStats->addStats(StatsDataType::crafted, itemType, amount);
+        playerStats->addCustomStats(CustomType::traded_with_villager);
+        break;
+    case SharedTypes::Legacy::ContainerType::Enchantment:
+        playerStats->addCustomStats(CustomType::enchant_item);
+        break;
+    case SharedTypes::Legacy::ContainerType::Workbench:
+    case SharedTypes::Legacy::ContainerType::Inventory:
+        playerStats->addStats(StatsDataType::crafted, itemType, amount);
+        break;
+    default:
+        break;
+    }
+}
 
 void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage) {
     auto uuid       = player->getUuid();
@@ -319,10 +339,10 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
         playerStats->addStats(StatsDataType::used, instance.getTypeName());
         // 暂时先用ID, 装addon不知道会不会有问题？
         // if (auto id = instance.getId();
-        //     (id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784)) {
-        //     playerStats->addCustomStats(CustomType::play_record);
+        //     (id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784))
+        //     { playerStats->addCustomStats(CustomType::play_record);
         // }
-        if(instance.getItem()->isMusicDisk()){
+        if (instance.getItem()->isMusicDisk()) {
             playerStats->addCustomStats(CustomType::play_record);
         }
         break;

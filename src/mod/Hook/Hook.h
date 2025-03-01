@@ -43,5 +43,9 @@ namespace container {
 void hookLevelContainerChanged();
 }
 
+namespace inventory {
+void hookItemStackRequestActionHandlerTransfer();
+}
+
 } // namespace hook
 } // namespace stats

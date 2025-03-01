@@ -29,6 +29,8 @@ void hook() {
     item::hookItemStackBaseHurtAndBroken();
 
     container::hookLevelContainerChanged();
+
+    inventory::hookItemStackRequestActionHandlerTransfer();
 }
 
 void unhook() {}
