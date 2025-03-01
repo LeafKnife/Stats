@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.2.3] - 2025-03-01
+
 ### 新增
 
 - 统计玩家合成，交易物品数量
@@ -17,20 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 新增
 
-- 适配LeviLamina v1.1.0(BDS1.20.60)
+- 适配 LeviLamina v1.1.0(BDS1.20.60)
 - 统计玩家捕鱼次数
 - 统计玩家移动距离(滑行、疾跑、游泳等)
 
 ### 修复
 
 - 玩家造成伤害无法被记录的异常情况
-- mob_kills拼写错误
+- mob_kills 拼写错误
 
 ## [0.2.1] - 2025-02-23
 
 ### 新增
 
-- 适配LeviLamina v1.1.0.rc.1(BDS1.20.60)
+- 适配 LeviLamina v1.1.0.rc.1(BDS1.20.60)
 - 统计玩家摔落高度(单位: 厘米)
 
 ## [0.1.12] - 2025-02-23
@@ -49,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 修复
 
-- 插件初始化(未创建Stats目录)崩服
+- 插件初始化(未创建 Stats 目录)崩服
 - 部分玩家进入游戏时崩服
 
 ## [0.1.9] - 2025-02-20
@@ -90,7 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 修复
 
-- 无法使用lip安装的问题(tooth包)
+- 无法使用 lip 安装的问题(tooth 包)
 
 ## [0.1.3] - 2025-01-31
 
@@ -123,7 +125,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/lwenk/Stats/compare/v0.2.2...dev
+[未发布]: https://github.com/lwenk/Stats/compare/v0.2.3...dev
+[0.2.3]: https://github.com/lwenk/Stats/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/lwenk/Stats/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/lwenk/Stats/compare/v0.1.12...v0.2.1
 [0.1.12]: https://github.com/lwenk/Stats/compare/v0.1.9...v0.1.12
