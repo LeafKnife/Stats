@@ -102,7 +102,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 与烟熏炉交互次数   | 玩家和烟熏炉交互的次数。                           | minecraft:interact_with_smoker            |
 | 与切石机交互次数   | 玩家和切石机交互的次数。                           | minecraft:interact_with_stonecutter       |
 | 物品掉落           | 玩家掉落物品的数量，因死亡掉落的物品不计算在内。   | minecraft:drop                            |
-| ~~物品附魔次数~~   | 玩家为物品使用附魔台附魔的次数。                   | minecraft:enchant_item                    |
+| 物品附魔次数       | 玩家为物品使用附魔台附魔的次数。                   | minecraft:enchant_item                    |
 | 跳跃次数           | 玩家进行跳跃的次数。                               | minecraft:jump                            |
 | 生物击杀数         | 玩家击杀的生物总数。                               | minecraft:mob_kills                       |
 | 播放唱片数         | 玩家用唱片机播放音乐唱片的次数。                   | minecraft:play_record                     |
@@ -123,7 +123,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 | 游戏时长           | 玩家在游戏中经过的时长。                           | minecraft:play_time                       |
 | 世界打开时间       | 玩家打开世界的总时长。                             | minecraft:total_world_time                |
 | 躺在床上的次数     | 玩家在床上睡觉的次数。                             | minecraft:sleep_in_bed                    |
-| ~~村民交易次数~~   | 玩家和村民进行交易的次数。                         | minecraft:traded_with_villager            |
+| 村民交易次数       | 玩家和村民进行交易的次数。                         | minecraft:traded_with_villager            |
 | 陷阱箱触发次数     | 玩家打开陷阱箱的次数。                             | minecraft:trigger_trapped_chest           |
 | 从炼药锅取水次数   | 玩家从炼药锅中装取水、熔岩和细雪的次数。           | minecraft:use_cauldron                    |
 

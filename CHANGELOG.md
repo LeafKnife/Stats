@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+### 新增
+
+- 统计玩家合成，交易物品数量
+- 统计玩家与村民交易次数
+- 统计玩家使用附魔台次数
+
 ## [0.2.2] - 2025-02-28
 
 ### 新增

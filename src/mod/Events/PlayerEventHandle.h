@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mod/Stats/PlayerStats.h"
+#include <mc/deps/shared_types/legacy/ContainerType.h>
 #include <mc/network/packet/PlayerAuthInputPacket.h>
 #include <mc/platform/UUID.h>
 #include <mc/server/ServerPlayer.h>
@@ -27,7 +27,7 @@ void onDied(Player& player, ActorDamageSource const& source);
 void onKillMob(Player& player, Mob& mob);
 void onTakenDamage(Player* player, float damage, float afterDamage);
 void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage);
-void onCraftedItem();
+void onCraftedItem(mce::UUID uuid, std::string itemType, int amount, SharedTypes::Legacy::ContainerType type);
 void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage);
 void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMethod, bool consumeItem);
 void onEffectAdded(Player* player, MobEffectInstance const& effect);
