@@ -1,7 +1,7 @@
 # LK-Stats
 
 ![GitHub Tag](https://img.shields.io/github/v/tag/lwenk/Stats?include_prereleases&style=for-the-badge)
-
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/lwenk/Stats/total?style=for-the-badge)
 <!-- ![GitHub License](https://img.shields.io/github/license/lwenk/Stats?style=for-the-badge) -->
 
 Minecraft 基岩版服务器(BDS) 统计信息插件
