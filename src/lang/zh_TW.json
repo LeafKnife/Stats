@@ -7,6 +7,16 @@
     "command.stats.desc":"统计信息",
     "command.error.notplayer":"此命令仅限玩家执行",
 
+    "log.info.ExistOldPath":"检测到旧数据, 迁移数据中",
+    "log.warn.moveStats.fail":"数据迁移失败",
+    "log.info.CreateStatsPath":"未检测到数据目录，正在初始化...",
+    "log.warn.CreatePath.fail":"数据目录创建失败",
+    "plugins.load.success":"插件加载成功！",
+    "plugins.load.fail":"插件加载失败，请检查数据目录是否存在",
+    "data.parse.fail":"{0} 文件解析失败，请检查文件内容",
+    "log.info.createData":"未检测到玩家 {0} 数据，正在创建...",
+    "log.info.savaData":"保存玩家 {0} 数据中...",
+
     "minecraft:custom": "通用",
     "minecraft:mined": "方块挖掘",
     "minecraft:broken": "物品破损",

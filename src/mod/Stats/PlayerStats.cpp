@@ -1,9 +1,12 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include <cstdint>
+#include <exception>
+#include <ll/api/i18n/I18n.h>
 #include <ll/api/io/FileUtils.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
+
 
 #include "mod/Stats/Stats.h"
 #include "mod/Stats/StatsType.h"
@@ -13,6 +16,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+using namespace ll::i18n_literals;
 
 namespace stats {
 
@@ -32,6 +36,7 @@ PlayerStats::PlayerStats(Player const& player) {
     if (it != cache.end()) {
         mData = it->second;
     } else {
+        getLogger().debug("log.info.createData"_tr(mName));
         mData           = std::make_shared<StatsData>();
         PlayerInfo info = {mUuid.asString(), mXuid, mName};
         cache.push_back(std::make_pair(info, mData));
@@ -39,7 +44,7 @@ PlayerStats::PlayerStats(Player const& player) {
     }
 };
 mce::UUID             PlayerStats::getUuid() { return mUuid; };
-std::filesystem::path PlayerStats::getPath() { return ll::file_utils::u8path("stats/" + mUuid.asString() + ".json"); };
+std::filesystem::path PlayerStats::getPath() { return getStatsPath().concat("/" + mUuid.asString() + ".json"); };
 nlohmann::json        PlayerStats::getJson() {
     nlohmann::json j = {
         {"playerInfo",          {{"uuid", mUuid.asString()}, {"xuid", mXuid}, {"name", mName}}},
@@ -56,8 +61,14 @@ nlohmann::json        PlayerStats::getJson() {
     return j;
 }
 bool PlayerStats::saveData() {
+    getLogger().debug("log.info.savaData"_tr(mName));
     auto j = getJson();
-    return ll::file_utils::writeFile(getPath(), j.dump());
+    try {
+        return ll::file_utils::writeFile(getPath(), j.dump());
+    } catch (std::exception& exception) {
+        getLogger().error(exception.what());
+        return false;
+    }
 };
 void PlayerStats::addStats(StatsDataType type, std::string key, uint64_t value) {
     if (value <= 0) return;
