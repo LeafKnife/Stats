@@ -1,6 +1,6 @@
 {
     "format_version": 2,
-    "tooth": "github.com/lwenk/Stats",
+    "tooth": "github.com/LeafKnife/Stats",
     "version": "0.2.3",
     "info": {
         "name": "Stats",
@@ -10,9 +10,9 @@
             "platform:levilamina",
             "type:mod"
         ],
-        "avatar_url":"https://github.com/lwenk/Stats/raw/main/logo.png"
+        "avatar_url":"https://github.com/LeafKnife/Stats/raw/main/logo.png"
     },
-    "asset_url": "https://github.com/lwenk/Stats/releases/download/v$(version)/Stats-windows-x64.zip",
+    "asset_url": "https://github.com/LeafKnife/Stats/releases/download/v$(version)/Stats-windows-x64.zip",
     "prerequisites": {
         "github.com/LiteLDev/LeviLamina": "1.1.x"
     },
