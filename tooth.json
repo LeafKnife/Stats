@@ -4,7 +4,7 @@
     "version": "0.2.3",
     "info": {
         "name": "Stats",
-        "description": "BDS统计信息插件",
+        "description": "Minecraft 基岩版服务器(BDS) 统计信息插件",
         "author": "LWenK",
         "tags": [
             "platform:levilamina",
