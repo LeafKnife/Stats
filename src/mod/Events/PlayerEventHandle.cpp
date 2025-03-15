@@ -201,11 +201,12 @@ void onDied(Player& player, ActorDamageSource const& source) {
     // resetCustomSinceTime TODO
     if (!source.isEntitySource()) return;
     Actor* actor = nullptr;
-    actor        = ll::service::getLevel()->fetchEntity(source.getEntityUniqueID(), false);
+    actor        = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
     if (!actor) return;
     if (source.isChildEntitySource()) {
         actor = actor->getOwner();
     }
+    if (!actor) return;
     playerStats->addStats(StatsDataType::killed_by, actor->getTypeName());
 }
 
