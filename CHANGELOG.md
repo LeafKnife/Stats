@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 将数据文件保存到存档目录下
 
+### 修复
+
+- 玩家被间接击杀时无法被记录的异常情况
+
 ## [0.2.3] - 2025-03-01
 
 ### 新增
