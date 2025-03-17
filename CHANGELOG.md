@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 新增
 
-- 适配 LeviLamina v1.1.1(BDS1.20.60)
+- 适配 LeviLamina v1.1.1(BDS1.21.60)
 - 命令: `/stats player <playerName:string> <StatsType>`
 
 ### 更改
