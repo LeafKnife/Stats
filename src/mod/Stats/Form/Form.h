@@ -1,13 +1,16 @@
 #pragma once
 
+#include "mod/Stats/StatsData.h"
+#include <mc/platform/UUID.h>
 #include <mc/world/actor/player/Player.h>
-#include "mod/Stats/StatsType.h"
 
 namespace stats::form {
+using StatsPair = std::pair<std::string, uint64_t>;
 void sendMainGui(Player& player);
-void sendStatsGui(Player& player, StatsDataType type);
-void sendRankGui(Player& player, StatsDataType statsType,std::string type);
-// void sendEntityStatsGui(Player& player,bool type = false);
-// void sendItemStatsGui(Player& player,StatsDataType type);
-// void sendCustomStatsGui(Player& player);
+void sendStatsGui(Player& player, StatsType type);
+void sendRankGui(Player& player, StatsType statsType, std::string type);
+
+std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type, uint64_t tick = 0);
+
+
 } // namespace stats::form

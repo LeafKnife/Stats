@@ -8,7 +8,6 @@
 #include <mc/world/level/dimension/Dimension.h>
 
 #include "mod/Stats/Stats.h"
-#include "mod/Stats/StatsType.h"
 
 namespace stats {
 namespace event {
@@ -32,7 +31,7 @@ void onBlockDestroyedByPlayer(BlockPos const& pos, Player& player) {
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    playerStats->addStats(StatsDataType::mined, bl.getTypeName());
+    playerStats->addStats(StatsType::mined, bl.getTypeName());
 }
 
 void onBlockPlacedByPlayer(BlockPos const& pos, Player& player) {
@@ -43,7 +42,7 @@ void onBlockPlacedByPlayer(BlockPos const& pos, Player& player) {
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    playerStats->addStats(StatsDataType::used, bl.getTypeName());
+    playerStats->addStats(StatsType::used, bl.getTypeName());
 }
 
 void onBlockUsed(BlockPos const& pos, Player& player) {

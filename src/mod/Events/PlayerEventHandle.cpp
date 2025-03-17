@@ -18,9 +18,7 @@
 #include <mc/world/level/Level.h>
 #include <mc/world/level/block/Block.h>
 
-#include "mod/Stats/PlayerStats.h"
 #include "mod/Stats/Stats.h"
-#include "mod/Stats/StatsType.h"
 
 namespace stats {
 namespace event {
@@ -178,7 +176,7 @@ void onTakeItem(Player& player, ItemStack& item) {
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    playerStats->addStats(StatsDataType::picked_up, item.getTypeName(), item.mCount);
+    playerStats->addStats(StatsType::picked_up, item.getTypeName(), item.mCount);
 }
 
 void onDropItem(Player* player, ItemStack const& item) {
@@ -188,7 +186,7 @@ void onDropItem(Player* player, ItemStack const& item) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::drop);
-    playerStats->addStats(StatsDataType::dropped, item.getTypeName(), item.mCount);
+    playerStats->addStats(StatsType::dropped, item.getTypeName(), item.mCount);
 }
 
 void onDied(Player& player, ActorDamageSource const& source) {
@@ -201,12 +199,13 @@ void onDied(Player& player, ActorDamageSource const& source) {
     // resetCustomSinceTime TODO
     if (!source.isEntitySource()) return;
     Actor* actor = nullptr;
-    actor        = ll::service::getLevel()->fetchEntity(source.getEntityUniqueID(), false);
+    actor        = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
     if (!actor) return;
     if (source.isChildEntitySource()) {
         actor = actor->getOwner();
     }
-    playerStats->addStats(StatsDataType::killed_by, actor->getTypeName());
+    if (!actor) return;
+    playerStats->addStats(StatsType::killed_by, actor->getTypeName());
 }
 
 void onKillMob(Player& player, Mob& mob) {
@@ -220,7 +219,7 @@ void onKillMob(Player& player, Mob& mob) {
     } else {
         playerStats->addCustomStats(CustomType::mob_kills);
     }
-    playerStats->addStats(StatsDataType::killed, mob.getTypeName());
+    playerStats->addStats(StatsType::killed, mob.getTypeName());
 }
 
 void onTakenDamage(Player* player, float damage, float afterDamage) {
@@ -286,7 +285,7 @@ void onCraftedItem(mce::UUID uuid, std::string itemType, int amount, SharedTypes
     if (!playerStats) return;
     switch (type) {
     case SharedTypes::Legacy::ContainerType::Trade:
-        playerStats->addStats(StatsDataType::crafted, itemType, amount);
+        playerStats->addStats(StatsType::crafted, itemType, amount);
         playerStats->addCustomStats(CustomType::traded_with_villager);
         break;
     case SharedTypes::Legacy::ContainerType::Enchantment:
@@ -294,7 +293,7 @@ void onCraftedItem(mce::UUID uuid, std::string itemType, int amount, SharedTypes
         break;
     case SharedTypes::Legacy::ContainerType::Workbench:
     case SharedTypes::Legacy::ContainerType::Inventory:
-        playerStats->addStats(StatsDataType::crafted, itemType, amount);
+        playerStats->addStats(StatsType::crafted, itemType, amount);
         break;
     default:
         break;
@@ -308,11 +307,11 @@ void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
     if (!item->isDamageableItem()) return;
-    if (!item->isArmorItem()) playerStats->addStats(StatsDataType::used, item->getTypeName());
+    if (!item->isArmorItem()) playerStats->addStats(StatsType::used, item->getTypeName());
     auto maxDamage = item->getMaxDamage();
     auto damage    = item->getDamageValue();
     if (damage + deltaDamage > maxDamage) {
-        playerStats->addStats(StatsDataType::broken, item->getTypeName());
+        playerStats->addStats(StatsType::broken, item->getTypeName());
     }
 }
 
@@ -333,10 +332,10 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     case ItemUseMethod::Throw:
     case ItemUseMethod::FillBottle:
     case ItemUseMethod::PourBucket:
-        playerStats->addStats(StatsDataType::used, instance.getTypeName());
+        playerStats->addStats(StatsType::used, instance.getTypeName());
         break;
     case ItemUseMethod::Place:
-        playerStats->addStats(StatsDataType::used, instance.getTypeName());
+        playerStats->addStats(StatsType::used, instance.getTypeName());
         // 暂时先用ID, 装addon不知道会不会有问题？
         // if (auto id = instance.getId();
         //     (id >= 567 && id <= 578) || id == 657 || id == 663 || id == 673 || id == 736 || (id >= 782 && id <= 784))
@@ -349,7 +348,7 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     case ItemUseMethod::Interact:
         // 交互只记录骨粉，其他与实体交互均不记录
         if (instance.getTypeName() == "minecraft:bone_meal")
-            playerStats->addStats(StatsDataType::used, instance.getTypeName());
+            playerStats->addStats(StatsType::used, instance.getTypeName());
         break;
     default:
         break;
@@ -426,7 +425,7 @@ void onChangeContainerWith(
         if (slot != 2) return;
         if (oldItem.isNull()) return;
         if (oldItem.mCount > newItem.mCount) {
-            playerStats->addStats(StatsDataType::crafted, oldItem.getTypeName());
+            playerStats->addStats(StatsType::crafted, oldItem.getTypeName());
         }
     }
     return;

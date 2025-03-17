@@ -1,8 +1,8 @@
 # LK-Stats
 
-![GitHub Tag](https://img.shields.io/github/v/tag/lwenk/Stats?include_prereleases&style=for-the-badge)
-
-<!-- ![GitHub License](https://img.shields.io/github/license/lwenk/Stats?style=for-the-badge) -->
+![GitHub Tag](https://img.shields.io/github/v/tag/LeafKnife/Stats?include_prereleases&style=for-the-badge)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/LeafKnife/Stats/total?style=for-the-badge)
+<!-- ![GitHub License](https://img.shields.io/github/license/LeafKnife/Stats?style=for-the-badge) -->
 
 Minecraft 基岩版服务器(BDS) 统计信息插件
 
@@ -11,12 +11,12 @@ Minecraft 基岩版服务器(BDS) 统计信息插件
 ### 使用 Lip
 
 ```sh
-lip install github.com/lwenk/Stats
+lip install github.com/LeafKnife/Stats
 ```
 
 ### 手动安装
 
-1. 从[发布页面](https://github.com/lwenk/Stats/releases)下载最新版本。
+1. 从[发布页面](https://github.com/LeafKnife/Stats/releases)下载最新版本。
 2. 解压`Stats-windows-x64.zip`文件。
 3. 将`LK-Stats`文件夹复制到 BDS 安装目录下的 plugins 文件夹中。
 
@@ -26,8 +26,9 @@ lip install github.com/lwenk/Stats
 
 ### 命令
 
-- `/stats gui [StatsType]` 显示玩家统计信息表单(GUI)
-- `/stats rank <StatsType> [type]` 显示玩家统计信息排行榜
+- `/stats gui [StatsType]` 打开个人统计信息表单GUI
+- `/stats rank <StatsType> [type]` 打开玩家统计信息排行榜GUI
+- `/stats player <playerName:string> <StatsType>` 打开指定玩家统计信息表单GUI
 
 StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
 
@@ -133,7 +134,7 @@ StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped
 
 ## 贡献
 
-如果您有任何问题，请开启一个 [issue](https://github.com/lwenk/Stats/issues) 来讨论  
+如果您有任何问题，请开启一个 [issue](https://github.com/LeafKnife/Stats/issues) 来讨论  
 欢迎 PR
 
 ## 许可

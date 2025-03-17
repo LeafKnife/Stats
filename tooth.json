@@ -1,18 +1,18 @@
 {
     "format_version": 2,
-    "tooth": "github.com/lwenk/Stats",
-    "version": "0.2.3",
+    "tooth": "github.com/LeafKnife/Stats",
+    "version": "0.2.4",
     "info": {
         "name": "Stats",
-        "description": "BDS统计信息插件",
+        "description": "Minecraft 基岩版服务器(BDS) 统计信息插件",
         "author": "LWenK",
         "tags": [
             "platform:levilamina",
             "type:mod"
         ],
-        "avatar_url":"https://github.com/lwenk/Stats/raw/main/logo.png"
+        "avatar_url":"https://github.com/LeafKnife/Stats/raw/main/logo.png"
     },
-    "asset_url": "https://github.com/lwenk/Stats/releases/download/v$(version)/Stats-windows-x64.zip",
+    "asset_url": "https://github.com/LeafKnife/Stats/releases/download/v$(version)/Stats-windows-x64.zip",
     "prerequisites": {
         "github.com/LiteLDev/LeviLamina": "1.1.x"
     },

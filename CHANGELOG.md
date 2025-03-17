@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.2.4] - 2025-03-17
+
+### 新增
+
+- 适配 LeviLamina v1.1.1(BDS1.20.60)
+- 命令: `/stats player <playerName:string> <StatsType>`
+
+### 更改
+
+- 将数据文件保存到存档目录下
+
+### 修复
+
+- 玩家被间接击杀时无法被记录的异常情况
+
 ## [0.2.3] - 2025-03-01
 
 ### 新增
@@ -125,15 +140,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/lwenk/Stats/compare/v0.2.3...dev
-[0.2.3]: https://github.com/lwenk/Stats/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/lwenk/Stats/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/lwenk/Stats/compare/v0.1.12...v0.2.1
-[0.1.12]: https://github.com/lwenk/Stats/compare/v0.1.9...v0.1.12
-[0.1.9]: https://github.com/lwenk/Stats/compare/v0.1.7...v0.1.9
-[0.1.7]: https://github.com/lwenk/Stats/compare/v0.1.5...v0.1.7
-[0.1.5]: https://github.com/lwenk/Stats/compare/v0.1.4...v0.1.5
-[0.1.4]: https://github.com/lwenk/Stats/compare/v0.1.3...v0.1.4
-[0.1.3]: https://github.com/lwenk/Stats/compare/v0.1.2...v0.1.3
-[0.1.2]: https://github.com/lwenk/Stats/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/lwenk/Stats/releases/tag/v0.1.1
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.2.4...dev
+[0.2.4]: https://github.com/LeafKnife/Stats/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/LeafKnife/Stats/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/LeafKnife/Stats/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/LeafKnife/Stats/compare/v0.1.12...v0.2.1
+[0.1.12]: https://github.com/LeafKnife/Stats/compare/v0.1.9...v0.1.12
+[0.1.9]: https://github.com/LeafKnife/Stats/compare/v0.1.7...v0.1.9
+[0.1.7]: https://github.com/LeafKnife/Stats/compare/v0.1.5...v0.1.7
+[0.1.5]: https://github.com/LeafKnife/Stats/compare/v0.1.4...v0.1.5
+[0.1.4]: https://github.com/LeafKnife/Stats/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/LeafKnife/Stats/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/LeafKnife/Stats/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/LeafKnife/Stats/releases/tag/v0.1.1
