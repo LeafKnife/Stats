@@ -7,9 +7,7 @@
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
 
-
 #include "mod/Stats/Stats.h"
-#include "mod/Stats/StatsType.h"
 
 #include <algorithm>
 #include <memory>
@@ -70,38 +68,38 @@ bool PlayerStats::saveData() {
         return false;
     }
 };
-void PlayerStats::addStats(StatsDataType type, std::string key, uint64_t value) {
+void PlayerStats::addStats(StatsType type, std::string key, uint64_t value) {
     if (value <= 0) return;
     switch (type) {
-    case StatsDataType::custom:
+    case StatsType::custom:
         mData->custom[key] += value;
         break;
-    case StatsDataType::mined:
+    case StatsType::mined:
         mData->mined[key] += value;
         break;
-    case StatsDataType::broken:
+    case StatsType::broken:
         mData->broken[key] += value;
         break;
-    case StatsDataType::crafted:
+    case StatsType::crafted:
         mData->crafted[key] += value;
         break;
-    case StatsDataType::used:
+    case StatsType::used:
         mData->used[key] += value;
         break;
-    case StatsDataType::picked_up:
+    case StatsType::picked_up:
         mData->picked_up[key] += value;
         break;
-    case StatsDataType::dropped:
+    case StatsType::dropped:
         mData->dropped[key] += value;
         break;
-    case StatsDataType::killed:
+    case StatsType::killed:
         mData->killed[key] += value;
         break;
-    case StatsDataType::killed_by:
+    case StatsType::killed_by:
         mData->killed_by[key] += value;
         break;
     }
-    auto typeName = StatsDataTypeMap.at(type);
+    auto typeName = StatsTypeMap.at(type);
     // getLogger().debug("AddStats {} {} key:{} value:{}", mName, typeName, key, value);
 };
 void PlayerStats::addCustomStats(CustomType type, uint64_t value) {

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "mod/Stats/StatsType.h"
+#include "mod/Stats/StatsCustom.h"
+#include "mod/Stats/StatsData.h"
 
 #include <cstdint>
 #include <mc/deps/core/math/Vec3.h>
 #include <mc/world/actor/player/Player.h>
 #include <mc/world/level/dimension/Dimension.h>
-#include <memory>
 #include <nlohmann/json_fwd.hpp>
 
 
@@ -39,9 +39,9 @@ public:
     PlayerStats(Player const& player);
     mce::UUID      getUuid();
     nlohmann::json getJson();
-    // nlohmann::json getJsonStatsData(StatsDataType type);
+    // nlohmann::json getJsonStatsData(StatsType type);
     bool saveData();
-    void addStats(StatsDataType type, std::string key, uint64_t value = 1);
+    void addStats(StatsType type, std::string key, uint64_t value = 1);
     void addCustomStats(CustomType type, uint64_t value = 1);
     void resetCustomStats(CustomType type, uint64_t value = 0);
     void startSneaking();

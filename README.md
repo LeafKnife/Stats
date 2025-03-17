@@ -26,8 +26,9 @@ lip install github.com/LeafKnife/Stats
 
 ### 命令
 
-- `/stats gui [StatsType]` 显示玩家统计信息表单(GUI)
-- `/stats rank <StatsType> [type]` 显示玩家统计信息排行榜
+- `/stats gui [StatsType]` 打开个人统计信息表单GUI
+- `/stats rank <StatsType> [type]` 打开玩家统计信息排行榜GUI
+- `/stats player <playerName:string> <StatsType>` 打开指定玩家统计信息表单GUI
 
 StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
 

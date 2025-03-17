@@ -1,42 +1,10 @@
 #pragma once
 
-#include <cstdint>
 #include <map>
 #include <string>
-#include <unordered_map>
 
 namespace stats {
-enum class StatsDataType { custom, mined, broken, crafted, used, picked_up, dropped, killed, killed_by };
 
-static const std::map<StatsDataType, std::string> StatsDataTypeMap = {
-    {StatsDataType::custom,    "minecraft:custom"   },
-    {StatsDataType::mined,     "minecraft:mined"    },
-    {StatsDataType::broken,    "minecraft:broken"   },
-    {StatsDataType::crafted,   "minecraft:crafted"  },
-    {StatsDataType::used,      "minecraft:used"     },
-    {StatsDataType::picked_up, "minecraft:picked_up"},
-    {StatsDataType::dropped,   "minecraft:dropped"  },
-    {StatsDataType::killed,    "minecraft:killed"   },
-    {StatsDataType::killed_by, "minecraft:killed_by"},
-};
-
-typedef std::unordered_map<std::string, uint64_t> StatsDataMap;
-struct PlayerInfo {
-    std::string uuid;
-    std::string xuid;
-    std::string name;
-};
-struct StatsData {
-    StatsDataMap custom;
-    StatsDataMap mined;
-    StatsDataMap broken;
-    StatsDataMap crafted;
-    StatsDataMap used;
-    StatsDataMap picked_up;
-    StatsDataMap dropped;
-    StatsDataMap killed;
-    StatsDataMap killed_by;
-};
 enum struct CustomType {
     animals_bred,
     clean_armor,

@@ -18,7 +18,6 @@
 #include "mod/Hook/Hook.h"
 #include "mod/MyMod.h"
 #include "mod/Stats/Command/RegisterCommand.h"
-#include "mod/Stats/StatsType.h"
 
 using namespace ll::i18n_literals;
 

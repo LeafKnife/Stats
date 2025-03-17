@@ -6,6 +6,9 @@
     "command.stats.alias":"lks",
     "command.stats.desc":"统计信息",
     "command.error.notplayer":"此命令仅限玩家执行",
+    "command.error.player_name_empty":"玩家名不能为空",
+    "command.error.find_player":"找不到指定的玩家，请检查玩家名是否正确",
+    "command.error.rank_type_required":"排行榜类型为custom时，type不能为空",
 
     "log.info.ExistOldPath":"检测到旧数据, 迁移数据中",
     "log.warn.moveStats.fail":"数据迁移失败",
