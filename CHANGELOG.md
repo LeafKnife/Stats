@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 新增
 
-- 适配 LeviLamina v1.1.0(BDS1.20.60)
+- 适配 LeviLamina v1.1.0(BDS1.21.60)
 - 统计玩家捕鱼次数
 - 统计玩家移动距离(滑行、疾跑、游泳等)
 
@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 新增
 
-- 适配 LeviLamina v1.1.0.rc.1(BDS1.20.60)
+- 适配 LeviLamina v1.1.0.rc.1(BDS1.21.60)
 - 统计玩家摔落高度(单位: 厘米)
 
 ## [0.1.12] - 2025-02-23
