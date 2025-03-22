@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.2.5] - 2025-03-22
+
 ### 修复
 
-- 部分情况下物品消耗耐久度时崩服的异常情况
+- 部分情况下物品消耗耐久度时崩服
+- 部分情况下动物繁殖时崩服
 
 ## [0.2.4] - 2025-03-17
 
@@ -144,7 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.2.4...dev
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.2.5...dev
+[0.2.5]: https://github.com/LeafKnife/Stats/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/LeafKnife/Stats/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/LeafKnife/Stats/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/LeafKnife/Stats/compare/v0.2.1...v0.2.2
