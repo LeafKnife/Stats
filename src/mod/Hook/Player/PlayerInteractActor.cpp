@@ -52,10 +52,11 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 LL_TYPE_INSTANCE_HOOK(BreedGoalStopHook, HookPriority::Normal, BreedGoal, &BreedGoal::$stop, void) {
-    Mob& mob          = mOwner;
-    Mob& partner      = mPartner->tryUnwrap<Mob>();
+    Mob& mob     = mOwner;
+    Mob* partner = mPartner->tryUnwrap<Mob>();
+    if (!partner) return origin();
     auto mob1UniqueId = mob.getOrCreateUniqueID().getHash();
-    auto mob2UniqueId = partner.getOrCreateUniqueID().getHash();
+    auto mob2UniqueId = partner->getOrCreateUniqueID().getHash();
     auto find1        = breedCacheMap.find(mob1UniqueId);
     auto find2        = breedCacheMap.find(mob2UniqueId);
     if (find1 == breedCacheMap.end() && find2 == breedCacheMap.end()) return origin();

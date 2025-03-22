@@ -17,6 +17,7 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     auto res = origin(player, pos);
     if (!res) return res;
+    if(!player) return res;
     event::block::onNoteBlockAttacked(player);
     return res;
 }

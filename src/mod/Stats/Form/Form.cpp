@@ -98,7 +98,7 @@ std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type, ui
         });
     } else {
         std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
-            return a.second < b.second;
+            return a.second > b.second;
         });
     }
 

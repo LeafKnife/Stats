@@ -7,11 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.2.5] - 2025-03-22
+
+### 修复
+
+- 部分情况下物品消耗耐久度时崩服
+- 部分情况下动物繁殖时崩服
+
 ## [0.2.4] - 2025-03-17
 
 ### 新增
 
-- 适配 LeviLamina v1.1.1(BDS1.20.60)
+- 适配 LeviLamina v1.1.1(BDS1.21.60)
 - 命令: `/stats player <playerName:string> <StatsType>`
 
 ### 更改
@@ -34,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 新增
 
-- 适配 LeviLamina v1.1.0(BDS1.20.60)
+- 适配 LeviLamina v1.1.0(BDS1.21.60)
 - 统计玩家捕鱼次数
 - 统计玩家移动距离(滑行、疾跑、游泳等)
 
@@ -47,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 新增
 
-- 适配 LeviLamina v1.1.0.rc.1(BDS1.20.60)
+- 适配 LeviLamina v1.1.0.rc.1(BDS1.21.60)
 - 统计玩家摔落高度(单位: 厘米)
 
 ## [0.1.12] - 2025-02-23
@@ -140,7 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.2.4...dev
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.2.5...dev
+[0.2.5]: https://github.com/LeafKnife/Stats/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/LeafKnife/Stats/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/LeafKnife/Stats/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/LeafKnife/Stats/compare/v0.2.1...v0.2.2
