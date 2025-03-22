@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+### 修复
+
+- 部分情况下物品消耗耐久度时崩服的异常情况
+
 ## [0.2.4] - 2025-03-17
 
 ### 新增
