@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+### 新增
+
+- RemoteCallApi 导出(获取玩家统计信息,获取排行榜信息)
+
 ## [0.2.5] - 2025-03-22
 
 ### 修复
