@@ -29,4 +29,5 @@ bool loadStatsCache();
 void load();
 void unload();
 void printLogo();
+void exportRemoteCall();
 } // namespace stats
