@@ -13,7 +13,6 @@ end
 
 add_requires("levibuildscript")
 add_requires(
-    "nlohmann_json v3.11.3",
     "legacyremotecall 0.10.0"
 )
 
