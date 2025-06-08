@@ -23,7 +23,7 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     origin(source, packet);
     auto handle = thisFor<NetEventCallback>();
-    auto player = handle->_getServerPlayer(source, packet.mClientSubId);
+    auto player = handle->_getServerPlayer(source, packet.mSenderSubId);
     if (!player) return;
     event::player::onAuthInput(*player, packet);
     return;

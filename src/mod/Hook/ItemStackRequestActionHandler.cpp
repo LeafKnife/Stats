@@ -39,7 +39,7 @@ LL_TYPE_INSTANCE_HOOK(
     if (!srcContainer) return origin(requestAction, isSwap, isSrcHintSlot, isDstHintSlot);
     auto const& srcItem    = srcContainer->getItem(src.mSlot);
     auto&       screenCtx  = getScreenContext();
-    auto        screenType = screenCtx.mUnk2a0ccb.as<SharedTypes::Legacy::ContainerType>();
+    auto        screenType = screenCtx.mScreenContainerType;
     auto        itemType   = srcItem.getTypeName();
     auto r = origin(requestAction, isSwap, isSrcHintSlot, isDstHintSlot);
     if (r != ItemStackNetResult::Success) return r;

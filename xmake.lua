@@ -6,9 +6,9 @@ add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
 if is_config("target_type", "server") then
-    add_requires("levilamina 1.1.2", {configs = {target_type = "server"}})
+    add_requires("levilamina 1.2.1", {configs = {target_type = "server"}})
 else
-    add_requires("levilamina 1.1.2", {configs = {target_type = "client"}})
+    add_requires("levilamina 1.2.1", {configs = {target_type = "client"}})
 end
 
 add_requires("levibuildscript")
