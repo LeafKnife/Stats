@@ -128,6 +128,7 @@ void load() {
         event::listenEvents();
         hook::hook();
         command::registerCommand();
+        exportRemoteCall();
         getLogger().info("plugins.load.success"_tr());
     } else {
         getLogger().warn("plugins.load.fail"_tr());

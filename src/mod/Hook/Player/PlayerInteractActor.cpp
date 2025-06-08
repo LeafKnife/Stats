@@ -53,7 +53,7 @@ LL_TYPE_INSTANCE_HOOK(
 
 LL_TYPE_INSTANCE_HOOK(BreedGoalStopHook, HookPriority::Normal, BreedGoal, &BreedGoal::$stop, void) {
     Mob& mob     = mOwner;
-    Mob* partner = mPartner->tryUnwrap<Mob>();
+    Actor* partner = mPartner->tryUnwrap<>();
     if (!partner) return origin();
     auto mob1UniqueId = mob.getOrCreateUniqueID().getHash();
     auto mob2UniqueId = partner->getOrCreateUniqueID().getHash();

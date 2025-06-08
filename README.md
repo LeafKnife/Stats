@@ -2,6 +2,7 @@
 
 ![GitHub Tag](https://img.shields.io/github/v/tag/LeafKnife/Stats?include_prereleases&style=for-the-badge)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/LeafKnife/Stats/total?style=for-the-badge)
+
 <!-- ![GitHub License](https://img.shields.io/github/license/LeafKnife/Stats?style=for-the-badge) -->
 
 Minecraft 基岩版服务器(BDS) 统计信息插件
@@ -26,11 +27,41 @@ lip install github.com/LeafKnife/Stats
 
 ### 命令
 
-- `/stats gui [StatsType]` 打开个人统计信息表单GUI
-- `/stats rank <StatsType> [type]` 打开玩家统计信息排行榜GUI
-- `/stats player <playerName:string> <StatsType>` 打开指定玩家统计信息表单GUI
+- `/stats gui [StatsType]` 打开个人统计信息表单 GUI
+- `/stats rank <StatsType> [type]` 打开玩家统计信息排行榜 GUI
+- `/stats player <playerName:string> <StatsType>` 打开指定玩家统计信息表单 GUI
 
 StatsType: `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
+
+### API
+
+获取玩家统计信息
+
+- 参数：
+  > - uuid: `String` 玩家 UUID
+  > - type: `Number` StatsType: 1-9 分别对应 `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
+- 返回值：玩家统计信息
+- 返回类型: `Object`
+
+```javascript
+const getStats = ll.import("LK-Stats", "getPlayerStats");
+const stats = getStats(uuid, 1);
+```
+
+获取排行榜信息
+
+- 参数：
+  > - type:`Number` StatsType: 1-9 分别对应 `custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`
+  > - key: `String` 命名空间ID: 除`custom`外, key一般为物品、方块、实体的命名空间ID(`item.type`), key可以为空字符串(`""`)
+- 返回值：排行榜信息
+- 返回类型: `Object`
+
+```javascript
+const getRankData = ll.import("LK-Stats", "getRankStats");
+const rank1 = getRankData(1,"minecraft:play_time") // 在线时长榜
+const rank2 = getRankData(2,"minecraft:stone"); //挖掘石头排行榜
+const rank3 = getRankData(2,""); // 挖掘排行榜
+```
 
 ## 统计信息
 
