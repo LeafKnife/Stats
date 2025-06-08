@@ -20,8 +20,8 @@ LL_TYPE_INSTANCE_HOOK(
     if (*reinterpret_cast<void***>(this) != LevelContainerModel::$vftable())
         return origin(slotNumber, oldItem, newItem);
 
-    Player&   player    = mUnk84d147.as<Player&>();
-    BlockPos& blockPos  = mUnk74419a.as<BlockPos>();
+    Player&   player    = mPlayer;
+    BlockPos& blockPos  = mBlockPos;
     auto      slot      = slotNumber + this->_getContainerOffset();
     auto&     block     = event::block::getBlockByBlockPos(blockPos, player.getDimensionId());
     auto      blockType = block.getTypeName();
