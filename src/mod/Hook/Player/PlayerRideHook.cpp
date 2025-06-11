@@ -1,3 +1,4 @@
+#include "mc/world/item/ItemUseMethod.h"
 #include "mod/Hook/Hook.h"
 
 #include <ll/api/memory/Hook.h>
@@ -31,13 +32,15 @@ LL_TYPE_INSTANCE_HOOK(
     void,
     bool exitFromPassenger,
     bool actorIsBeingDestroyed,
-    bool switchingVehicles
+    bool switchingVehicles,
+    bool isBeingTeleported
 ) {
-    if (!hasType(::ActorType::Player)) return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles);
+    if (!hasType(::ActorType::Player))
+        return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
     Player* player = getWeakEntity().tryUnwrap<Player>();
-    if (!player) return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles);
+    if (!player) return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
     event::player::onStopRiding(player->getUuid(), *player->getVehicle());
-    origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles);
+    origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
 }
 
 void hookPlayerRiding() {
