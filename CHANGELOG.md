@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.3.1] - 2025-06-11
+
 ### 新增
 
 - 适配LeviLamina v1.3.0
@@ -164,7 +166,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.3.0...dev
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.3.1...dev
+[0.3.1]: https://github.com/LeafKnife/Stats/compare/v0.3.0...0.3.1
 [0.3.0]: https://github.com/LeafKnife/Stats/compare/v0.2.6...0.3.0
 [0.2.6]: https://github.com/LeafKnife/Stats/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/LeafKnife/Stats/compare/v0.2.4...v0.2.5
