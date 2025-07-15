@@ -6,14 +6,15 @@
 #include <ll/api/Expected.h>
 #include <ll/api/command/CommandHandle.h>
 #include <ll/api/command/CommandRegistrar.h>
+#include <ll/api/form/SimpleForm.h>
 #include <ll/api/i18n/I18n.h>
+#include <mc/platform/UUID.h>
 #include <mc/server/commands/CommandOrigin.h>
 #include <mc/server/commands/CommandOutput.h>
 #include <mc/server/commands/CommandPermissionLevel.h>
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/player/Player.h>
-#include <ll/api/form/SimpleForm.h>
-#include <mc/platform/UUID.h>
+
 
 #include "mod/Stats/Form/Form.h"
 #include "mod/Stats/Stats.h"
@@ -92,7 +93,7 @@ void registerCommand() {
                     break;
                 }
             }
-            std::optional<std::string> content = form::renderStatsContent(uuid, param.StatsType);
+            std::optional<std::string> content = form::renderStatsContent(mce::UUID(uuid), param.StatsType);
             if (!content.has_value()) return output.error("command.error.find_player"_tr());
             auto fm         = ll::form::SimpleForm();
             auto typeString = StatsTypeMap.at(param.StatsType);
