@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 适配LeviLamina 1.4.0(BDS 1.21.93)
 
+## 修复
+
+- 玩家停止骑行时服务器异常崩溃的问题
+
 ## [0.3.1] - 2025-06-11
 
 ### 新增
