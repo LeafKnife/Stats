@@ -56,7 +56,7 @@ void exportRemoteCall() {
             auto      r     = std::unordered_map<std::string, unsigned long long>();
             if (type < 1 || type > 9) return r;
             for (auto& data : cache) {
-                if (data.first.uuid == uuid) {
+                if (mce::UUID(data.first.uuid) == uuid) {
                     return *data.second->getMap((StatsType)type);
                 }
             }

@@ -38,7 +38,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
     Player* player = getWeakEntity().tryUnwrap<Player>();
     if (!player) return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
-    event::player::onStopRiding(player->getUuid(), *player->getVehicle());
+    event::player::onStopRiding(player->getUuid(), player->getVehicle());
     origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
 }
 

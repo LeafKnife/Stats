@@ -66,7 +66,7 @@ inline std::optional<StatsDataMap> getStatsDataMap(mce::UUID uuid, StatsType typ
     } else {
         auto& cache = getStatsCache();
         for (auto it : cache) {
-            if (it.first.uuid != uuid) continue;
+            if (mce::UUID(it.first.uuid) != uuid) continue;
             if (auto r = it.second->getMap(type); r) {
                 return std::make_optional(*r);
             } else {

@@ -104,10 +104,10 @@ void listenEvents() {
             if (!source.isEntitySource()) return;
             Actor* actor = nullptr;
             actor        = ll::service::getLevel()->fetchEntity(source.getDamagingEntityUniqueID(), false);
-            if (!actor) return;
-            if (source.isChildEntitySource()) {
-                actor = actor->getOwner();
+            if (actor) {
+                if (source.isChildEntitySource()) actor = actor->getOwner();
             }
+            if (!actor) return;
             if (actor->getTypeName() != "minecraft:player") return;
             auto& player = *static_cast<::Player*>(actor);
             player::onKillMob(player, mob);

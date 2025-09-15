@@ -89,24 +89,27 @@ void onStartRiding(mce::UUID uuid, Actor& vehicle, bool forceRiding) {
     if (!playerStats) return;
     playerStats->mDistanceCache.ride = 0;
 }
-void onStopRiding(mce::UUID uuid, Actor& vehicle) {
+void onStopRiding(mce::UUID uuid, Actor* vehicle) {
     auto findPlayer = playerStatsMap.find(uuid);
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
     auto value = playerStats->mDistanceCache.ride;
-    if (vehicle.hasCategory(::ActorCategory::BoatRideable)) {
+    if (!vehicle) {
+        playerStats->mDistanceCache.ride = 0;
+        return;
+    }
+    if (vehicle->hasCategory(::ActorCategory::BoatRideable)) {
         playerStats->addCustomStats(CustomType::boat_one_cm, value);
-    } else if (vehicle.hasCategory(::ActorCategory::MinecartRidable)) {
+    } else if (vehicle->hasCategory(::ActorCategory::MinecartRidable)) {
         playerStats->addCustomStats(CustomType::minecart_one_cm, value);
-    } else if (vehicle.hasType(::ActorType::Horse)) {
+    } else if (vehicle->hasType(::ActorType::Horse)) {
         playerStats->addCustomStats(CustomType::horse_one_cm, value);
-    } else if (vehicle.hasType(::ActorType::Pig)) {
+    } else if (vehicle->hasType(::ActorType::Pig)) {
         playerStats->addCustomStats(CustomType::pig_one_cm, value);
-    } else if (vehicle.hasType(::ActorType::Strider)) {
+    } else if (vehicle->hasType(::ActorType::Strider)) {
         playerStats->addCustomStats(CustomType::strider_one_cm, value);
     }
-    playerStats->mDistanceCache.ride = 0;
 }
 
 void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
