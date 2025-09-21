@@ -22,6 +22,7 @@ enum struct CustomType {
     damage_resisted,
     damage_taken,
     inspect_dispenser,
+    happy_ghast_one_cm,
     boat_one_cm,
     aviate_one_cm,
     horse_one_cm,

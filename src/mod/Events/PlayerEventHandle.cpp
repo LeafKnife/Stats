@@ -6,6 +6,7 @@
 #include <mc/deps/core/math/Vec3.h>
 #include <mc/legacy/ActorUniqueID.h>
 #include <mc/network/packet/PlayerAuthInputPacket.h>
+#include <mc/world/actor/ActorType.h>
 #include <mc/world/attribute/AttributeInstance.h>
 #include <mc/world/attribute/AttributeModificationContext.h>
 #include <mc/world/attribute/MutableAttributeWithContext.h>
@@ -109,6 +110,8 @@ void onStopRiding(mce::UUID uuid, Actor* vehicle) {
         playerStats->addCustomStats(CustomType::pig_one_cm, value);
     } else if (vehicle->hasType(::ActorType::Strider)) {
         playerStats->addCustomStats(CustomType::strider_one_cm, value);
+    } else if (vehicle->hasType(ActorType::HappyGhast)) {
+        playerStats->addCustomStats(CustomType::happy_ghast_one_cm, value);
     }
 }
 

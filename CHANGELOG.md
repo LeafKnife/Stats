@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## 新增
+
+- 统计玩家骑乘快乐恶魂移动距离
+
 ## [0.4.0] - 2025-08-16
 
 ## 新增
