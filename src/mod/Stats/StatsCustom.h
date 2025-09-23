@@ -100,6 +100,7 @@ static const std::map<CustomType, std::string> CustomTypeMap = {
     {CustomType::damage_resisted,                 "minecraft:damage_resisted"                },
     {CustomType::damage_taken,                    "minecraft:damage_taken"                   },
     {CustomType::inspect_dispenser,               "minecraft:inspect_dispenser"              },
+    {CustomType::happy_ghast_one_cm,              "minecraft:happy_ghast_one_cm"             },
     {CustomType::boat_one_cm,                     "minecraft:boat_one_cm"                    },
     {CustomType::aviate_one_cm,                   "minecraft:aviate_one_cm"                  },
     {CustomType::horse_one_cm,                    "minecraft:horse_one_cm"                   },
