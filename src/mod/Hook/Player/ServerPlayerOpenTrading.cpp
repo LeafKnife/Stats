@@ -22,7 +22,7 @@ LL_TYPE_INSTANCE_HOOK(
     Player* player = this;
     auto actor = ll::service::getLevel()->fetchEntity(uniqueID, false);
 
-    if (!actor->hasType(::ActorType::VillagerV2)) return;
+    if (!actor->isType(::ActorType::VillagerV2)) return;
     event::player::onOpenTrading(player);
 }
 

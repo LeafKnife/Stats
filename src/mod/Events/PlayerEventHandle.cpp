@@ -104,13 +104,13 @@ void onStopRiding(mce::UUID uuid, Actor* vehicle) {
         playerStats->addCustomStats(CustomType::boat_one_cm, value);
     } else if (vehicle->hasCategory(::ActorCategory::MinecartRidable)) {
         playerStats->addCustomStats(CustomType::minecart_one_cm, value);
-    } else if (vehicle->hasType(::ActorType::Horse)) {
+    } else if (vehicle->isType(::ActorType::Horse)) {
         playerStats->addCustomStats(CustomType::horse_one_cm, value);
-    } else if (vehicle->hasType(::ActorType::Pig)) {
+    } else if (vehicle->isType(::ActorType::Pig)) {
         playerStats->addCustomStats(CustomType::pig_one_cm, value);
-    } else if (vehicle->hasType(::ActorType::Strider)) {
+    } else if (vehicle->isType(::ActorType::Strider)) {
         playerStats->addCustomStats(CustomType::strider_one_cm, value);
-    } else if (vehicle->hasType(ActorType::HappyGhast)) {
+    } else if (vehicle->isType(ActorType::HappyGhast)) {
         playerStats->addCustomStats(CustomType::happy_ghast_one_cm, value);
     }
 }
@@ -220,7 +220,7 @@ void onKillMob(Player& player, Mob& mob) {
     if (findPlayer == playerStatsMap.end()) return;
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
-    if (mob.hasType(::ActorType::Player)) {
+    if (mob.isType(::ActorType::Player)) {
         playerStats->addCustomStats(CustomType::player_kills);
     } else {
         playerStats->addCustomStats(CustomType::mob_kills);
@@ -314,7 +314,7 @@ void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage) {
     if (!playerStats) return;
     if (!item->isDamageableItem()) return;
     if (!item->isArmorItem()) playerStats->addStats(StatsType::used, item->getTypeName());
-    auto maxDamage = item->getMaxDamage();
+    auto maxDamage = item->mItem->mMaxDamage;
     auto damage    = item->getDamageValue();
     if (damage + deltaDamage > maxDamage) {
         playerStats->addStats(StatsType::broken, item->getTypeName());

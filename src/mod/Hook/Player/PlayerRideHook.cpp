@@ -34,7 +34,7 @@ LL_TYPE_INSTANCE_HOOK(
     bool switchingVehicles,
     bool isBeingTeleported
 ) {
-    if (!hasType(::ActorType::Player))
+    if (!isType(::ActorType::Player))
         return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
     Player* player = getWeakEntity().tryUnwrap<Player>();
     if (!player) return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
