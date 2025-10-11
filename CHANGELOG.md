@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.5.0] - 2025-10-11
+
 ## 新增
 
 - 统计玩家骑乘快乐恶魂移动距离
-- 适配LeviLamina 1.5.0
+- 适配LeviLamina 1.6.0
 
 ## [0.4.0] - 2025-08-16
 
@@ -182,8 +184,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.4.0...dev
-[0.3.1]: https://github.com/LeafKnife/Stats/compare/v0.3.1...0.4.0
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.5.0...dev
+[0.5.0]: https://github.com/LeafKnife/Stats/compare/v0.4.0...0.5.0
+[0.4.0]: https://github.com/LeafKnife/Stats/compare/v0.3.1...0.4.0
 [0.3.1]: https://github.com/LeafKnife/Stats/compare/v0.3.0...0.3.1
 [0.3.0]: https://github.com/LeafKnife/Stats/compare/v0.2.6...0.3.0
 [0.2.6]: https://github.com/LeafKnife/Stats/compare/v0.2.5...v0.2.6
