@@ -16,7 +16,7 @@ LL_TYPE_INSTANCE_HOOK(
     int      deltaDamage,
     ::Actor* owner
 ) {
-    if (!owner||!owner->hasType(::ActorType::Player)) return origin(deltaDamage, owner);
+    if (!owner||!owner->isType(::ActorType::Player)) return origin(deltaDamage, owner);
     ItemStackBase* item = this;
     auto           res  = origin(deltaDamage, owner);
     if (!res) return res;

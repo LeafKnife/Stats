@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/LeafKnife/Stats",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "info": {
         "name": "Stats",
         "description": "Minecraft 基岩版服务器(BDS) 统计信息插件",
@@ -14,7 +14,7 @@
     },
     "asset_url": "https://github.com/LeafKnife/Stats/releases/download/v$(version)/Stats-windows-x64.zip",
     "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": "1.4.x"
+        "github.com/LiteLDev/LeviLamina": "1.6.x"
     },
     "files": {
         "place": [

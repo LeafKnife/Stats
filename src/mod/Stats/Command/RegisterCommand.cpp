@@ -46,7 +46,7 @@ void registerCommand() {
         .optional("StatsType")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
-            if (entity == nullptr || !entity->hasType(::ActorType::Player)) {
+            if (entity == nullptr || !entity->isType(::ActorType::Player)) {
                 output.error("command.error.notplayer"_tr());
             }
             Player* player = (Player*)entity;
@@ -75,7 +75,7 @@ void registerCommand() {
         .required("StatsType")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
-            if (entity == nullptr || !entity->hasType(::ActorType::Player)) {
+            if (entity == nullptr || !entity->isType(::ActorType::Player)) {
                 output.error("command.error.notplayer"_tr());
             }
             Player* player = (Player*)entity;
@@ -111,7 +111,7 @@ void registerCommand() {
         .optional("type")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsRank const& param) {
             auto* entity = origin.getEntity();
-            if (entity == nullptr || !entity->hasType(::ActorType::Player)) {
+            if (entity == nullptr || !entity->isType(::ActorType::Player)) {
                 output.error("command.error.notplayer"_tr());
             }
             Player* player = (Player*)entity;

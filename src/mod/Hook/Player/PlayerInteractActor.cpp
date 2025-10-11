@@ -39,7 +39,7 @@ LL_TYPE_INSTANCE_HOOK(
     auto uuid     = getUuid();
     auto r        = origin(actor, location);
     if (!r) return r;
-    if (actor.hasCategory(::ActorCategory::WaterAnimal) || actor.hasType(::ActorType::Axolotl)) {
+    if (actor.hasCategory(::ActorCategory::WaterAnimal) || actor.isType(::ActorType::Axolotl)) {
         auto it = fishCaughtSet.find(uniqueId);
         if (it != fishCaughtSet.end()) {
             event::player::onFishCaught(uuid);

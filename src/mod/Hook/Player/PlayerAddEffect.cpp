@@ -15,7 +15,7 @@ LL_TYPE_INSTANCE_HOOK(
     void,
     ::MobEffectInstance const& effect
 ) {
-    if (!this->hasType(::ActorType::Player)) return origin(effect);
+    if (!this->isType(::ActorType::Player)) return origin(effect);
     Player* player = this->getEntityContext().getWeakRef().tryUnwrap<Player>();
     if (!player) return origin(effect);
     event::player::onEffectAdded(player, effect);

@@ -133,7 +133,7 @@ void onFlowerPotBlockPlaceFlower(Player& player) {
 
 void onProjectileHitTargetBlock(Actor const& projectile) {
     auto mob = projectile.getOwner();
-    if (!mob||!mob->hasType(::ActorType::Player)) return;
+    if (!mob||!mob->isType(::ActorType::Player)) return;
     Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
     if (!player) return;
     auto uuid       = player->getUuid();
@@ -145,7 +145,7 @@ void onProjectileHitTargetBlock(Actor const& projectile) {
     return;
 }
 void onFallOn(Actor& actor, float fallDistance) {
-    if (!actor.hasType(::ActorType::Player)) return;
+    if (!actor.isType(::ActorType::Player)) return;
     Player* player = actor.getEntityContext().getWeakRef().tryUnwrap<Player>();
     if (!player) return;
     auto uuid       = player->getUuid();
