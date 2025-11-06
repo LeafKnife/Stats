@@ -7,20 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.6.0] - 2025-11-06
+
+### 新增
+
+- 适配LeviLamina 1.7.0
+
 ## [0.5.0] - 2025-10-11
 
-## 新增
+### 新增
 
 - 统计玩家骑乘快乐恶魂移动距离
 - 适配LeviLamina 1.6.0
 
 ## [0.4.0] - 2025-08-16
 
-## 新增
+### 新增
 
 - 适配LeviLamina 1.4.0(BDS 1.21.93)
 
-## 修复
+### 修复
 
 - 玩家停止骑行时服务器异常崩溃的问题
 - 部分情况下生物死亡时报错
@@ -184,11 +190,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.5.0...dev
-[0.5.0]: https://github.com/LeafKnife/Stats/compare/v0.4.0...0.5.0
-[0.4.0]: https://github.com/LeafKnife/Stats/compare/v0.3.1...0.4.0
-[0.3.1]: https://github.com/LeafKnife/Stats/compare/v0.3.0...0.3.1
-[0.3.0]: https://github.com/LeafKnife/Stats/compare/v0.2.6...0.3.0
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.6.0...dev
+[0.6.0]: https://github.com/LeafKnife/Stats/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/LeafKnife/Stats/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/LeafKnife/Stats/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/LeafKnife/Stats/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/LeafKnife/Stats/compare/v0.2.6...v0.3.0
 [0.2.6]: https://github.com/LeafKnife/Stats/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/LeafKnife/Stats/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/LeafKnife/Stats/compare/v0.2.3...v0.2.4
