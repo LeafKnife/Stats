@@ -142,7 +142,7 @@ void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
         // 部分情况下可能检测不到玩家停止骑行
         playerStats->mDistanceCache.ride = 0;
 
-        if (player.isInWater()) {
+        if (player.isInWaterOrRain()) {
             auto value = static_cast<uint64_t>(std::floor(packet.mPosDelta->length() * 100));
             if (player.isSwimming()) {
                 playerStats->addCustomStats(CustomType::swim_one_cm, value);
