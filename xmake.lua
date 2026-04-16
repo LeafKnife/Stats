@@ -6,13 +6,13 @@ add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
 if is_config("target_type", "server") then
-    add_requires("levilamina 26.10.0", {configs = {target_type = "server"}})
+    add_requires("levilamina 26.10.*", {configs = {target_type = "server"}})
 else
-    add_requires("levilamina 26.10.0", {configs = {target_type = "client"}})
+    add_requires("levilamina 26.10.*", {configs = {target_type = "client"}})
 end
 
 add_requires("levibuildscript")
-add_requires("legacyremotecall b8bf79f92e1ef3ede108be7bdc881048b4ef929f")
+add_requires("legacyremotecall 0.18.0")
 
 
 if not has_config("vs_runtime") then
