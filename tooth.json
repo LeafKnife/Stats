@@ -1,27 +1,52 @@
 {
-    "format_version": 2,
+    "format_version": 3,
+    "format_uuid": "289f771f-2c9a-4d73-9f3f-8492495a924d",
     "tooth": "github.com/LeafKnife/Stats",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "info": {
         "name": "Stats",
         "description": "Minecraft 基岩版服务器(BDS) 统计信息插件",
-        "author": "LWenK",
         "tags": [
             "platform:levilamina",
             "type:mod"
         ],
-        "avatar_url":"https://github.com/LeafKnife/Stats/raw/main/logo.png"
+        "avatar_url": "https://github.com/LeafKnife/Stats/raw/main/logo.png"
     },
-    "asset_url": "https://github.com/LeafKnife/Stats/releases/download/v$(version)/Stats-windows-x64.zip",
-    "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": "26.10.x"
-    },
-    "files": {
-        "place": [
-            {
-                "src": "LK-Stats/*",
-                "dest": "plugins/LK-Stats/"
+    "variants": [
+        {
+            "label": "",
+            "platform": "win-x64",
+            "dependencies": {
+                "github.com/LiteLDev/LeviLamina": "26.10.*",
+                "github.com/LiteLDev/LegacyRemoteCall": "0.18.*"
+            },
+            "assets": [
+                {
+                    "type": "zip",
+                    "urls": [
+                        "https://{{tooth}}/releases/download/v{{version}}/Stats-windows-x64.zip"
+                    ],
+                    "placements": [
+                        {
+                            "type": "dir",
+                            "src": "LK-Stats/",
+                            "dest": "plugins/LK-Stats/"
+                        }
+                    ]
+                }
+            ],
+            "preserve_files": [],
+            "remove_files": [],
+            "scripts": {
+                "pre_install": [],
+                "install": [],
+                "post_install": [],
+                "pre_pack": [],
+                "post_pack": [],
+                "pre_uninstall": [],
+                "uninstall": [],
+                "post_uninstall": []
             }
-        ]
-    }
+        }
+    ]
 }
