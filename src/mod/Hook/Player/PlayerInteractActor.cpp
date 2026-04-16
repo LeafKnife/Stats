@@ -30,7 +30,7 @@ LL_TYPE_INSTANCE_HOOK(
     HookPriority::Normal,
     Player,
     &Player::interact,
-    bool,
+    ::InteractionResult,
     Actor&      actor,
     Vec3 const& location
 ) {
@@ -38,7 +38,7 @@ LL_TYPE_INSTANCE_HOOK(
     auto text     = getInteractText();
     auto uuid     = getUuid();
     auto r        = origin(actor, location);
-    if (!r) return r;
+    if (!r.mSuccess) return r; //后续可能还需要修改
     if (actor.hasCategory(::ActorCategory::WaterAnimal) || actor.isType(::ActorType::Axolotl)) {
         auto it = fishCaughtSet.find(uniqueId);
         if (it != fishCaughtSet.end()) {
@@ -94,7 +94,7 @@ LL_TYPE_INSTANCE_HOOK(
     if (!canFill) return origin(instance, entity, pos, face, clickPos);
     auto uniqueId = entity.getOrCreateUniqueID().getHash();
     auto r        = origin(instance, entity, pos, face, clickPos);
-    if (r.mResult == InteractionResult::Result::Swing) {
+    if (r.mSwing) {
         fishCaughtSet.insert(uniqueId);
     }
     return r;
