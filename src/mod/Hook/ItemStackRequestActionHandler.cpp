@@ -33,14 +33,14 @@ LL_TYPE_INSTANCE_HOOK(
     bool                                        isSrcHintSlot,
     bool                                        isDstHintSlot
 ) {
-    auto& src = ll::memory::dAccess<ItemStackRequestSlotInfo>(&requestAction.mSrc, 4);
+    auto& src = *requestAction.mSrc;
     // if (r != ItemStackNetResult::Success) return origin(requestAction, isSwap, isSrcHintSlot, isDstHintSlot);
     if (src.mFullContainerName.mName != ContainerEnumName::CreatedOutputContainer)
         return origin(requestAction, isSwap, isSrcHintSlot, isDstHintSlot);
     ::std::shared_ptr<::SimpleSparseContainer> srcContainer = _getOrInitSparseContainer(src.mFullContainerName);
     if (!srcContainer) return origin(requestAction, isSwap, isSrcHintSlot, isDstHintSlot);
     auto const& srcItem    = srcContainer->getItem(src.mSlot);
-    auto& screenCtx  = mItemStackNetManager.getScreenContext();
+    auto&       screenCtx  = mItemStackNetManager.getScreenContext();
     auto        screenType = screenCtx.mScreenContainerType;
     auto        itemType   = srcItem.getTypeName();
     auto        r          = origin(requestAction, isSwap, isSrcHintSlot, isDstHintSlot);
