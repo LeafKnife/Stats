@@ -34,7 +34,7 @@ LL_TYPE_INSTANCE_HOOK(
     Actor&      actor,
     Vec3 const& location
 ) {
-    auto uniqueId = actor.getOrCreateUniqueID().getHash();
+    auto uniqueId = actor.getOrCreateUniqueID().rawID;
     auto text     = getInteractText();
     auto uuid     = getUuid();
     auto r        = origin(actor, location);
@@ -55,8 +55,8 @@ LL_TYPE_INSTANCE_HOOK(BreedGoalStopHook, HookPriority::Normal, BreedGoal, &Breed
     Mob& mob     = mOwner;
     Actor* partner = mPartner->tryUnwrap<>();
     if (!partner) return origin();
-    auto mob1UniqueId = mob.getOrCreateUniqueID().getHash();
-    auto mob2UniqueId = partner->getOrCreateUniqueID().getHash();
+    auto mob1UniqueId = mob.getOrCreateUniqueID().rawID;
+    auto mob2UniqueId = partner->getOrCreateUniqueID().rawID;
     auto find1        = breedCacheMap.find(mob1UniqueId);
     auto find2        = breedCacheMap.find(mob2UniqueId);
     if (find1 == breedCacheMap.end() && find2 == breedCacheMap.end()) return origin();
@@ -92,7 +92,7 @@ LL_TYPE_INSTANCE_HOOK(
     auto typeId  = static_cast<int>(entity.getEntityTypeId());
     auto canFill = (typeId >= 9068 && typeId <= 9072) || typeId == 4994 || typeId == 9093;
     if (!canFill) return origin(instance, entity, pos, face, clickPos);
-    auto uniqueId = entity.getOrCreateUniqueID().getHash();
+    auto uniqueId = entity.getOrCreateUniqueID().rawID;
     auto r        = origin(instance, entity, pos, face, clickPos);
     if (r.mSwing) {
         fishCaughtSet.insert(uniqueId);
