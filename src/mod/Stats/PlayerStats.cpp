@@ -24,7 +24,7 @@ PlayerStats::PlayerStats(Player const& player) {
     mName              = player.getRealName();
     mSneakingStartTick = 0;
     mLastPos           = const_cast<Vec3&>(player.getPosition());
-    mLastDimensionId   = player.getDimensionId().id;
+    mLastDimensionId   = player.getDimensionId().mValue;
 
     auto                 cache = getStatsCache();
     auto                 uuid  = mUuid.asString();

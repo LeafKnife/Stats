@@ -126,7 +126,7 @@ void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
     auto pos   = const_cast<Vec3&>(player.getPosition());
-    auto dimId = player.getDimensionId().id;
+    auto dimId = player.getDimensionId().mValue;
     if (playerStats->mLastDimensionId != dimId) {
         playerStats->mLastDimensionId = dimId;
         playerStats->mLastPos         = pos;
