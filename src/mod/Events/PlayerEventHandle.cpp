@@ -100,28 +100,39 @@ void onStopRiding(mce::UUID uuid, Actor* vehicle) {
 }
 
 void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
-    auto  uuid        = player.getUuid();
-    auto* playerStats = findPlayerStats(uuid);
+    auto const uuid        = player.getUuid();
+    auto*      playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
-    auto pos   = const_cast<Vec3&>(player.getPosition());
-    auto dimId = player.getDimensionId().id;
+
+    auto const& position  = player.getPosition();
+    auto const& posDelta  = *packet.mPosDelta;
+    auto const& inputData = *packet.mInputData;
+    auto const  dimId     = player.getDimensionId().id;
+
+    auto updateGlidingState = [&] {
+        if (inputData.test(static_cast<std::size_t>(PlayerAuthInputPacket::InputData::StartGliding))) {
+            playerStats->mDistanceCache.isGliding = true;
+        } else if (inputData.test(static_cast<std::size_t>(PlayerAuthInputPacket::InputData::StopGliding))) {
+            playerStats->mDistanceCache.isGliding = false;
+        }
+    };
+
     if (playerStats->mLastDimensionId != dimId) {
         playerStats->mLastDimensionId = dimId;
-        playerStats->mLastPos         = pos;
+        playerStats->mLastPos         = position;
+        updateGlidingState();
         return;
     }
-    // packet.mPosDelta
-
     if (player.isRiding()) {
-        auto value = static_cast<uint64_t>(std::floor(player.getPosition().distanceTo(playerStats->mLastPos) * 100));
+        auto const value = static_cast<uint64_t>(std::floor(position.distanceTo(playerStats->mLastPos) * 100));
         playerStats->mDistanceCache.ride += value;
-        playerStats->mLastPos             = pos;
+        playerStats->mLastPos             = position;
     } else {
         // 部分情况下可能检测不到玩家停止骑行
         playerStats->mDistanceCache.ride = 0;
 
         if (player.isInWaterOrRain()) {
-            auto value = static_cast<uint64_t>(std::floor(packet.mPosDelta->length() * 100));
+            auto const value = static_cast<uint64_t>(std::floor(posDelta.length() * 100));
             if (player.isSwimming()) {
                 playerStats->addCustomStats(CustomType::swim_one_cm, value);
             } else if (player._isHeadInWater()) {
@@ -130,11 +141,11 @@ void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
                 playerStats->addCustomStats(CustomType::walk_under_water_one_cm, value);
             }
         } else if (player.isFlying()) {
-            auto value = static_cast<uint64_t>(std::floor(packet.mPosDelta->length() * 100));
+            auto const value = static_cast<uint64_t>(std::floor(posDelta.length() * 100));
             playerStats->addCustomStats(CustomType::fly_one_cm, value);
         } else if (player.isOnGround()) {
-            auto posOffset = Vec3{0, -0.0784, 0};
-            auto value     = static_cast<uint64_t>(std::floor(packet.mPosDelta->distanceTo(posOffset) * 100));
+            auto const posOffset = Vec3{0, -0.0784, 0};
+            auto const value     = static_cast<uint64_t>(std::floor(posDelta.distanceTo(posOffset) * 100));
             if (playerStats->mDistanceCache.isSneaking) {
                 playerStats->mDistanceCache.sneak += value;
             } else if (playerStats->mDistanceCache.isSprinting) {
@@ -143,19 +154,15 @@ void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
                 playerStats->addCustomStats(CustomType::walk_one_cm, value);
             }
         } else if (player.onClimbableBlock()) {
-            auto valueY = packet.mPosDelta->y + 0.0784;
-            auto value2 = static_cast<uint64_t>(std::floor(valueY > 0 ? valueY * 100 : 0));
-            playerStats->addCustomStats(CustomType::climb_one_cm, value2);
+            auto const valueY = posDelta.y + 0.0784;
+            auto const value  = static_cast<uint64_t>(std::floor(valueY > 0 ? valueY * 100 : 0));
+            playerStats->addCustomStats(CustomType::climb_one_cm, value);
         } else if (playerStats->mDistanceCache.isGliding) {
-            auto value = static_cast<uint64_t>(std::floor(packet.mPosDelta->length() * 100));
+            auto const value = static_cast<uint64_t>(std::floor(posDelta.length() * 100));
             playerStats->addCustomStats(CustomType::aviate_one_cm, value);
         }
     }
-    if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::StartGliding)) {
-        playerStats->mDistanceCache.isGliding = true;
-    } else if (packet.mInputData->test((size_t)PlayerAuthInputPacket::InputData::StopGliding)) {
-        playerStats->mDistanceCache.isGliding = false;
-    }
+    updateGlidingState();
 }
 
 void onTakeItem(Player& player, ItemStack& item) {

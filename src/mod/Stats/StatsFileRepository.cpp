@@ -49,6 +49,70 @@ std::filesystem::path resolveStatsPath() {
     return ll::file_utils::u8path("./worlds/" + levelName + "/stats");
 }
 
+bool isValidSnapshot(std::filesystem::path const& path) {
+    auto const source = ll::file_utils::readFile(path);
+    if (!source) return false;
+
+    try {
+        (void)decodeStatsJson(*source);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+void recoverPendingWrites() {
+    for (auto const& entry : std::filesystem::directory_iterator(statsPath)) {
+        auto const& tempPath = entry.path();
+        if (tempPath.extension() != ".tmp" || tempPath.stem().extension() != ".json") continue;
+
+        if (!isValidSnapshot(tempPath)) {
+            getLogger().warn("Ignoring invalid temporary stats snapshot: {}", tempPath.string());
+            continue;
+        }
+
+        auto targetPath = tempPath;
+        targetPath.replace_extension();
+
+        bool recover = !std::filesystem::exists(targetPath) || !isValidSnapshot(targetPath);
+        if (!recover) {
+            std::error_code timeError;
+            auto const      tempTime = std::filesystem::last_write_time(tempPath, timeError);
+            if (!timeError) {
+                auto const targetTime = std::filesystem::last_write_time(targetPath, timeError);
+                if (!timeError) recover = tempTime > targetTime;
+            }
+            if (timeError) {
+                getLogger().warn("Could not compare pending stats snapshot times: {}", tempPath.string());
+                continue;
+            }
+        }
+
+        if (!recover) {
+            std::error_code removeError;
+            std::filesystem::remove(tempPath, removeError);
+            if (removeError) {
+                getLogger().warn("Failed to remove stale stats snapshot: {}", tempPath.string());
+            }
+            continue;
+        }
+
+        if (MoveFileExW(
+                tempPath.c_str(),
+                targetPath.c_str(),
+                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH
+            )) {
+            getLogger().info("Recovered pending stats snapshot: {}", targetPath.string());
+        } else {
+            getLogger().error(
+                "Failed to recover pending stats snapshot: {} ({})",
+                targetPath.string(),
+                GetLastError()
+            );
+        }
+    }
+}
+
 bool writeNow(DecodedStats const& record) {
     try {
         auto const path = statsPath / ll::file_utils::u8path(record.info.uuid + ".json");
@@ -65,9 +129,7 @@ bool writeNow(DecodedStats const& record) {
             )) {
             return true;
         }
-        auto const      replaceError = GetLastError();
-        std::error_code error;
-        std::filesystem::remove(tempPath, error);
+        auto const replaceError = GetLastError();
         getLogger().error("Failed to replace stats snapshot: {} ({})", path.string(), replaceError);
         return false;
     } catch (std::exception const& exception) {
@@ -121,6 +183,7 @@ bool loadAll(std::vector<DecodedStats>& records) {
     records.clear();
     std::vector<std::filesystem::path> files;
     try {
+        recoverPendingWrites();
         for (auto const& entry : std::filesystem::directory_iterator(statsPath)) {
             if (entry.path().extension() == ".json") files.push_back(entry.path());
         }
