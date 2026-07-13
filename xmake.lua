@@ -85,3 +85,11 @@ target("LK-Stats") -- Change this to your mod name.
         os.mkdir(outputPath)
         os.cp(langPath, outputPath)
     end)
+
+target("LK-Stats-Tests")
+    set_default(false)
+    set_kind("binary")
+    set_languages("c++20")
+    add_includedirs("src")
+    add_files("tests/StatsQueryTests.cpp")
+    add_files("src/mod/Stats/StatsQuery.cpp")

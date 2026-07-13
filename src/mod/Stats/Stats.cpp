@@ -52,6 +52,17 @@ StatsCacheData parseStatsData(const std::string& data) {
     return r;
 }
 
+query::RankData getStatsRank(StatsType type, std::string const& key) {
+    std::vector<query::RankEntryView> entries;
+    entries.reserve(statsCache.size());
+
+    for (auto const& data : statsCache) {
+        auto const* stats = data.second ? data.second->getMap(type) : nullptr;
+        entries.push_back({data.first.name, stats});
+    }
+    return query::buildRank(entries, key);
+}
+
 inline std::optional<std::string> getLevelName() {
     if (ll::service::getPropertiesSettings().has_value()) {
         return ll::service::getPropertiesSettings()->mLevelName;

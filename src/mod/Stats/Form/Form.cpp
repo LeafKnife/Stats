@@ -9,7 +9,6 @@
 #include <ll/api/i18n/I18n.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
-#include <numeric>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -112,37 +111,8 @@ std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type, ui
     return content;
 }
 
-inline uint64_t getStatsDataMapValue(StatsDataMap const& map, std::string const& type) {
-    uint64_t value;
-    if (type.empty()) {
-        value = std::accumulate(map.begin(), map.end(), uint64_t{0}, [](uint64_t total, auto const& pair) {
-            return total + pair.second;
-        });
-    } else {
-        auto mapValue = map.find(type);
-        if (mapValue != map.end()) {
-            value = mapValue->second;
-        } else {
-            value = 0;
-        }
-    }
-    return value;
-}
-
-inline void getRankData(std::vector<StatsPair>& data, StatsType statsType, std::string const& type) {
-    auto& cache = getStatsCache();
-    data.reserve(cache.size());
-    for (auto const& it : cache) {
-        auto const* map = it.second->getMap(statsType);
-        if (!map) continue;
-        data.emplace_back(it.first.name, getStatsDataMapValue(*map, type));
-    };
-    std::sort(data.begin(), data.end(), [](const StatsPair& a, const StatsPair& b) { return a.second > b.second; });
-}
-
 void sendRankGui(Player& player, StatsType statsType, std::string type) {
-    std::vector<StatsPair> data;
-    getRankData(data, statsType, type);
+    auto        data    = getStatsRank(statsType, type);
     std::string title   = type.empty() ? "" : " | " + std::string(ll::i18n::getInstance().get(type, {}));
     std::string content = "";
     renderContent(content, data);

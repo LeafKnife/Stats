@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mod/Stats/PlayerStats.h"
+#include "mod/Stats/StatsQuery.h"
 
 #include <ll/api/io/Logger.h>
 #include <mc/platform/UUID.h>
@@ -22,6 +23,7 @@ ll::io::Logger& getLogger();
 PlayerStatsMap& getPlayerStatsMap();
 StatsCache&     getStatsCache();
 StatsCacheData  parseStatsData(std::string const& data);
+query::RankData getStatsRank(StatsType type, std::string const& key);
 
 std::filesystem::path getStatsPath();
 
