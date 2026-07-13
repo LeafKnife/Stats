@@ -2,28 +2,34 @@
 #include "mod/Hook/Hook.h"
 
 #include <ll/api/memory/Hook.h>
+#include <ll/api/service/Bedrock.h>
 #include <mc/deps/core/math/Vec3.h>
 #include <mc/deps/ecs/WeakEntityRef.h>
+#include <mc/entity/components_json_legacy/BreedableComponent.h>
 #include <mc/legacy/ActorUniqueID.h>
-#include <mc/platform/UUID.h>
 #include <mc/world/actor/Actor.h>
-#include <mc/world/actor/Mob.h>
-#include <mc/world/actor/ai/goal/BreedGoal.h>
 #include <mc/world/actor/player/Player.h>
 #include <mc/world/gamemode/InteractionResult.h>
 #include <mc/world/item/BucketItem.h>
+#include <mc/world/level/Level.h>
 #include <mc/world/level/BlockPos.h>
 
 
 #include "mod/Events/PlayerEventHandle.h"
 
-#include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 namespace stats::hook::player {
 namespace {
-std::unordered_map<uint64, mce::UUID> breedCacheMap;
-std::unordered_set<uint64>            fishCaughtSet;
+std::unordered_set<uint64> fishCaughtSet;
+
+Player* resolveLoveCausePlayer(ActorUniqueID const& loveCause) {
+    if (loveCause == ActorUniqueID::INVALID_ID()) return nullptr;
+
+    auto* level = ll::service::getLevel().as_ptr();
+    return level ? level->getPlayer(loveCause) : nullptr;
+}
 } // namespace
 LL_TYPE_INSTANCE_HOOK(
     InteractEntityHook,
@@ -35,7 +41,6 @@ LL_TYPE_INSTANCE_HOOK(
     Vec3 const& location
 ) {
     auto uniqueId = actor.getOrCreateUniqueID().getHash();
-    auto text     = getInteractText();
     auto uuid     = getUuid();
     auto r        = origin(actor, location);
     if (!r.mSuccess) return r; //后续可能还需要修改
@@ -46,35 +51,27 @@ LL_TYPE_INSTANCE_HOOK(
             fishCaughtSet.erase(it);
         }
     }
-    if (text != "Feed") return r;
-    breedCacheMap[uniqueId] = uuid;
     return r;
 }
 
-LL_TYPE_INSTANCE_HOOK(BreedGoalStopHook, HookPriority::Normal, BreedGoal, &BreedGoal::$stop, void) {
-    Mob& mob     = mOwner;
-    Actor* partner = mPartner->tryUnwrap<>();
-    if (!partner) return origin();
-    auto mob1UniqueId = mob.getOrCreateUniqueID().getHash();
-    auto mob2UniqueId = partner->getOrCreateUniqueID().getHash();
-    auto find1        = breedCacheMap.find(mob1UniqueId);
-    auto find2        = breedCacheMap.find(mob2UniqueId);
-    if (find1 == breedCacheMap.end() && find2 == breedCacheMap.end()) return origin();
-    if (find1->second == find2->second) {
-        event::player::onBreedAnimal(find1->second);
-        breedCacheMap.erase(find1);
-        breedCacheMap.erase(find2);
-    } else {
-        if (find1 != breedCacheMap.end()) {
-            event::player::onBreedAnimal(find1->second);
-            breedCacheMap.erase(find1);
-        }
-        if (find2 != breedCacheMap.end()) {
-            event::player::onBreedAnimal(find1->second);
-            breedCacheMap.erase(find2);
-        }
-    }
-    origin();
+LL_TYPE_INSTANCE_HOOK(
+    PlayerBredAnimalsHook,
+    HookPriority::Normal,
+    BreedableComponent,
+    &BreedableComponent::mate,
+    std::vector<WeakEntityRef>,
+    Actor& owner,
+    Actor& partner
+) {
+    auto const loveCause = mLoveCause.get();
+    auto       result    = origin(owner, partner);
+    if (result.empty()) return result;
+
+    auto* player = resolveLoveCausePlayer(loveCause);
+    if (!player) return result;
+
+    event::player::onBreedAnimal(player->getUuid());
+    return result;
 }
 
 LL_TYPE_INSTANCE_HOOK(
@@ -102,8 +99,8 @@ LL_TYPE_INSTANCE_HOOK(
 
 void hookPlayerInteractActor() { InteractEntityHook::hook(); }
 void unhookPlayerInteractActor() { InteractEntityHook::unhook(); }
-void hookPlayerBreedAnimal() { BreedGoalStopHook::hook(); }
-void unhookPlayerBreedAnimal() { BreedGoalStopHook::unhook(); }
+void hookPlayerBreedAnimal() { PlayerBredAnimalsHook::hook(); }
+void unhookPlayerBreedAnimal() { PlayerBredAnimalsHook::unhook(); }
 void hookPlayerUseBucketItemOnFish() { BucketItemUseOnHook::hook(); }
 void unhookPlayerUseBucketItemOnFish() { BucketItemUseOnHook::unhook(); }
 
