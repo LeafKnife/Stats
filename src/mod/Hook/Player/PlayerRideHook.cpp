@@ -3,8 +3,10 @@
 #include <ll/api/memory/Hook.h>
 #include <mc/deps/ecs/WeakEntityRef.h>
 #include <mc/legacy/ActorUniqueID.h>
+#include <mc/world/actor/Actor.h>
+#include <mc/world/actor/player/Player.h>
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::player {
 
@@ -19,7 +21,7 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     auto r = origin(vehicle, forceRiding);
     if (!r) return r;
-    event::player::onStartRiding(getUuid());
+    handler::onPlayerStartRiding(getUuid());
     return r;
 }
 
@@ -38,7 +40,7 @@ LL_TYPE_INSTANCE_HOOK(
         return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
     Player* player = getWeakEntity().tryUnwrap<Player>();
     if (!player) return origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
-    event::player::onStopRiding(player->getUuid(), player->getVehicle());
+    handler::onPlayerStopRiding(player->getUuid(), player->getVehicle());
     origin(exitFromPassenger, actorIsBeingDestroyed, switchingVehicles, isBeingTeleported);
 }
 

@@ -18,7 +18,7 @@
 #include <mc/world/level/block/actor/BlockActor.h>
 
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::inventory {
 
@@ -45,7 +45,7 @@ LL_TYPE_INSTANCE_HOOK(
     auto        itemType   = srcItem.getTypeName();
     auto        r          = origin(requestAction, isSwap, isSrcHintSlot, isDstHintSlot);
     if (r != ItemStackNetResult::Success) return r;
-    event::player::onCraftedItem(mPlayer.getUuid(), itemType, requestAction.mAmount, screenType);
+    handler::onPlayerCraftedItem(mPlayer.getUuid(), itemType, requestAction.mAmount, screenType);
     return r;
 }
 void hookItemStackRequestActionHandlerTransfer() { trasferHandlerHook::hook(); };

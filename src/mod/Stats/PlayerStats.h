@@ -52,7 +52,6 @@ public:
     StatsDataMap const* getStatsMap(StatsType type) const;
     void                addStats(StatsType type, std::string const& key, uint64_t value = 1);
     void                addCustomStats(CustomType type, uint64_t value = 1);
-    void                resetCustomStats(CustomType type, uint64_t value = 0);
     void                startSneaking(uint64_t currentTick);
     void                stopSneaking(uint64_t currentTick);
     void                checkpoint(uint64_t currentTick);

@@ -5,7 +5,6 @@
 // #include "mc/world/item/FishingRodItem.h"
 // #include "mc/world/item/ItemStackBase.h"
 
-// #include "mod/Events/PlayerEventHandle.h"
 
 // namespace stats::hook::item {
 // LL_TYPE_INSTANCE_HOOK(

@@ -91,7 +91,7 @@ void registerCommand() {
             }
             auto* player = static_cast<Player*>(entity);
             if (!isValidStatsType(param.StatsType)) {
-                return output.error("TODO");
+                return output.error("command.error.invalid_stats_type"_tr());
             }
             if (param.StatsType == StatsType::custom && param.type.empty()) {
                 return output.error("command.error.rank_type_required"_tr());

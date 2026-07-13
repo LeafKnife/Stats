@@ -6,7 +6,7 @@
 #include <mc/server/ServerPlayer.h>
 #include <mc/world/level/Level.h>
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::player {
 LL_TYPE_INSTANCE_HOOK(
@@ -23,7 +23,7 @@ LL_TYPE_INSTANCE_HOOK(
     auto actor = ll::service::getLevel()->fetchEntity(uniqueID, false);
 
     if (!actor->isType(::ActorType::VillagerV2)) return;
-    event::player::onOpenTrading(player);
+    handler::onPlayerOpenTrading(player);
 }
 
 void hookServerPlayerOpenTrading() { ServerPlayerOpenTradingHook::hook(); }

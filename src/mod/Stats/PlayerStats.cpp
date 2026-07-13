@@ -31,8 +31,6 @@ void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
     mData->custom.add(type, value);
 };
 
-void PlayerStats::resetCustomStats(CustomType type, uint64_t value) { mData->custom.set(type, value); }
-
 void PlayerStats::startSneaking(uint64_t currentTick) {
     mSneakingStartTick        = currentTick;
     mDistanceCache.isSneaking = true;

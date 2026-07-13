@@ -1,8 +1,11 @@
 #include "mod/Hook/Hook.h"
 
 #include <ll/api/memory/Hook.h>
+#include <mc/world/actor/player/Player.h>
+#include <mc/world/item/ItemStackBase.h>
+#include <mc/world/item/ItemUseMethod.h>
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::player {
 
@@ -18,7 +21,7 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     Player* player         = this;
     
-    event::player::onUsedItem(player, instance, itemUseMethod, consumeItem);
+    handler::onPlayerUsedItem(player, instance, itemUseMethod, consumeItem);
     return origin(instance, itemUseMethod, consumeItem);
 }
 
