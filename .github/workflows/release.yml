@@ -28,6 +28,7 @@ jobs:
 
       - run: |
           xrepo clean --cache -y
+          xmake global --policies=package.precompiled:n
 
       - run: |
           xmake repo -u
