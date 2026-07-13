@@ -25,6 +25,9 @@ jobs:
             xmake-
 
       - run: |
+          xrepo clean --cache -y
+
+      - run: |
           xmake repo -u
 
       - run: |
