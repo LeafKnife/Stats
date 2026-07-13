@@ -46,7 +46,7 @@ std::filesystem::path PlayerStats::getPath() const { return getStatsPath().conca
 nlohmann::json        PlayerStats::getJson() const {
     nlohmann::json j = {
         {"playerInfo",          {{"uuid", mUuid.asString()}, {"xuid", mXuid}, {"name", mName}}},
-        {"minecraft:custom",    mData->custom                                                 },
+        {"minecraft:custom",    *mData->getMap(StatsType::custom)                             },
         {"minecraft:mined",     mData->mined                                                  },
         {"minecraft:broken",    mData->broken                                                 },
         {"minecraft:crafted",   mData->crafted                                                },
@@ -73,17 +73,14 @@ bool PlayerStats::saveData() {
 };
 void PlayerStats::addStats(StatsType type, std::string const& key, uint64_t value) {
     if (value <= 0) return;
-    if (auto* data = mData->getMap(type)) {
-        (*data)[key] += value;
-    }
+    mData->add(type, key, value);
 };
 void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
     if (value <= 0) return;
-    auto const& key = getCustomTypeName(type);
-    // getLogger().debug("AddCustomStats {} key:{} value:{}", mName, key, value);
-
-    mData->custom[key] += value;
+    mData->custom.add(type, value);
 };
+
+void PlayerStats::resetCustomStats(CustomType type, uint64_t value) { mData->custom.set(type, value); }
 
 void PlayerStats::startSneaking() {
     mSneakingStartTick        = ll::service::getLevel()->getCurrentTick().tickID;

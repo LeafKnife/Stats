@@ -7,6 +7,7 @@
 #include <vector>
 
 int runStatsCustomTests();
+int runStatsDataTests();
 
 namespace {
 
@@ -73,6 +74,7 @@ void testEmptyRanking() {
 
 int main() {
     failures += runStatsCustomTests();
+    failures += runStatsDataTests();
     testValueLookup();
     testTotalsUse64Bits();
     testRanking();

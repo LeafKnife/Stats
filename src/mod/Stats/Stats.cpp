@@ -33,13 +33,13 @@ PlayerStatsMap& getPlayerStatsMap() { return playerStatsMap; }
 StatsCache&     getStatsCache() { return statsCache; }
 
 StatsCacheData parseStatsData(const std::string& data) {
-    auto j             = nlohmann::json::parse(data);
-    auto tmpData       = std::make_shared<StatsData>();
-    auto tmpInfo       = PlayerInfo();
-    tmpInfo.name       = j["playerInfo"]["name"];
-    tmpInfo.uuid       = j["playerInfo"]["uuid"];
-    tmpInfo.xuid       = j["playerInfo"]["xuid"];
-    tmpData->custom    = j["minecraft:custom"];
+    auto j       = nlohmann::json::parse(data);
+    auto tmpData = std::make_shared<StatsData>();
+    auto tmpInfo = PlayerInfo();
+    tmpInfo.name = j["playerInfo"]["name"];
+    tmpInfo.uuid = j["playerInfo"]["uuid"];
+    tmpInfo.xuid = j["playerInfo"]["xuid"];
+    tmpData->custom.load(j["minecraft:custom"].get<StatsDataMap>());
     tmpData->mined     = j["minecraft:mined"];
     tmpData->broken    = j["minecraft:broken"];
     tmpData->crafted   = j["minecraft:crafted"];

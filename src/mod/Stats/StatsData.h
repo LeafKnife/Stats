@@ -1,5 +1,9 @@
 #pragma once
 
+#include "mod/Stats/StatsCustom.h"
+
+#include <array>
+#include <bitset>
 #include <cstdint>
 #include <map>
 #include <string>
@@ -20,8 +24,24 @@ inline const std::map<StatsType, std::string> StatsTypeMap = {
     {StatsType::killed_by, "minecraft:killed_by"},
 };
 
+class CustomStatsData {
+public:
+    void                load(StatsDataMap const& values);
+    void                add(CustomType type, uint64_t value = 1);
+    void                add(std::string const& key, uint64_t value = 1);
+    void                set(CustomType type, uint64_t value = 0);
+    StatsDataMap const& asMap() const;
+
+private:
+    std::array<uint64_t, static_cast<std::size_t>(CustomType::count)> mValues{};
+    std::bitset<static_cast<std::size_t>(CustomType::count)>          mPresent;
+    StatsDataMap                                                      mUnknown;
+    mutable StatsDataMap                                              mSnapshot;
+    mutable bool                                                      mSnapshotDirty = true;
+};
+
 struct StatsData {
-    StatsDataMap        custom;
+    CustomStatsData     custom;
     StatsDataMap        mined;
     StatsDataMap        broken;
     StatsDataMap        crafted;
@@ -30,7 +50,7 @@ struct StatsData {
     StatsDataMap        dropped;
     StatsDataMap        killed;
     StatsDataMap        killed_by;
-    StatsDataMap*       getMap(StatsType type);
+    void                add(StatsType type, std::string const& key, uint64_t value = 1);
     StatsDataMap const* getMap(StatsType type) const;
 };
 } // namespace stats

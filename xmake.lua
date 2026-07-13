@@ -95,4 +95,5 @@ target("LK-Stats-Tests")
     end
     add_includedirs("src")
     add_files("tests/*.cpp")
+    add_files("src/mod/Stats/StatsData.cpp")
     add_files("src/mod/Stats/StatsQuery.cpp")
