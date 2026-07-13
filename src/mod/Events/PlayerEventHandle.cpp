@@ -45,14 +45,14 @@ void onSneaking(Player& player) {
     auto  uuid        = player.getUuid();
     auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
-    playerStats->startSneaking();
+    playerStats->startSneaking(ll::service::getLevel()->getCurrentTick().tickID);
 }
 
 void onSneaked(Player& player) {
     auto  uuid        = player.getUuid();
     auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
-    playerStats->stopSneaking();
+    playerStats->stopSneaking(ll::service::getLevel()->getCurrentTick().tickID);
 }
 
 void onSprinting(Player& player) {

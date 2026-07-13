@@ -1,23 +1,20 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include <cstdint>
-#include <ll/api/service/Bedrock.h>
-#include <mc/world/level/Level.h>
-
 #include <memory>
 #include <string>
 #include <utility>
 
 namespace stats {
 
-PlayerStats::PlayerStats(Player const& player, std::shared_ptr<StatsData> data) : mData(std::move(data)) {
-    mUuid              = player.getUuid();
-    mXuid              = player.getXuid();
-    mName              = player.getRealName();
-    mSneakingStartTick = 0;
-    mLastPos           = player.getPosition();
-    mLastDimensionId   = player.getDimensionId().id;
-};
+PlayerStats::PlayerStats(PlayerSessionInit init, std::shared_ptr<StatsData> data)
+: mData(std::move(data)),
+  mUuid(init.uuid),
+  mXuid(std::move(init.xuid)),
+  mName(std::move(init.name)),
+  mSneakingStartTick(0),
+  mLastPos(init.position),
+  mLastDimensionId(init.dimensionId) {}
 mce::UUID           PlayerStats::getUuid() const { return mUuid; };
 PlayerInfo          PlayerStats::getInfo() const { return {mUuid.asString(), mXuid, mName}; }
 StatsData const&    PlayerStats::getData() const { return *mData; }
@@ -35,14 +32,14 @@ void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
 
 void PlayerStats::resetCustomStats(CustomType type, uint64_t value) { mData->custom.set(type, value); }
 
-void PlayerStats::startSneaking() {
-    mSneakingStartTick        = ll::service::getLevel()->getCurrentTick().tickID;
+void PlayerStats::startSneaking(uint64_t currentTick) {
+    mSneakingStartTick        = currentTick;
     mDistanceCache.isSneaking = true;
     mDistanceCache.sneak      = 0;
 };
-void PlayerStats::stopSneaking() {
+void PlayerStats::stopSneaking(uint64_t currentTick) {
     if (mSneakingStartTick == 0) return;
-    auto record = ll::service::getLevel()->getCurrentTick().tickID - mSneakingStartTick;
+    auto record = currentTick - mSneakingStartTick;
     addCustomStats(CustomType::sneak_time, record);
     addCustomStats(CustomType::crouch_one_cm, mDistanceCache.sneak);
     mSneakingStartTick        = 0;

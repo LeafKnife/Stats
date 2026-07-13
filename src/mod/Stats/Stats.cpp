@@ -8,6 +8,7 @@
 #include <parallel_hashmap/phmap.h>
 
 #include <ll/api/i18n/I18n.h>
+#include <mc/world/actor/player/Player.h>
 
 
 #include "mod/Events/Events.h"
@@ -90,7 +91,14 @@ void addPlayerStats(Player const& player) {
     PlayerInfo info{uuid.asString(), player.getXuid(), player.getRealName()};
     if (needsInitialSave) getLogger().debug("log.info.createData"_tr(info.name));
     upsertStatsCache(std::make_pair(info, data));
-    playerStatsMap.try_emplace(uuid, std::make_shared<PlayerStats>(player, data));
+    PlayerSessionInit session{
+        uuid,
+        info.xuid,
+        info.name,
+        player.getPosition(),
+        player.getDimensionId().id,
+    };
+    playerStatsMap.try_emplace(uuid, std::make_shared<PlayerStats>(std::move(session), data));
     if (needsInitialSave) repository::save(info, *data);
 }
 

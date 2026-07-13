@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+class Player;
+
 namespace stats {
 typedef std::pair<PlayerInfo, std::shared_ptr<StatsData>> StatsCacheData;
 

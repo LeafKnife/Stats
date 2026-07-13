@@ -5,14 +5,21 @@
 #include "mod/Stats/StatsRecord.h"
 
 #include <cstdint>
-#include <memory>
 #include <mc/deps/core/math/Vec3.h>
-#include <mc/world/actor/player/Player.h>
-#include <mc/world/level/dimension/Dimension.h>
+#include <mc/platform/UUID.h>
+#include <memory>
 #include <string>
 
 
 namespace stats {
+
+struct PlayerSessionInit {
+    mce::UUID   uuid;
+    std::string xuid;
+    std::string name;
+    Vec3        position;
+    int         dimensionId;
+};
 
 class PlayerStats {
     struct MoveCache {
@@ -36,7 +43,7 @@ public:
     int       mLastDimensionId;
     // PlayerStats();
 public:
-    PlayerStats(Player const& player, std::shared_ptr<StatsData> data);
+    PlayerStats(PlayerSessionInit init, std::shared_ptr<StatsData> data);
     mce::UUID           getUuid() const;
     PlayerInfo          getInfo() const;
     StatsData const&    getData() const;
@@ -44,7 +51,7 @@ public:
     void                addStats(StatsType type, std::string const& key, uint64_t value = 1);
     void                addCustomStats(CustomType type, uint64_t value = 1);
     void                resetCustomStats(CustomType type, uint64_t value = 0);
-    void                startSneaking();
-    void                stopSneaking();
+    void                startSneaking(uint64_t currentTick);
+    void                stopSneaking(uint64_t currentTick);
 };
 } // namespace stats
