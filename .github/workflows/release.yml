@@ -5,31 +5,32 @@ on:
   
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v7
 
       - uses: xmake-io/github-action-setup-xmake@v1
-        with:
-          xmake-version: '3.0.9'
-
-      - uses: actions/cache@v6
-        with:
-          path: |
-            ~/AppData/Local/.xmake/packages
-          key: xmake-packages-v2-vs2022-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('xmake.lua') }}
-
+        # with:
+        #   xmake-version: branch@master
       - uses: matbour/setup-sentry-cli@v2
         with:
           token: ${{ SECRETS.SENTRY_TOKEN }}
           organization: ${{ SECRETS.SENTRY_ORG }}
           project: ${{ SECRETS.SENTRY_PROJECT }}
 
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/AppData/Local/.xmake
+          key: xmake-${{ hashFiles('xmake.lua') }}
+          restore-keys: |
+            xmake-
+
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows --vs=2022 -y --publish=y
+          xmake f -a x64 -m release -p windows -y --publish=y
 
       - run: |
           xmake -w -y

@@ -8,25 +8,27 @@ on:
   
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v7
 
       - uses: xmake-io/github-action-setup-xmake@v1
-        with:
-          xmake-version: '3.0.9'
+        # with:
+        #   xmake-version: branch@master
 
       - uses: actions/cache@v6
         with:
           path: |
-            ~/AppData/Local/.xmake/packages
-          key: xmake-packages-v2-vs2022-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('xmake.lua') }}
+            ~/AppData/Local/.xmake
+          key: xmake-${{ hashFiles('xmake.lua') }}
+          restore-keys: |
+            xmake-
 
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows --vs=2022 -v -y
+          xmake f -a x64 -m release -p windows -v -y
 
       - run: |
           xmake -v -y
@@ -38,7 +40,7 @@ jobs:
             bin/
 
   # clang-format:
-  #   runs-on: windows-latest
+  #   runs-on: windows-2022
   #   steps:
   #     - uses: actions/checkout@v7
 
