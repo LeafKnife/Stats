@@ -1,8 +1,8 @@
 #pragma once
 
 #include "mod/Stats/PlayerStats.h"
-#include "mod/Stats/StatsJsonCodec.h"
 #include "mod/Stats/StatsQuery.h"
+#include "mod/Stats/StatsRecord.h"
 
 #include <ll/api/io/Logger.h>
 #include <mc/platform/UUID.h>
@@ -14,7 +14,8 @@ typedef std::pair<PlayerInfo, std::shared_ptr<StatsData>> StatsCacheData;
 
 ll::io::Logger&       getLogger();
 PlayerStats*          findPlayerStats(mce::UUID const& uuid);
-void                  addPlayerStats(std::shared_ptr<PlayerStats> playerStats);
+void                  addPlayerStats(Player const& player);
+bool                  savePlayerStats(PlayerStats const& playerStats);
 void                  removePlayerStats(mce::UUID const& uuid);
 StatsCacheData const* findCachedStats(mce::UUID const& uuid);
 StatsCacheData const* findCachedStatsByName(std::string const& name);

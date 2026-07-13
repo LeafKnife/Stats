@@ -81,9 +81,23 @@ PlayerStats*    findPlayerStats(mce::UUID const& uuid) {
     return player == playerStatsMap.end() ? nullptr : player->second.get();
 }
 
-void addPlayerStats(std::shared_ptr<PlayerStats> playerStats) {
-    auto const uuid = playerStats->getUuid();
-    playerStatsMap.try_emplace(uuid, std::move(playerStats));
+void addPlayerStats(Player const& player) {
+    auto const  uuid             = player.getUuid();
+    auto const* cached           = findCachedStats(uuid);
+    bool const  needsInitialSave = !cached || !cached->second;
+    auto        data             = needsInitialSave ? std::make_shared<StatsData>() : cached->second;
+
+    PlayerInfo info{uuid.asString(), player.getXuid(), player.getRealName()};
+    if (needsInitialSave) getLogger().debug("log.info.createData"_tr(info.name));
+    upsertStatsCache(std::make_pair(info, data));
+    playerStatsMap.try_emplace(uuid, std::make_shared<PlayerStats>(player, data));
+    if (needsInitialSave) repository::save(info, *data);
+}
+
+bool savePlayerStats(PlayerStats const& playerStats) {
+    auto const info = playerStats.getInfo();
+    getLogger().debug("log.info.savaData"_tr(info.name));
+    return repository::save(info, playerStats.getData());
 }
 
 void removePlayerStats(mce::UUID const& uuid) { playerStatsMap.erase(uuid); }

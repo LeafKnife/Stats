@@ -28,7 +28,7 @@ namespace player {
 
 void onJoin(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    addPlayerStats(std::make_shared<PlayerStats>(player));
+    addPlayerStats(player);
 }
 
 void onLeft(ServerPlayer& player) {
@@ -37,7 +37,7 @@ void onLeft(ServerPlayer& player) {
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::play_time, player.mTickCount);
     playerStats->addCustomStats(CustomType::leave_game);
-    playerStats->saveData();
+    savePlayerStats(*playerStats);
     removePlayerStats(uuid);
 }
 

@@ -1,50 +1,29 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include <cstdint>
-#include <ll/api/i18n/I18n.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
 
-#include "mod/Stats/Stats.h"
-#include "mod/Stats/StatsFileRepository.h"
-
 #include <memory>
 #include <string>
-
-using namespace ll::i18n_literals;
+#include <utility>
 
 namespace stats {
 
-PlayerStats::PlayerStats(Player const& player) {
+PlayerStats::PlayerStats(Player const& player, std::shared_ptr<StatsData> data) : mData(std::move(data)) {
     mUuid              = player.getUuid();
     mXuid              = player.getXuid();
     mName              = player.getRealName();
     mSneakingStartTick = 0;
-    mLastPos           = const_cast<Vec3&>(player.getPosition());
+    mLastPos           = player.getPosition();
     mLastDimensionId   = player.getDimensionId().id;
-
-    auto const* cached           = findCachedStats(mUuid);
-    bool const  needsInitialSave = !cached || !cached->second;
-    if (!needsInitialSave) {
-        mData = cached->second;
-    } else {
-        getLogger().debug("log.info.createData"_tr(mName));
-        mData = std::make_shared<StatsData>();
-    }
-
-    PlayerInfo info = {mUuid.asString(), mXuid, mName};
-    upsertStatsCache(std::make_pair(std::move(info), mData));
-    if (needsInitialSave) saveData();
 };
 mce::UUID           PlayerStats::getUuid() const { return mUuid; };
+PlayerInfo          PlayerStats::getInfo() const { return {mUuid.asString(), mXuid, mName}; }
+StatsData const&    PlayerStats::getData() const { return *mData; }
 StatsDataMap const* PlayerStats::getStatsMap(StatsType type) const {
     return static_cast<StatsData const&>(*mData).getMap(type);
 }
-bool PlayerStats::saveData() {
-    getLogger().debug("log.info.savaData"_tr(mName));
-    PlayerInfo const info{mUuid.asString(), mXuid, mName};
-    return repository::save(info, *mData);
-};
 void PlayerStats::addStats(StatsType type, std::string const& key, uint64_t value) {
     if (value <= 0) return;
     mData->add(type, key, value);

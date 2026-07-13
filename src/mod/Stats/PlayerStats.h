@@ -2,11 +2,14 @@
 
 #include "mod/Stats/StatsCustom.h"
 #include "mod/Stats/StatsData.h"
+#include "mod/Stats/StatsRecord.h"
 
 #include <cstdint>
+#include <memory>
 #include <mc/deps/core/math/Vec3.h>
 #include <mc/world/actor/player/Player.h>
 #include <mc/world/level/dimension/Dimension.h>
+#include <string>
 
 
 namespace stats {
@@ -33,10 +36,11 @@ public:
     int       mLastDimensionId;
     // PlayerStats();
 public:
-    PlayerStats(Player const& player);
+    PlayerStats(Player const& player, std::shared_ptr<StatsData> data);
     mce::UUID           getUuid() const;
+    PlayerInfo          getInfo() const;
+    StatsData const&    getData() const;
     StatsDataMap const* getStatsMap(StatsType type) const;
-    bool                saveData();
     void                addStats(StatsType type, std::string const& key, uint64_t value = 1);
     void                addCustomStats(CustomType type, uint64_t value = 1);
     void                resetCustomStats(CustomType type, uint64_t value = 0);

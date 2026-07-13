@@ -1,17 +1,12 @@
 #pragma once
 
 #include "mod/Stats/StatsData.h"
+#include "mod/Stats/StatsRecord.h"
 
 #include <string>
 #include <string_view>
 
 namespace stats {
-
-struct PlayerInfo {
-    std::string uuid;
-    std::string xuid;
-    std::string name;
-};
 
 struct DecodedStats {
     PlayerInfo info;
