@@ -60,14 +60,10 @@ inline std::optional<StatsDataMap> getStatsDataMap(mce::UUID uuid, StatsType typ
         }
         return std::nullopt;
     } else {
-        auto& cache = getStatsCache();
-        for (auto const& it : cache) {
-            if (mce::UUID(it.first.uuid) != uuid) continue;
-            if (auto r = it.second->getMap(type); r) {
-                return std::make_optional(*r);
-            } else {
-                return std::nullopt;
-            }
+        auto const* cached = findCachedStats(uuid);
+        if (!cached || !cached->second) return std::nullopt;
+        if (auto const* data = cached->second->getMap(type)) {
+            return *data;
         }
         return std::nullopt;
     }

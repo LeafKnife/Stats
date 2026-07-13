@@ -82,18 +82,10 @@ void registerCommand() {
             if (param.playerName.empty()) {
                 return output.error("command.error.player_name_empty"_tr());
             }
-            // auto playerInfo = ll::service::PlayerInfo::getInstance().fromName(param.playerName);
-            // if (!playerInfo.has_value()) return output.error("Error");
-            // auto                       uuid    = playerInfo->uuid;
-            auto const& cache = getStatsCache();
-            std::string uuid;
-            for (auto& it : cache) {
-                if (it.first.name == param.playerName) {
-                    uuid = it.first.uuid;
-                    break;
-                }
-            }
-            std::optional<std::string> content = form::renderStatsContent(mce::UUID(uuid), param.StatsType);
+            auto const* cached = findCachedStatsByName(param.playerName);
+            if (!cached) return output.error("command.error.find_player"_tr());
+            std::optional<std::string> content =
+                form::renderStatsContent(mce::UUID(cached->first.uuid), param.StatsType);
             if (!content.has_value()) return output.error("command.error.find_player"_tr());
             auto fm         = ll::form::SimpleForm();
             auto typeString = StatsTypeMap.at(param.StatsType);

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include <nlohmann/json.hpp>
+#include <parallel_hashmap/phmap.h>
 
 #include <ll/api/i18n/I18n.h>
 #include <ll/api/io/FileUtils.h>
@@ -23,9 +24,53 @@ using namespace ll::i18n_literals;
 
 namespace stats {
 namespace {
-PlayerStatsMap playerStatsMap;
-StatsCache     statsCache;
-std::string    levelName;
+class StatsCacheStore {
+public:
+    using UuidIndex = phmap::node_hash_map<mce::UUID, StatsCacheData>;
+
+    StatsCacheData const* find(mce::UUID const& uuid) const {
+        auto const cached = mByUuid.find(uuid);
+        return cached == mByUuid.end() ? nullptr : &cached->second;
+    }
+
+    StatsCacheData const* findByName(std::string const& name) const {
+        auto const cached = mUuidByName.find(name);
+        return cached == mUuidByName.end() ? nullptr : find(cached->second);
+    }
+
+    void add(StatsCacheData data) {
+        auto const uuid   = mce::UUID(data.first.uuid);
+        auto       cached = mByUuid.find(uuid);
+        if (cached != mByUuid.end()) {
+            auto const oldName = cached->second.first.name;
+            if (auto const old = mUuidByName.find(oldName);
+                old != mUuidByName.end() && old->second == uuid) {
+                mUuidByName.erase(old);
+            }
+            cached->second = std::move(data);
+            mUuidByName.try_emplace(cached->second.first.name, uuid);
+            return;
+        }
+
+        auto const inserted = mByUuid.try_emplace(uuid, std::move(data)).first;
+        mUuidByName.try_emplace(inserted->second.first.name, uuid);
+    }
+
+    void clear() {
+        mUuidByName.clear();
+        mByUuid.clear();
+    }
+
+    UuidIndex const& entries() const { return mByUuid; }
+
+private:
+    UuidIndex                                    mByUuid;
+    phmap::flat_hash_map<std::string, mce::UUID> mUuidByName;
+};
+
+PlayerStatsMap  playerStatsMap;
+StatsCacheStore statsCache;
+std::string     levelName;
 } // namespace
 
 ll::io::Logger& getLogger() { return lk::MyMod::getInstance().getSelf().getLogger(); }
@@ -34,7 +79,17 @@ PlayerStats*    findPlayerStats(mce::UUID const& uuid) {
     auto const player = playerStatsMap.find(uuid);
     return player == playerStatsMap.end() ? nullptr : player->second.get();
 }
-StatsCache& getStatsCache() { return statsCache; }
+StatsCacheData const* findCachedStats(mce::UUID const& uuid) {
+    return statsCache.find(uuid);
+}
+
+StatsCacheData const* findCachedStatsByName(std::string const& name) {
+    return statsCache.findByName(name);
+}
+
+void addStatsCache(StatsCacheData data) { statsCache.add(std::move(data)); }
+
+void clearStatsCache() { statsCache.clear(); }
 
 StatsCacheData parseStatsData(const std::string& data) {
     auto j       = nlohmann::json::parse(data);
@@ -58,9 +113,10 @@ StatsCacheData parseStatsData(const std::string& data) {
 
 query::RankData getStatsRank(StatsType type, std::string const& key) {
     std::vector<query::RankEntryView> entries;
-    entries.reserve(statsCache.size());
+    entries.reserve(statsCache.entries().size());
 
-    for (auto const& data : statsCache) {
+    for (auto const& entry : statsCache.entries()) {
+        auto const& data  = entry.second;
         auto const* stats = data.second ? data.second->getMap(type) : nullptr;
         entries.push_back({data.first.name, stats});
     }
@@ -96,7 +152,7 @@ std::filesystem::path getStatsPath() {
 }
 
 bool loadStatsCache() {
-    statsCache.clear();
+    clearStatsCache();
     auto        oldPath      = ll::file_utils::u8path("./stats");
     auto        newPath      = getStatsPath();
     std::string extension    = ".json";
@@ -132,8 +188,7 @@ bool loadStatsCache() {
                 continue;
             }
             try {
-                auto data = parseStatsData(*rawData);
-                statsCache.push_back(data);
+                addStatsCache(parseStatsData(*rawData));
             } catch (std::exception& excep) {
                 getLogger().error(excep.what());
                 getLogger().warn("data.parse.fail"_tr(entry.path().filename()));

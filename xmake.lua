@@ -13,6 +13,7 @@ end
 
 add_requires("levibuildscript")
 add_requires("legacyremotecall 0.18.0")
+add_requires("parallel-hashmap 1.3.12")
 
 
 if not has_config("vs_runtime") then
@@ -35,7 +36,7 @@ target("LK-Stats") -- Change this to your mod name.
     -- add_rules("@levibuildscript/modpacker")
     add_cxflags( "/EHa", "/utf-8", "/W4", "/w44265", "/w44289", "/w44296", "/w45263", "/w44738", "/w45204")
     add_defines("NOMINMAX", "UNICODE")
-    add_packages("levilamina","legacyremotecall")
+    add_packages("levilamina", "legacyremotecall", "parallel-hashmap")
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
     set_languages("c++20")

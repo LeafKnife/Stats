@@ -18,14 +18,16 @@ struct PlayerInfo {
 };
 typedef std::unordered_map<mce::UUID, std::shared_ptr<PlayerStats>> PlayerStatsMap;
 typedef std::pair<PlayerInfo, std::shared_ptr<StatsData>>           StatsCacheData;
-typedef std::vector<StatsCacheData>                                 StatsCache;
 
-ll::io::Logger& getLogger();
-PlayerStatsMap& getPlayerStatsMap();
-PlayerStats*    findPlayerStats(mce::UUID const& uuid);
-StatsCache&     getStatsCache();
-StatsCacheData  parseStatsData(std::string const& data);
-query::RankData getStatsRank(StatsType type, std::string const& key);
+ll::io::Logger&       getLogger();
+PlayerStatsMap&       getPlayerStatsMap();
+PlayerStats*          findPlayerStats(mce::UUID const& uuid);
+StatsCacheData const* findCachedStats(mce::UUID const& uuid);
+StatsCacheData const* findCachedStatsByName(std::string const& name);
+void                  addStatsCache(StatsCacheData data);
+void                  clearStatsCache();
+StatsCacheData        parseStatsData(std::string const& data);
+query::RankData       getStatsRank(StatsType type, std::string const& key);
 
 std::filesystem::path getStatsPath();
 

@@ -9,7 +9,6 @@
 
 #include "mod/Stats/Stats.h"
 
-#include <algorithm>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -26,18 +25,13 @@ PlayerStats::PlayerStats(Player const& player) {
     mLastPos           = const_cast<Vec3&>(player.getPosition());
     mLastDimensionId   = player.getDimensionId().id;
 
-    auto&                cache = getStatsCache();
-    auto                 uuid  = mUuid.asString();
-    StatsCache::iterator it    = std::find_if(cache.begin(), cache.end(), [&uuid](const StatsCacheData& data) {
-        return data.first.uuid.compare(uuid) == 0;
-    });
-    if (it != cache.end()) {
-        mData = it->second;
+    if (auto const* cached = findCachedStats(mUuid)) {
+        mData = cached->second;
     } else {
         getLogger().debug("log.info.createData"_tr(mName));
         mData           = std::make_shared<StatsData>();
         PlayerInfo info = {mUuid.asString(), mXuid, mName};
-        cache.push_back(std::make_pair(info, mData));
+        addStatsCache(std::make_pair(std::move(info), mData));
         saveData();
     }
 };

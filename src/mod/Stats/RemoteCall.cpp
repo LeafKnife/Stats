@@ -14,13 +14,11 @@ void exportRemoteCall() {
         "getPlayerStats",
         [](std::string uuidStr, int type) -> std::unordered_map<std::string, unsigned long long> {
             mce::UUID uuid(uuidStr);
-            auto&     cache = getStatsCache();
-            auto      r     = std::unordered_map<std::string, unsigned long long>();
+            auto      r = std::unordered_map<std::string, unsigned long long>();
             if (type < 1 || type > 9) return r;
-            for (auto const& data : cache) {
-                if (mce::UUID(data.first.uuid) == uuid) {
-                    return *data.second->getMap((StatsType)type);
-                }
+            auto const* cached = findCachedStats(uuid);
+            if (cached && cached->second) {
+                return *cached->second->getMap((StatsType)type);
             }
             return r;
         }
