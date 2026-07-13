@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <nlohmann/json.hpp>
 #include <parallel_hashmap/phmap.h>
@@ -24,6 +25,8 @@ using namespace ll::i18n_literals;
 
 namespace stats {
 namespace {
+using PlayerStatsMap = phmap::flat_hash_map<mce::UUID, std::shared_ptr<PlayerStats>>;
+
 class StatsCacheStore {
 public:
     using UuidIndex = phmap::node_hash_map<mce::UUID, StatsCacheData>;
@@ -61,6 +64,11 @@ public:
         mByUuid.clear();
     }
 
+    void reserve(std::size_t size) {
+        mByUuid.reserve(size);
+        mUuidByName.reserve(size);
+    }
+
     UuidIndex const& entries() const { return mByUuid; }
 
 private:
@@ -74,11 +82,18 @@ std::string     levelName;
 } // namespace
 
 ll::io::Logger& getLogger() { return lk::MyMod::getInstance().getSelf().getLogger(); }
-PlayerStatsMap& getPlayerStatsMap() { return playerStatsMap; }
-PlayerStats*    findPlayerStats(mce::UUID const& uuid) {
+PlayerStats* findPlayerStats(mce::UUID const& uuid) {
     auto const player = playerStatsMap.find(uuid);
     return player == playerStatsMap.end() ? nullptr : player->second.get();
 }
+
+void addPlayerStats(std::shared_ptr<PlayerStats> playerStats) {
+    auto const uuid = playerStats->getUuid();
+    playerStatsMap.try_emplace(uuid, std::move(playerStats));
+}
+
+void removePlayerStats(mce::UUID const& uuid) { playerStatsMap.erase(uuid); }
+
 StatsCacheData const* findCachedStats(mce::UUID const& uuid) {
     return statsCache.find(uuid);
 }
@@ -179,20 +194,23 @@ bool loadStatsCache() {
             }
         }
     }
-    for (const auto& entry : std::filesystem::directory_iterator(newPath)) {
-        // 检查文件是否为所需后缀
-        if (entry.path().extension() == extension) {
-            auto rawData = ll::file_utils::readFile(entry.path());
-            if (!rawData.has_value()) {
-                getLogger().warn("data.parse.fail"_tr(entry.path().filename()));
-                continue;
-            }
-            try {
-                addStatsCache(parseStatsData(*rawData));
-            } catch (std::exception& excep) {
-                getLogger().error(excep.what());
-                getLogger().warn("data.parse.fail"_tr(entry.path().filename()));
-            }
+    std::vector<std::filesystem::path> statsFiles;
+    for (auto const& entry : std::filesystem::directory_iterator(newPath)) {
+        if (entry.path().extension() == extension) statsFiles.push_back(entry.path());
+    }
+
+    statsCache.reserve(statsFiles.size());
+    for (auto const& path : statsFiles) {
+        auto rawData = ll::file_utils::readFile(path);
+        if (!rawData.has_value()) {
+            getLogger().warn("data.parse.fail"_tr(path.filename()));
+            continue;
+        }
+        try {
+            addStatsCache(parseStatsData(*rawData));
+        } catch (std::exception& excep) {
+            getLogger().error(excep.what());
+            getLogger().warn("data.parse.fail"_tr(path.filename()));
         }
     }
     return true;

@@ -25,15 +25,10 @@
 namespace stats {
 namespace event {
 namespace player {
-namespace {
-auto& playerStatsMap = getPlayerStatsMap();
-}
 
 void onJoin(Player& player) {
     if (player.isSimulatedPlayer()) return;
-    // PlayerStats* playerStats = new PlayerStats(player);
-    auto playerStats = std::make_shared<PlayerStats>(player);
-    playerStatsMap.emplace(playerStats->getUuid(), playerStats);
+    addPlayerStats(std::make_shared<PlayerStats>(player));
 }
 
 void onLeft(ServerPlayer& player) {
@@ -43,8 +38,7 @@ void onLeft(ServerPlayer& player) {
     playerStats->addCustomStats(CustomType::play_time, player.mTickCount);
     playerStats->addCustomStats(CustomType::leave_game);
     playerStats->saveData();
-    // delete playerStats;
-    playerStatsMap.erase(uuid);
+    removePlayerStats(uuid);
 }
 
 void onSneaking(Player& player) {
