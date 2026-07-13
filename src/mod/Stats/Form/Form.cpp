@@ -53,37 +53,22 @@ inline void renderContent(std::string& content, std::vector<StatsPair> const& da
     }
 }
 
-inline std::optional<StatsDataMap> getStatsDataMap(mce::UUID uuid, StatsType type) {
+inline StatsDataMap const* getStatsDataMap(mce::UUID uuid, StatsType type) {
     if (auto* playerStats = findPlayerStats(uuid)) {
-        if (auto const* dataMap = playerStats->getStatsMap(type)) {
-            return *dataMap;
-        }
-        return std::nullopt;
-    } else {
-        auto const* cached = findCachedStats(uuid);
-        if (!cached || !cached->second) return std::nullopt;
-        if (auto const* data = cached->second->getMap(type)) {
-            return *data;
-        }
-        return std::nullopt;
+        return playerStats->getStatsMap(type);
     }
+
+    auto const* cached = findCachedStats(uuid);
+    return cached && cached->second ? cached->second->getMap(type) : nullptr;
 }
 
 std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type, uint64_t tick) {
-    auto data = getStatsDataMap(uuid, type);
+    auto const* dataMap = getStatsDataMap(uuid, type);
+    if (!dataMap) return std::nullopt;
 
-    if (!data.has_value()) return std::nullopt;
-
-    auto& dataMap = data.value();
-
-    if (type == StatsType::custom) {
-        dataMap["minecraft:play_time"] += tick;
-    }
-
-    std::vector<StatsPair> dataVector;
-    dataVector.reserve(dataMap.size() + (type == StatsType::custom ? 1 : 0));
-    for (const auto& pair : dataMap) {
-        dataVector.push_back(std::make_pair(std::string(ll::i18n::getInstance().get(pair.first, {})), pair.second));
+    auto dataVector = query::buildDisplayEntries(*dataMap, type, tick);
+    for (auto& pair : dataVector) {
+        pair.first = std::string(ll::i18n::getInstance().get(pair.first, {}));
     }
     if (type == StatsType::custom) {
         auto levelTick =

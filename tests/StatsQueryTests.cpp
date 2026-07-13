@@ -41,6 +41,35 @@ void testTotalsUse64Bits() {
     );
 }
 
+uint64_t findEntryValue(stats::query::StatsEntries const& entries, std::string const& key) {
+    for (auto const& entry : entries) {
+        if (entry.first == key) return entry.second;
+    }
+    return 0;
+}
+
+void testDisplayEntriesAddActivePlayTime() {
+    stats::StatsDataMap values{
+        {"minecraft:play_time", 100},
+        {"minecraft:jump",      7  },
+    };
+
+    auto const entries = stats::query::buildDisplayEntries(values, StatsType::custom, 25);
+    expectEqual(entries.size(), std::size_t{2}, "keeps existing custom entries");
+    expectEqual(findEntryValue(entries, "minecraft:play_time"), uint64_t{125}, "adds active play time");
+    expectEqual(values.at("minecraft:play_time"), uint64_t{100}, "does not mutate stored play time");
+}
+
+void testDisplayEntriesInsertMissingPlayTime() {
+    stats::StatsDataMap values{
+        {"minecraft:jump", 7}
+    };
+
+    auto const entries = stats::query::buildDisplayEntries(values, StatsType::custom, 25);
+    expectEqual(entries.size(), std::size_t{2}, "adds a missing play-time entry");
+    expectEqual(findEntryValue(entries, "minecraft:play_time"), uint64_t{25}, "uses active play time for new entry");
+}
+
 void testRanking() {
     stats::StatsDataMap alice{
         {"stone", 8},
@@ -77,6 +106,8 @@ int main() {
     failures += runStatsDataTests();
     testValueLookup();
     testTotalsUse64Bits();
+    testDisplayEntriesAddActivePlayTime();
+    testDisplayEntriesInsertMissingPlayTime();
     testRanking();
     testEmptyRanking();
 

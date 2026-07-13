@@ -16,6 +16,27 @@ uint64_t getValue(StatsDataMap const& stats, std::string const& key) {
     return value == stats.end() ? 0 : value->second;
 }
 
+StatsEntries buildDisplayEntries(StatsDataMap const& stats, StatsType type, uint64_t playTimeDelta) {
+    constexpr std::string_view playTimeKey = "minecraft:play_time";
+
+    StatsEntries result;
+    result.reserve(stats.size() + (type == StatsType::custom ? 2 : 0));
+
+    bool hasPlayTime = false;
+    for (auto const& [key, value] : stats) {
+        if (type == StatsType::custom && key == playTimeKey) {
+            result.emplace_back(key, value + playTimeDelta);
+            hasPlayTime = true;
+        } else {
+            result.emplace_back(key, value);
+        }
+    }
+    if (type == StatsType::custom && !hasPlayTime) {
+        result.emplace_back(playTimeKey, playTimeDelta);
+    }
+    return result;
+}
+
 RankData buildRank(std::span<RankEntryView const> entries, std::string const& key) {
     RankData result;
     result.reserve(entries.size());
