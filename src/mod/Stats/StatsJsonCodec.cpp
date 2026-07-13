@@ -30,4 +30,18 @@ DecodedStats decodeStatsJson(std::string_view source) {
     return decoded;
 }
 
+std::string encodeStatsPageJson(query::StatsPage const& page, std::string_view labelField) {
+    nlohmann::json json = {
+        {"page",       page.totalPages == 0 ? 0 : page.pageIndex + 1},
+        {"pageSize",   page.pageSize                                  },
+        {"total",      page.totalEntries                              },
+        {"totalPages", page.totalPages                                },
+        {"items",      nlohmann::json::array()                        },
+    };
+    for (auto const& [label, value] : page.entries) {
+        json["items"].push_back({{std::string{labelField}, label}, {"value", value}});
+    }
+    return json.dump();
+}
+
 } // namespace stats

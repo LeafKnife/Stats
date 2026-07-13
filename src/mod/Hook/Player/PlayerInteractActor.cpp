@@ -101,7 +101,10 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookPlayerInteractActor() { InteractEntityHook::hook(); }
+void unhookPlayerInteractActor() { InteractEntityHook::unhook(); }
 void hookPlayerBreedAnimal() { BreedGoalStopHook::hook(); }
+void unhookPlayerBreedAnimal() { BreedGoalStopHook::unhook(); }
 void hookPlayerUseBucketItemOnFish() { BucketItemUseOnHook::hook(); }
+void unhookPlayerUseBucketItemOnFish() { BucketItemUseOnHook::unhook(); }
 
 } // namespace stats::hook::player

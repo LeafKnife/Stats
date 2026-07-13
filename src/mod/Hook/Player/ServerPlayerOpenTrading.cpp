@@ -27,4 +27,5 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookServerPlayerOpenTrading() { ServerPlayerOpenTradingHook::hook(); }
+void unhookServerPlayerOpenTrading() { ServerPlayerOpenTradingHook::unhook(); }
 } // namespace stats::hook::player

@@ -46,4 +46,8 @@ void hookPlayerRiding() {
     PlayerStartRiding::hook();
     ActorStopRidingHook::hook();
 }
+void unhookPlayerRiding() {
+    ActorStopRidingHook::unhook();
+    PlayerStartRiding::unhook();
+}
 } // namespace stats::hook::player

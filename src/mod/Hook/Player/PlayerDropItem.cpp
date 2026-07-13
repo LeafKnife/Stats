@@ -22,4 +22,5 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookPlayerDropItem() { PlayerDropItemHook::hook(); }
+void unhookPlayerDropItem() { PlayerDropItemHook::unhook(); }
 } // namespace stats::hook::player

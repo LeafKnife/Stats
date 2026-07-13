@@ -24,4 +24,5 @@ LL_TYPE_INSTANCE_HOOK(
 void hookPlayerBlockUsingShield(){
     PlayerBlockUsingShieldHook::hook();
 }
+void unhookPlayerBlockUsingShield() { PlayerBlockUsingShieldHook::unhook(); }
 } // namespace stats::hook::player

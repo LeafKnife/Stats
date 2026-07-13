@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include <nlohmann/json.hpp>
+
 namespace {
 
 int failures = 0;
@@ -62,10 +64,28 @@ void testRequiredFields() {
     expectEqual(threw, true, "rejects missing required fields");
 }
 
+void testPageEncoding() {
+    stats::query::StatsEntries entries{
+        {"Alice", 9},
+        {"Bob",   7},
+        {"Carol", 5},
+    };
+    auto const page = stats::query::paginate(std::move(entries), 1, 2);
+    auto const json = nlohmann::json::parse(stats::encodeStatsPageJson(page, "player"));
+    expectEqual(json.at("page").get<int>(), 2, "encodes one-based page numbers");
+    expectEqual(json.at("pageSize").get<int>(), 2, "encodes page size");
+    expectEqual(json.at("total").get<int>(), 3, "encodes total entry count");
+    expectEqual(json.at("totalPages").get<int>(), 2, "encodes total page count");
+    expectEqual(json.at("items").size(), std::size_t{1}, "encodes only current page items");
+    expectEqual(json.at("items")[0].at("player").get<std::string>(), std::string{"Carol"}, "encodes labels");
+    expectEqual(json.at("items")[0].at("value").get<uint64_t>(), uint64_t{5}, "encodes values");
+}
+
 } // namespace
 
 int runStatsJsonCodecTests() {
     testRoundTrip();
     testRequiredFields();
+    testPageEncoding();
     return failures;
 }

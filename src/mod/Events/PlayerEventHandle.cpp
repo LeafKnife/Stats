@@ -35,7 +35,7 @@ void onLeft(ServerPlayer& player) {
     auto  uuid        = player.getUuid();
     auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
-    playerStats->addCustomStats(CustomType::play_time, player.mTickCount);
+    playerStats->checkpoint(ll::service::getLevel()->getCurrentTick().tickID);
     playerStats->addCustomStats(CustomType::leave_game);
     savePlayerStats(*playerStats);
     removePlayerStats(uuid);

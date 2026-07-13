@@ -30,4 +30,5 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookLevelContainerChanged() { LevelContainerChangeHook::hook(); }
+void unhookLevelContainerChanged() { LevelContainerChangeHook::unhook(); }
 } // namespace stats::hook::container

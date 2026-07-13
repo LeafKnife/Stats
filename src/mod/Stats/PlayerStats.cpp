@@ -13,6 +13,7 @@ PlayerStats::PlayerStats(PlayerSessionInit init, std::shared_ptr<StatsData> data
   mXuid(std::move(init.xuid)),
   mName(std::move(init.name)),
   mSneakingStartTick(0),
+  mLastCheckpointTick(init.currentTick),
   mLastPos(init.position),
   mLastDimensionId(init.dimensionId) {}
 mce::UUID           PlayerStats::getUuid() const { return mUuid; };
@@ -46,4 +47,24 @@ void PlayerStats::stopSneaking(uint64_t currentTick) {
     mDistanceCache.isSneaking = false;
     mDistanceCache.sneak      = 0;
 };
+
+void PlayerStats::checkpoint(uint64_t currentTick) {
+    if (currentTick < mLastCheckpointTick) {
+        mLastCheckpointTick = currentTick;
+        return;
+    }
+
+    addCustomStats(CustomType::play_time, currentTick - mLastCheckpointTick);
+    mLastCheckpointTick = currentTick;
+
+    if (!mDistanceCache.isSneaking || mSneakingStartTick == 0) return;
+    addCustomStats(CustomType::sneak_time, currentTick - mSneakingStartTick);
+    addCustomStats(CustomType::crouch_one_cm, mDistanceCache.sneak);
+    mSneakingStartTick   = currentTick;
+    mDistanceCache.sneak = 0;
+}
+
+uint64_t PlayerStats::getPendingPlayTime(uint64_t currentTick) const {
+    return currentTick < mLastCheckpointTick ? 0 : currentTick - mLastCheckpointTick;
+}
 } // namespace stats

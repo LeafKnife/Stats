@@ -30,5 +30,6 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookPlayerAuthInput() { PlayerAuthInputHook::hook(); }
+void unhookPlayerAuthInput() { PlayerAuthInputHook::unhook(); }
 
 } // namespace stats::hook::player

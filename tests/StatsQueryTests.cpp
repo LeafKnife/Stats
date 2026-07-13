@@ -9,6 +9,7 @@
 int runStatsCustomTests();
 int runStatsDataTests();
 int runStatsJsonCodecTests();
+int runStatsWriteQueueTests();
 
 namespace {
 
@@ -100,18 +101,59 @@ void testEmptyRanking() {
     expectEqual(stats::query::buildRank(entries, "").size(), std::size_t{0}, "handles an empty ranking");
 }
 
+void testRankingUsesStableTieOrder() {
+    stats::StatsDataMap value{{"stone", 5}};
+    std::vector<stats::query::RankEntryView> entries{
+        {"Carol", &value},
+        {"Alice", &value},
+        {"Bob",   &value},
+    };
+    auto const rank = stats::query::buildRank(entries, "stone");
+    expectEqual(rank[0].first, std::string{"Alice"}, "sorts rank ties by player name");
+    expectEqual(rank[1].first, std::string{"Bob"}, "keeps rank pagination deterministic");
+}
+
+void testPagination() {
+    stats::query::StatsEntries entries;
+    for (uint64_t index = 0; index < 45; ++index) {
+        entries.emplace_back("entry-" + std::to_string(index), index);
+    }
+
+    auto const middle = stats::query::paginate(entries, 1, 20);
+    expectEqual(middle.pageIndex, std::size_t{1}, "keeps a valid page index");
+    expectEqual(middle.totalPages, std::size_t{3}, "calculates total pages");
+    expectEqual(middle.entries.size(), std::size_t{20}, "returns one page of entries");
+    expectEqual(middle.entries.front().first, std::string{"entry-20"}, "uses the correct page offset");
+
+    auto const last = stats::query::paginate(std::move(entries), 99, 20);
+    expectEqual(last.pageIndex, std::size_t{2}, "clamps an out-of-range page");
+    expectEqual(last.entries.size(), std::size_t{5}, "returns the partial last page");
+
+    stats::query::StatsEntries unsorted;
+    for (uint64_t index = 0; index < 100; ++index) {
+        unsorted.emplace_back("rank-" + std::to_string(index), index);
+    }
+    auto const firstPage = stats::query::sortAndPaginate(std::move(unsorted), 0, 20);
+    expectEqual(firstPage.entries.size(), std::size_t{20}, "partially sorts only one rank page");
+    expectEqual(firstPage.entries.front().second, uint64_t{99}, "keeps the highest rank first");
+    expectEqual(firstPage.entries.back().second, uint64_t{80}, "returns the correct first-page cutoff");
+}
+
 } // namespace
 
 int main() {
     failures += runStatsCustomTests();
     failures += runStatsDataTests();
     failures += runStatsJsonCodecTests();
+    failures += runStatsWriteQueueTests();
     testValueLookup();
     testTotalsUse64Bits();
     testDisplayEntriesAddActivePlayTime();
     testDisplayEntriesInsertMissingPlayTime();
     testRanking();
     testEmptyRanking();
+    testRankingUsesStableTieOrder();
+    testPagination();
 
     if (failures != 0) return 1;
     std::cout << "Stats tests passed\n";

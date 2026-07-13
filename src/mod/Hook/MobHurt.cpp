@@ -47,4 +47,5 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookMobGetDamageAfterResistanceEffect() { MobGetDamageAfterResistanceEffectHook::hook(); }
+void unhookMobGetDamageAfterResistanceEffect() { MobGetDamageAfterResistanceEffectHook::unhook(); }
 } // namespace stats::hook::mob

@@ -25,5 +25,6 @@ LL_TYPE_INSTANCE_HOOK(
 void hookPlayerUseItem(){
     PlayerUseItemHook::hook();
 }
+void unhookPlayerUseItem() { PlayerUseItemHook::unhook(); }
 //PlayerEat BlockPlace 也可以通过hook玩家使用物品
 } // namespace stats::hook::player

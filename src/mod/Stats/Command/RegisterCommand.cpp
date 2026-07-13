@@ -1,6 +1,5 @@
 #include "mod/Stats/Command/RegisterCommand.h"
 
-#include <optional>
 #include <string>
 
 #include <ll/api/Expected.h>
@@ -73,17 +72,12 @@ void registerCommand() {
             }
             auto const* cached = findCachedStatsByName(param.playerName);
             if (!cached) return output.error("command.error.find_player"_tr());
-            std::optional<std::string> content =
-                form::renderStatsContent(mce::UUID(cached->first.uuid), param.StatsType);
-            if (!content.has_value()) return output.error("command.error.find_player"_tr());
-            auto fm         = ll::form::SimpleForm();
-            auto typeString = getStatsTypeKey(param.StatsType);
-            fm.setTitle(
-                  "gui.title.stats"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {})) + " | "
-                  + param.playerName
-            )
-                .setContent(content.value())
-                .sendTo(*player);
+            form::sendStatsGui(
+                *player,
+                mce::UUID(cached->first.uuid),
+                param.playerName,
+                param.StatsType
+            );
         });
 
     cmd.overload<StatsRank>()

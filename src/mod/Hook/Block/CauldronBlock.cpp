@@ -36,6 +36,8 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookCauldronBlockUseInventory() { CauldronBlockUseInventoryHook::hook(); }
+void unhookCauldronBlockUseInventory() { CauldronBlockUseInventoryHook::unhook(); }
 
 void hookCauldronBlockClean() { CauldronBlockCleanHook::hook(); }
+void unhookCauldronBlockClean() { CauldronBlockCleanHook::unhook(); }
 } // namespace stats::hook::block

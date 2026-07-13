@@ -27,4 +27,5 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookItemStackBaseHurtAndBroken() { ItemStackBaseHurtAndBreak::hook(); }
+void unhookItemStackBaseHurtAndBroken() { ItemStackBaseHurtAndBreak::unhook(); }
 } // namespace stats::hook::item

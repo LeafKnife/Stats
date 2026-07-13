@@ -23,4 +23,5 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookPlayerAddEffect() { ActorAddEffectHook::hook(); }
+void unhookPlayerAddEffect() { ActorAddEffectHook::unhook(); }
 } // namespace stats::hook::player

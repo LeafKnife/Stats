@@ -19,6 +19,7 @@ struct PlayerSessionInit {
     std::string name;
     Vec3        position;
     int         dimensionId;
+    uint64_t    currentTick;
 };
 
 class PlayerStats {
@@ -36,6 +37,7 @@ private:
     std::string                mXuid;
     std::string                mName;
     uint64_t                   mSneakingStartTick;
+    uint64_t                   mLastCheckpointTick;
 
 public:
     MoveCache mDistanceCache;
@@ -53,5 +55,7 @@ public:
     void                resetCustomStats(CustomType type, uint64_t value = 0);
     void                startSneaking(uint64_t currentTick);
     void                stopSneaking(uint64_t currentTick);
+    void                checkpoint(uint64_t currentTick);
+    uint64_t            getPendingPlayTime(uint64_t currentTick) const;
 };
 } // namespace stats

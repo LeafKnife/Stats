@@ -48,6 +48,26 @@ const getStats = ll.import("LK-Stats", "getPlayerStats");
 const stats = getStats(uuid, 1);
 ```
 
+### Paginated RemoteCall API
+
+The existing `getPlayerStats` and `getRankStats` exports remain available. For large datasets, use the paginated exports below. Both return a JSON string; `page` starts at `1`, and `pageSize` is limited to `1`-`100` (values less than `1` use `20`). Ranking results may be cached for up to 30 seconds.
+
+```javascript
+const getPlayerStatsPage = ll.import("LK-Stats", "getPlayerStatsPage");
+const statsPage = JSON.parse(getPlayerStatsPage(uuid, 1, 1, 20));
+
+// { page, pageSize, total, totalPages, items: [{ key, value }] }
+logger.info(JSON.stringify(statsPage));
+```
+
+```javascript
+const getRankStatsPage = ll.import("LK-Stats", "getRankStatsPage");
+const rankPage = JSON.parse(getRankStatsPage(1, "minecraft:play_time", 1, 20));
+
+// { page, pageSize, total, totalPages, items: [{ player, value }] }
+logger.info(JSON.stringify(rankPage));
+```
+
 获取排行榜信息
 
 - 参数：

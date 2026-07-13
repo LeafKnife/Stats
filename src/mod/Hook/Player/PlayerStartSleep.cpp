@@ -19,4 +19,5 @@ LL_TYPE_INSTANCE_HOOK(
     return res;
 }
 void hookPlayerStartSleep() { PlayerStartSleepHook::hook(); }
+void unhookPlayerStartSleep() { PlayerStartSleepHook::unhook(); }
 } // namespace stats::hook::player

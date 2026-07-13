@@ -101,3 +101,17 @@ target("LK-Stats-Tests")
     add_files("src/mod/Stats/StatsData.cpp")
     add_files("src/mod/Stats/StatsJsonCodec.cpp")
     add_files("src/mod/Stats/StatsQuery.cpp")
+    add_files("src/mod/Stats/StatsWriteQueue.cpp")
+
+target("LK-Stats-Benchmarks")
+    set_default(false)
+    set_kind("binary")
+    set_languages("c++20")
+    if is_plat("windows") then
+        add_cxflags("/utf-8")
+    end
+    add_includedirs("src")
+    add_syslinks("psapi")
+    add_files("benchmarks/StatsQueryBenchmark.cpp")
+    add_files("src/mod/Stats/StatsData.cpp")
+    add_files("src/mod/Stats/StatsQuery.cpp")

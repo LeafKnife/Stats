@@ -3,6 +3,7 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -13,7 +14,10 @@
 #include <ll/api/service/Bedrock.h>
 #include <mc/server/PropertiesSettings.h>
 
+#include <Windows.h>
+
 #include "mod/Stats/Stats.h"
+#include "mod/Stats/StatsWriteQueue.h"
 
 using namespace ll::i18n_literals;
 
@@ -21,6 +25,7 @@ namespace stats::repository {
 namespace {
 
 std::filesystem::path statsPath;
+std::unique_ptr<StatsWriteQueue> writeQueue;
 
 std::optional<std::string> getLevelName() {
     if (auto const settings = ll::service::getPropertiesSettings()) {
@@ -44,10 +49,44 @@ std::filesystem::path resolveStatsPath() {
     return ll::file_utils::u8path("./worlds/" + levelName + "/stats");
 }
 
+bool writeNow(DecodedStats const& record) {
+    try {
+        auto const path = statsPath / ll::file_utils::u8path(record.info.uuid + ".json");
+        auto       tempPath = path;
+        tempPath += ".tmp";
+        if (!ll::file_utils::writeFile(tempPath, encodeStatsJson(record.info, record.data))) {
+            getLogger().error("Failed to write stats snapshot: {}", path.string());
+            return false;
+        }
+        if (MoveFileExW(
+                tempPath.c_str(),
+                path.c_str(),
+                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH
+            )) {
+            return true;
+        }
+        auto const      replaceError = GetLastError();
+        std::error_code error;
+        std::filesystem::remove(tempPath, error);
+        getLogger().error("Failed to replace stats snapshot: {} ({})", path.string(), replaceError);
+        return false;
+    } catch (std::exception const& exception) {
+        getLogger().error(exception.what());
+        return false;
+    }
+}
+
+void ensureWriteQueue() {
+    if (!writeQueue) writeQueue = std::make_unique<StatsWriteQueue>(writeNow);
+}
+
 } // namespace
 
 bool initialize() {
-    if (!statsPath.empty()) return true;
+    if (!statsPath.empty()) {
+        ensureWriteQueue();
+        return true;
+    }
 
     auto const oldPath = ll::file_utils::u8path("./stats");
     auto const newPath = resolveStatsPath();
@@ -74,6 +113,7 @@ bool initialize() {
     }
 
     statsPath = newPath;
+    ensureWriteQueue();
     return true;
 }
 
@@ -107,14 +147,14 @@ bool loadAll(std::vector<DecodedStats>& records) {
 }
 
 bool save(PlayerInfo const& info, StatsData const& data) {
-    if (statsPath.empty()) return false;
-    try {
-        auto const path = statsPath / ll::file_utils::u8path(info.uuid + ".json");
-        return ll::file_utils::writeFile(path, encodeStatsJson(info, data));
-    } catch (std::exception const& exception) {
-        getLogger().error(exception.what());
-        return false;
-    }
+    if (!writeQueue) return false;
+    return writeQueue->enqueue(DecodedStats{info, data});
 }
+
+void flush() {
+    if (writeQueue) writeQueue->flush();
+}
+
+void shutdown() { writeQueue.reset(); }
 
 } // namespace stats::repository

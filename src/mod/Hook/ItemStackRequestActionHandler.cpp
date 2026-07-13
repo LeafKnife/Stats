@@ -49,4 +49,5 @@ LL_TYPE_INSTANCE_HOOK(
     return r;
 }
 void hookItemStackRequestActionHandlerTransfer() { trasferHandlerHook::hook(); };
+void unhookItemStackRequestActionHandlerTransfer() { trasferHandlerHook::unhook(); }
 } // namespace stats::hook::inventory

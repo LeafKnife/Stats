@@ -6,6 +6,7 @@
 
 #include <ll/api/io/Logger.h>
 #include <mc/platform/UUID.h>
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -24,6 +25,12 @@ StatsCacheData const* findCachedStatsByName(std::string const& name);
 void                  upsertStatsCache(StatsCacheData data);
 void                  clearStatsCache();
 query::RankData       getStatsRank(StatsType type, std::string const& key);
+query::StatsPage      getStatsRankPage(
+    StatsType         type,
+    std::string const& key,
+    std::size_t       pageIndex,
+    std::size_t       pageSize = query::DefaultPageSize
+);
 
 bool loadStatsCache();
 void load();
