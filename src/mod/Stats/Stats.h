@@ -23,7 +23,7 @@ void                  addPlayerStats(std::shared_ptr<PlayerStats> playerStats);
 void                  removePlayerStats(mce::UUID const& uuid);
 StatsCacheData const* findCachedStats(mce::UUID const& uuid);
 StatsCacheData const* findCachedStatsByName(std::string const& name);
-void                  addStatsCache(StatsCacheData data);
+void                  upsertStatsCache(StatsCacheData data);
 void                  clearStatsCache();
 StatsCacheData        parseStatsData(std::string const& data);
 query::RankData       getStatsRank(StatsType type, std::string const& key);

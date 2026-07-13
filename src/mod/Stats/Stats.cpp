@@ -41,7 +41,7 @@ public:
         return cached == mUuidByName.end() ? nullptr : find(cached->second);
     }
 
-    void add(StatsCacheData data) {
+    void upsert(StatsCacheData data) {
         auto const uuid   = mce::UUID(data.first.uuid);
         auto       cached = mByUuid.find(uuid);
         if (cached != mByUuid.end()) {
@@ -51,12 +51,12 @@ public:
                 mUuidByName.erase(old);
             }
             cached->second = std::move(data);
-            mUuidByName.try_emplace(cached->second.first.name, uuid);
+            mUuidByName.insert_or_assign(cached->second.first.name, uuid);
             return;
         }
 
         auto const inserted = mByUuid.try_emplace(uuid, std::move(data)).first;
-        mUuidByName.try_emplace(inserted->second.first.name, uuid);
+        mUuidByName.insert_or_assign(inserted->second.first.name, uuid);
     }
 
     void clear() {
@@ -73,6 +73,7 @@ public:
 
 private:
     UuidIndex                                    mByUuid;
+    // Player names are secondary keys; the most recently upserted UUID owns a collision.
     phmap::flat_hash_map<std::string, mce::UUID> mUuidByName;
 };
 
@@ -102,7 +103,7 @@ StatsCacheData const* findCachedStatsByName(std::string const& name) {
     return statsCache.findByName(name);
 }
 
-void addStatsCache(StatsCacheData data) { statsCache.add(std::move(data)); }
+void upsertStatsCache(StatsCacheData data) { statsCache.upsert(std::move(data)); }
 
 void clearStatsCache() { statsCache.clear(); }
 
@@ -207,7 +208,7 @@ bool loadStatsCache() {
             continue;
         }
         try {
-            addStatsCache(parseStatsData(*rawData));
+            upsertStatsCache(parseStatsData(*rawData));
         } catch (std::exception& excep) {
             getLogger().error(excep.what());
             getLogger().warn("data.parse.fail"_tr(path.filename()));

@@ -25,15 +25,18 @@ PlayerStats::PlayerStats(Player const& player) {
     mLastPos           = const_cast<Vec3&>(player.getPosition());
     mLastDimensionId   = player.getDimensionId().id;
 
-    if (auto const* cached = findCachedStats(mUuid)) {
+    auto const* cached           = findCachedStats(mUuid);
+    bool const  needsInitialSave = !cached || !cached->second;
+    if (!needsInitialSave) {
         mData = cached->second;
     } else {
         getLogger().debug("log.info.createData"_tr(mName));
-        mData           = std::make_shared<StatsData>();
-        PlayerInfo info = {mUuid.asString(), mXuid, mName};
-        addStatsCache(std::make_pair(std::move(info), mData));
-        saveData();
+        mData = std::make_shared<StatsData>();
     }
+
+    PlayerInfo info = {mUuid.asString(), mXuid, mName};
+    upsertStatsCache(std::make_pair(std::move(info), mData));
+    if (needsInitialSave) saveData();
 };
 mce::UUID             PlayerStats::getUuid() const { return mUuid; };
 std::filesystem::path PlayerStats::getPath() const { return getStatsPath().concat("/" + mUuid.asString() + ".json"); };
