@@ -14,7 +14,7 @@ end
 add_requires("levibuildscript")
 add_requires("legacyremotecall 0.18.0")
 add_requires("nlohmann_json 3.11.3")
-add_requires("parallel-hashmap 1.3.12")
+add_requires("parallel-hashmap 2.0.0")
 
 
 if not has_config("vs_runtime") then
