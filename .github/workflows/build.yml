@@ -20,13 +20,13 @@ jobs:
         with:
           path: |
             ~/AppData/Local/.xmake/packages
-          key: xmake-packages-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('xmake.lua') }}
+          key: xmake-packages-v2-vs2022-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('xmake.lua') }}
 
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows -v -y
+          xmake f -a x64 -m release -p windows --vs=2022 -v -y
 
       - run: |
           xmake -v -y
