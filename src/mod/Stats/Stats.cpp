@@ -81,6 +81,7 @@ std::filesystem::path getStatsPath() {
 }
 
 bool loadStatsCache() {
+    statsCache.clear();
     auto        oldPath      = ll::file_utils::u8path("./stats");
     auto        newPath      = getStatsPath();
     std::string extension    = ".json";
@@ -111,6 +112,10 @@ bool loadStatsCache() {
         // 检查文件是否为所需后缀
         if (entry.path().extension() == extension) {
             auto rawData = ll::file_utils::readFile(entry.path());
+            if (!rawData.has_value()) {
+                getLogger().warn("data.parse.fail"_tr(entry.path().filename()));
+                continue;
+            }
             try {
                 auto data = parseStatsData(*rawData);
                 statsCache.push_back(data);

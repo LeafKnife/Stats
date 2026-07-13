@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 
 namespace stats {
 
@@ -84,7 +85,7 @@ enum struct CustomType {
     trigger_trapped_chest,
     use_cauldron
 };
-static const std::map<CustomType, std::string> CustomTypeMap = {
+inline const std::map<CustomType, std::string> CustomTypeMap = {
     {CustomType::animals_bred,                    "minecraft:animals_bred"                   },
     {CustomType::clean_armor,                     "minecraft:clean_armor"                    },
     {CustomType::clean_banner,                    "minecraft:clean_banner"                   },
@@ -163,7 +164,7 @@ static const std::map<CustomType, std::string> CustomTypeMap = {
     {CustomType::trigger_trapped_chest,           "minecraft:trigger_trapped_chest"          },
     {CustomType::use_cauldron,                    "minecraft:use_cauldron"                   }
 };
-static const std::map<std::string, CustomType> CustomInteractBlockMap = {
+inline const std::unordered_map<std::string, CustomType> CustomInteractBlockMap = {
     // 交互工作方块 营火 工作台无法通过监听方块交互检测到
     {"minecraft:anvil",                  CustomType::interact_with_anvil            },
     {"minecraft:beacon",                 CustomType::interact_with_beacon           },

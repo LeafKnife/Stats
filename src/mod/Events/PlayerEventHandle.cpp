@@ -239,24 +239,19 @@ void onTakenDamage(Player* player, float damage, float afterDamage) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
-    auto  heath          = player->getHealth();
-    auto  absorption     = player->getAttribute(SharedAttributes::ABSORPTION()).mPtr->mCurrentValue;
-    float damage_taken   = afterDamage > 0 ? afterDamage : -afterDamage;
-    float damage_absobed = 0;
+    auto  heath           = player->getHealth();
+    auto  absorption      = player->getAttribute(SharedAttributes::ABSORPTION()).mPtr->mCurrentValue;
+    float damage_taken    = afterDamage > 0 ? afterDamage : -afterDamage;
+    float damage_absorbed = 0;
     if (absorption > 0) {
-        if (damage_taken >= absorption) {
-            damage_taken   = damage_taken - absorption;
-            damage_absobed = absorption;
-        } else {
-            damage_taken   = 0;
-            damage_absobed = damage_taken;
-        }
+        damage_absorbed  = damage_taken < absorption ? damage_taken : absorption;
+        damage_taken    -= damage_absorbed;
     }
     float resistanceDamage = damage - afterDamage;
     resistanceDamage       = resistanceDamage > 0 ? resistanceDamage : -resistanceDamage;
     damage_taken           = damage_taken < heath ? damage_taken : heath;
     playerStats->addCustomStats(CustomType::damage_resisted, static_cast<int>(resistanceDamage * 10));
-    playerStats->addCustomStats(CustomType::damage_absorbed, static_cast<int>(damage_absobed * 10));
+    playerStats->addCustomStats(CustomType::damage_absorbed, static_cast<int>(damage_absorbed * 10));
     playerStats->addCustomStats(CustomType::damage_taken, static_cast<int>(damage_taken * 10));
 }
 
@@ -267,24 +262,19 @@ void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
     auto playerStats = findPlayer->second;
     if (!playerStats) return;
 
-    auto  heath          = mob->getHealth();
-    auto  absorption     = mob->getAttribute(SharedAttributes::ABSORPTION()).mPtr->mCurrentValue;
-    float damage_taken   = afterDamage > 0 ? afterDamage : -afterDamage;
-    float damage_absobed = 0;
+    auto  heath           = mob->getHealth();
+    auto  absorption      = mob->getAttribute(SharedAttributes::ABSORPTION()).mPtr->mCurrentValue;
+    float damage_taken    = afterDamage > 0 ? afterDamage : -afterDamage;
+    float damage_absorbed = 0;
     if (absorption > 0) {
-        if (damage_taken >= absorption) {
-            damage_taken   = damage_taken - absorption;
-            damage_absobed = absorption;
-        } else {
-            damage_taken   = 0;
-            damage_absobed = damage_taken;
-        }
+        damage_absorbed  = damage_taken < absorption ? damage_taken : absorption;
+        damage_taken    -= damage_absorbed;
     }
     float resistanceDamage = damage - afterDamage;
     resistanceDamage       = resistanceDamage > 0 ? resistanceDamage : -resistanceDamage;
     damage_taken           = damage_taken < heath ? damage_taken : heath;
     playerStats->addCustomStats(CustomType::damage_dealt_resisted, static_cast<int>(resistanceDamage * 10));
-    playerStats->addCustomStats(CustomType::damage_dealt_absorbed, static_cast<int>(damage_absobed * 10));
+    playerStats->addCustomStats(CustomType::damage_dealt_absorbed, static_cast<int>(damage_absorbed * 10));
     playerStats->addCustomStats(CustomType::damage_dealt, static_cast<int>(damage_taken * 10));
 }
 

@@ -26,7 +26,7 @@ PlayerStats::PlayerStats(Player const& player) {
     mLastPos           = const_cast<Vec3&>(player.getPosition());
     mLastDimensionId   = player.getDimensionId().id;
 
-    auto                 cache = getStatsCache();
+    auto&                cache = getStatsCache();
     auto                 uuid  = mUuid.asString();
     StatsCache::iterator it    = std::find_if(cache.begin(), cache.end(), [&uuid](const StatsCacheData& data) {
         return data.first.uuid.compare(uuid) == 0;
@@ -41,9 +41,9 @@ PlayerStats::PlayerStats(Player const& player) {
         saveData();
     }
 };
-mce::UUID             PlayerStats::getUuid() { return mUuid; };
-std::filesystem::path PlayerStats::getPath() { return getStatsPath().concat("/" + mUuid.asString() + ".json"); };
-nlohmann::json        PlayerStats::getJson() {
+mce::UUID             PlayerStats::getUuid() const { return mUuid; };
+std::filesystem::path PlayerStats::getPath() const { return getStatsPath().concat("/" + mUuid.asString() + ".json"); };
+nlohmann::json        PlayerStats::getJson() const {
     nlohmann::json j = {
         {"playerInfo",          {{"uuid", mUuid.asString()}, {"xuid", mXuid}, {"name", mName}}},
         {"minecraft:custom",    mData->custom                                                 },
@@ -58,6 +58,9 @@ nlohmann::json        PlayerStats::getJson() {
     };
     return j;
 }
+StatsDataMap const* PlayerStats::getStatsMap(StatsType type) const {
+    return static_cast<StatsData const&>(*mData).getMap(type);
+}
 bool PlayerStats::saveData() {
     getLogger().debug("log.info.savaData"_tr(mName));
     auto j = getJson();
@@ -68,43 +71,15 @@ bool PlayerStats::saveData() {
         return false;
     }
 };
-void PlayerStats::addStats(StatsType type, std::string key, uint64_t value) {
+void PlayerStats::addStats(StatsType type, std::string const& key, uint64_t value) {
     if (value <= 0) return;
-    switch (type) {
-    case StatsType::custom:
-        mData->custom[key] += value;
-        break;
-    case StatsType::mined:
-        mData->mined[key] += value;
-        break;
-    case StatsType::broken:
-        mData->broken[key] += value;
-        break;
-    case StatsType::crafted:
-        mData->crafted[key] += value;
-        break;
-    case StatsType::used:
-        mData->used[key] += value;
-        break;
-    case StatsType::picked_up:
-        mData->picked_up[key] += value;
-        break;
-    case StatsType::dropped:
-        mData->dropped[key] += value;
-        break;
-    case StatsType::killed:
-        mData->killed[key] += value;
-        break;
-    case StatsType::killed_by:
-        mData->killed_by[key] += value;
-        break;
+    if (auto* data = mData->getMap(type)) {
+        (*data)[key] += value;
     }
-    auto typeName = StatsTypeMap.at(type);
-    // getLogger().debug("AddStats {} {} key:{} value:{}", mName, typeName, key, value);
 };
 void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
     if (value <= 0) return;
-    auto key = CustomTypeMap.at(type);
+    auto const& key = CustomTypeMap.at(type);
     // getLogger().debug("AddCustomStats {} key:{} value:{}", mName, key, value);
 
     mData->custom[key] += value;

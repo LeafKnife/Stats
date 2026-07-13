@@ -8,7 +8,7 @@ enum class StatsType : int { custom = 1, mined, broken, crafted, used, picked_up
 namespace stats {
 using StatsDataMap = std::unordered_map<std::string, uint64_t>;
 
-static const std::map<StatsType, std::string> StatsTypeMap = {
+inline const std::map<StatsType, std::string> StatsTypeMap = {
     {StatsType::custom,    "minecraft:custom"   },
     {StatsType::mined,     "minecraft:mined"    },
     {StatsType::broken,    "minecraft:broken"   },
@@ -21,15 +21,16 @@ static const std::map<StatsType, std::string> StatsTypeMap = {
 };
 
 struct StatsData {
-    StatsDataMap custom;
-    StatsDataMap mined;
-    StatsDataMap broken;
-    StatsDataMap crafted;
-    StatsDataMap used;
-    StatsDataMap picked_up;
-    StatsDataMap dropped;
-    StatsDataMap killed;
-    StatsDataMap killed_by;
-    StatsDataMap* getMap(StatsType type);
+    StatsDataMap        custom;
+    StatsDataMap        mined;
+    StatsDataMap        broken;
+    StatsDataMap        crafted;
+    StatsDataMap        used;
+    StatsDataMap        picked_up;
+    StatsDataMap        dropped;
+    StatsDataMap        killed;
+    StatsDataMap        killed_by;
+    StatsDataMap*       getMap(StatsType type);
+    StatsDataMap const* getMap(StatsType type) const;
 };
 } // namespace stats

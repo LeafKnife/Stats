@@ -27,7 +27,7 @@ private:
     std::string                mXuid;
     std::string                mName;
     uint64_t                   mSneakingStartTick;
-    std::filesystem::path      getPath();
+    std::filesystem::path      getPath() const;
     // void                  parseData(std::string const& data);
 
 public:
@@ -37,11 +37,12 @@ public:
     // PlayerStats();
 public:
     PlayerStats(Player const& player);
-    mce::UUID      getUuid();
-    nlohmann::json getJson();
+    mce::UUID           getUuid() const;
+    nlohmann::json      getJson() const;
+    StatsDataMap const* getStatsMap(StatsType type) const;
     // nlohmann::json getJsonStatsData(StatsType type);
     bool saveData();
-    void addStats(StatsType type, std::string key, uint64_t value = 1);
+    void addStats(StatsType type, std::string const& key, uint64_t value = 1);
     void addCustomStats(CustomType type, uint64_t value = 1);
     void resetCustomStats(CustomType type, uint64_t value = 0);
     void startSneaking();

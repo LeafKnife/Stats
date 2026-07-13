@@ -47,9 +47,9 @@ void registerCommand() {
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->isType(::ActorType::Player)) {
-                output.error("command.error.notplayer"_tr());
+                return output.error("command.error.notplayer"_tr());
             }
-            Player* player = (Player*)entity;
+            auto* player = static_cast<Player*>(entity);
             // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.statsType);
             switch (param.StatsType) {
             case StatsType::custom:
@@ -76,9 +76,9 @@ void registerCommand() {
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->isType(::ActorType::Player)) {
-                output.error("command.error.notplayer"_tr());
+                return output.error("command.error.notplayer"_tr());
             }
-            Player* player = (Player*)entity;
+            auto* player = static_cast<Player*>(entity);
             if (param.playerName.empty()) {
                 return output.error("command.error.player_name_empty"_tr());
             }
@@ -112,9 +112,9 @@ void registerCommand() {
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsRank const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->isType(::ActorType::Player)) {
-                output.error("command.error.notplayer"_tr());
+                return output.error("command.error.notplayer"_tr());
             }
-            Player* player = (Player*)entity;
+            auto* player = static_cast<Player*>(entity);
             switch (param.StatsType) {
             case StatsType::custom:
                 if (param.type.empty()) {

@@ -3,13 +3,13 @@
 #include "mc/platform/UUID.h"
 #include "mod/Stats/Stats.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <ll/api/form/SimpleForm.h>
 #include <ll/api/i18n/I18n.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
-#include <memory>
-#include <nlohmann/json.hpp>
+#include <numeric>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -47,6 +47,7 @@ void sendStatsGui(Player& player, StatsType type) {
 };
 
 inline void renderContent(std::string& content, std::vector<StatsPair> const& data) {
+    content.reserve(content.size() + data.size() * 32);
     for (auto it = data.begin(); it != data.end(); ++it) {
         std::string str  = "§6" + it->first + "§r : §a" + std::to_string(it->second) + "§r\n";
         content         += str;
@@ -57,15 +58,15 @@ inline std::optional<StatsDataMap> getStatsDataMap(mce::UUID uuid, StatsType typ
     auto& playerStatsMap = getPlayerStatsMap();
     auto  findPlayer     = playerStatsMap.find(uuid);
     if (findPlayer != playerStatsMap.end()) {
-        auto playerStats = findPlayer->second;
+        auto const& playerStats = findPlayer->second;
         if (!playerStats) return std::nullopt;
-        auto j          = playerStats->getJson();
-        auto typeString = StatsTypeMap.at(type);
-        auto dataMap    = j[typeString].get<StatsDataMap>();
-        return std::make_optional(dataMap);
+        if (auto const* dataMap = playerStats->getStatsMap(type)) {
+            return *dataMap;
+        }
+        return std::nullopt;
     } else {
         auto& cache = getStatsCache();
-        for (auto it : cache) {
+        for (auto const& it : cache) {
             if (mce::UUID(it.first.uuid) != uuid) continue;
             if (auto r = it.second->getMap(type); r) {
                 return std::make_optional(*r);
@@ -84,12 +85,16 @@ std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type, ui
 
     auto& dataMap = data.value();
 
+    if (type == StatsType::custom) {
+        dataMap["minecraft:play_time"] += tick;
+    }
+
     std::vector<StatsPair> dataVector;
+    dataVector.reserve(dataMap.size() + (type == StatsType::custom ? 1 : 0));
     for (const auto& pair : dataMap) {
         dataVector.push_back(std::make_pair(std::string(ll::i18n::getInstance().get(pair.first, {})), pair.second));
     }
     if (type == StatsType::custom) {
-        dataMap["minecraft:play_time"] += tick;
         auto levelTick =
             std::make_pair("minecraft:total_world_time"_tr(), ll::service::getLevel()->getCurrentServerTick().tickID);
         dataVector.push_back(levelTick);
@@ -107,11 +112,12 @@ std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type, ui
     return content;
 }
 
-inline uint64_t getStatsDataMapValue(StatsDataMap const& map, std::string type) {
+inline uint64_t getStatsDataMapValue(StatsDataMap const& map, std::string const& type) {
     uint64_t value;
     if (type.empty()) {
-        value =
-            std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) { return total + p.second; });
+        value = std::accumulate(map.begin(), map.end(), uint64_t{0}, [](uint64_t total, auto const& pair) {
+            return total + pair.second;
+        });
     } else {
         auto mapValue = map.find(type);
         if (mapValue != map.end()) {
@@ -123,13 +129,13 @@ inline uint64_t getStatsDataMapValue(StatsDataMap const& map, std::string type) 
     return value;
 }
 
-inline void getRankData(std::vector<StatsPair>& data, StatsType statsType, std::string type) {
+inline void getRankData(std::vector<StatsPair>& data, StatsType statsType, std::string const& type) {
     auto& cache = getStatsCache();
-    for (auto it : cache) {
-        auto name  = it.first.name;
-        auto map   = it.second->getMap(statsType);
-        auto value = getStatsDataMapValue(*map, type);
-        data.push_back(std::make_pair(name, value));
+    data.reserve(cache.size());
+    for (auto const& it : cache) {
+        auto const* map = it.second->getMap(statsType);
+        if (!map) continue;
+        data.emplace_back(it.first.name, getStatsDataMapValue(*map, type));
     };
     std::sort(data.begin(), data.end(), [](const StatsPair& a, const StatsPair& b) { return a.second > b.second; });
 }
