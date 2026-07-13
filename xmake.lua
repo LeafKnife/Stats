@@ -90,6 +90,9 @@ target("LK-Stats-Tests")
     set_default(false)
     set_kind("binary")
     set_languages("c++20")
+    if is_plat("windows") then
+        add_cxflags("/utf-8")
+    end
     add_includedirs("src")
-    add_files("tests/StatsQueryTests.cpp")
+    add_files("tests/*.cpp")
     add_files("src/mod/Stats/StatsQuery.cpp")

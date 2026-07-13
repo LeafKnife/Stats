@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+int runStatsCustomTests();
+
 namespace {
 
 int failures = 0;
@@ -70,12 +72,13 @@ void testEmptyRanking() {
 } // namespace
 
 int main() {
+    failures += runStatsCustomTests();
     testValueLookup();
     testTotalsUse64Bits();
     testRanking();
     testEmptyRanking();
 
     if (failures != 0) return 1;
-    std::cout << "StatsQuery tests passed\n";
+    std::cout << "Stats tests passed\n";
     return 0;
 }

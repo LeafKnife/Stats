@@ -79,7 +79,7 @@ void PlayerStats::addStats(StatsType type, std::string const& key, uint64_t valu
 };
 void PlayerStats::addCustomStats(CustomType type, uint64_t value) {
     if (value <= 0) return;
-    auto const& key = CustomTypeMap.at(type);
+    auto const& key = getCustomTypeName(type);
     // getLogger().debug("AddCustomStats {} key:{} value:{}", mName, key, value);
 
     mData->custom[key] += value;
