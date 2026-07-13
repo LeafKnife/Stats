@@ -26,8 +26,6 @@ private:
     std::string                mXuid;
     std::string                mName;
     uint64_t                   mSneakingStartTick;
-    std::filesystem::path      getPath() const;
-    // void                  parseData(std::string const& data);
 
 public:
     MoveCache mDistanceCache;

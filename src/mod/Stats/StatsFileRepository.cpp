@@ -1,0 +1,120 @@
+#include "mod/Stats/StatsFileRepository.h"
+
+#include <exception>
+#include <filesystem>
+#include <fstream>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include <ll/api/i18n/I18n.h>
+#include <ll/api/io/FileUtils.h>
+#include <ll/api/service/Bedrock.h>
+#include <mc/server/PropertiesSettings.h>
+
+#include "mod/Stats/Stats.h"
+
+using namespace ll::i18n_literals;
+
+namespace stats::repository {
+namespace {
+
+std::filesystem::path statsPath;
+
+std::optional<std::string> getLevelName() {
+    if (auto const settings = ll::service::getPropertiesSettings()) {
+        return settings->mLevelName;
+    }
+
+    std::ifstream file("server.properties");
+    std::string   line;
+    while (std::getline(file, line)) {
+        constexpr std::string_view prefix = "level-name=";
+        if (!line.starts_with(prefix)) continue;
+        auto name = line.substr(prefix.size());
+        if (!name.empty() && name.back() == '\r') name.pop_back();
+        return name;
+    }
+    return std::nullopt;
+}
+
+std::filesystem::path resolveStatsPath() {
+    auto const levelName = getLevelName().value_or("");
+    return ll::file_utils::u8path("./worlds/" + levelName + "/stats");
+}
+
+} // namespace
+
+bool initialize() {
+    if (!statsPath.empty()) return true;
+
+    auto const oldPath = ll::file_utils::u8path("./stats");
+    auto const newPath = resolveStatsPath();
+    if (!std::filesystem::exists(newPath)) {
+        if (std::filesystem::exists(oldPath)) {
+            getLogger().warn("log.info.ExistOldPath"_tr());
+            try {
+                std::filesystem::rename(oldPath, newPath);
+            } catch (std::exception const& exception) {
+                getLogger().error(exception.what());
+                getLogger().warn("log.warn.moveStats.fail"_tr());
+                return false;
+            }
+        } else {
+            getLogger().warn("log.info.CreateStatsPath"_tr());
+            try {
+                std::filesystem::create_directory(newPath);
+            } catch (std::exception const& exception) {
+                getLogger().error(exception.what());
+                getLogger().warn("log.warn.CreatePath.fail"_tr());
+                return false;
+            }
+        }
+    }
+
+    statsPath = newPath;
+    return true;
+}
+
+bool loadAll(std::vector<DecodedStats>& records) {
+    records.clear();
+    std::vector<std::filesystem::path> files;
+    try {
+        for (auto const& entry : std::filesystem::directory_iterator(statsPath)) {
+            if (entry.path().extension() == ".json") files.push_back(entry.path());
+        }
+    } catch (std::exception const& exception) {
+        getLogger().error(exception.what());
+        return false;
+    }
+
+    records.reserve(files.size());
+    for (auto const& path : files) {
+        auto const source = ll::file_utils::readFile(path);
+        if (!source) {
+            getLogger().warn("data.parse.fail"_tr(path.filename()));
+            continue;
+        }
+        try {
+            records.push_back(decodeStatsJson(*source));
+        } catch (std::exception const& exception) {
+            getLogger().error(exception.what());
+            getLogger().warn("data.parse.fail"_tr(path.filename()));
+        }
+    }
+    return true;
+}
+
+bool save(PlayerInfo const& info, StatsData const& data) {
+    if (statsPath.empty()) return false;
+    try {
+        auto const path = statsPath / ll::file_utils::u8path(info.uuid + ".json");
+        return ll::file_utils::writeFile(path, encodeStatsJson(info, data));
+    } catch (std::exception const& exception) {
+        getLogger().error(exception.what());
+        return false;
+    }
+}
+
+} // namespace stats::repository

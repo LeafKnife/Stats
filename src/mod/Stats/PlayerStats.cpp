@@ -1,14 +1,12 @@
 #include "mod/Stats/PlayerStats.h"
 
 #include <cstdint>
-#include <exception>
 #include <ll/api/i18n/I18n.h>
-#include <ll/api/io/FileUtils.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
 
 #include "mod/Stats/Stats.h"
-#include "mod/Stats/StatsJsonCodec.h"
+#include "mod/Stats/StatsFileRepository.h"
 
 #include <memory>
 #include <string>
@@ -38,20 +36,14 @@ PlayerStats::PlayerStats(Player const& player) {
     upsertStatsCache(std::make_pair(std::move(info), mData));
     if (needsInitialSave) saveData();
 };
-mce::UUID             PlayerStats::getUuid() const { return mUuid; };
-std::filesystem::path PlayerStats::getPath() const { return getStatsPath().concat("/" + mUuid.asString() + ".json"); };
-StatsDataMap const*   PlayerStats::getStatsMap(StatsType type) const {
+mce::UUID           PlayerStats::getUuid() const { return mUuid; };
+StatsDataMap const* PlayerStats::getStatsMap(StatsType type) const {
     return static_cast<StatsData const&>(*mData).getMap(type);
 }
 bool PlayerStats::saveData() {
     getLogger().debug("log.info.savaData"_tr(mName));
-    try {
-        PlayerInfo const info{mUuid.asString(), mXuid, mName};
-        return ll::file_utils::writeFile(getPath(), encodeStatsJson(info, *mData));
-    } catch (std::exception& exception) {
-        getLogger().error(exception.what());
-        return false;
-    }
+    PlayerInfo const info{mUuid.asString(), mXuid, mName};
+    return repository::save(info, *mData);
 };
 void PlayerStats::addStats(StatsType type, std::string const& key, uint64_t value) {
     if (value <= 0) return;

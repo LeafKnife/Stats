@@ -22,8 +22,6 @@ void                  upsertStatsCache(StatsCacheData data);
 void                  clearStatsCache();
 query::RankData       getStatsRank(StatsType type, std::string const& key);
 
-std::filesystem::path getStatsPath();
-
 bool loadStatsCache();
 void load();
 void unload();
