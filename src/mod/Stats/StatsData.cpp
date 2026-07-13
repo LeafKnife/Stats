@@ -81,6 +81,8 @@ void StatsData::add(StatsType type, std::string const& key, uint64_t value) {
     case StatsType::killed_by:
         killed_by[key] += value;
         return;
+    case StatsType::count:
+        return;
     }
 }
 
@@ -104,6 +106,8 @@ StatsDataMap const* StatsData::getMap(StatsType type) const {
         return &killed;
     case StatsType::killed_by:
         return &killed_by;
+    case StatsType::count:
+        return nullptr;
     }
     return nullptr;
 }

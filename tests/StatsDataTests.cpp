@@ -1,10 +1,43 @@
 #include "mod/Stats/StatsData.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <string_view>
+#include <unordered_set>
 
 int runStatsDataTests() {
+    static_assert(stats::StatsSchema.size() == static_cast<std::size_t>(StatsType::count) - 1);
+    static_assert(stats::isValidStatsType(StatsType::custom));
+    static_assert(stats::isValidStatsType(StatsType::killed_by));
+    static_assert(!stats::isValidStatsType(static_cast<StatsType>(0)));
+    static_assert(!stats::isValidStatsType(StatsType::count));
+    static_assert(stats::isStatsSchemaValid());
+
     int failures = 0;
+
+    std::unordered_set<std::string_view> schemaKeys;
+    schemaKeys.reserve(stats::StatsSchema.size());
+    for (std::size_t index = 0; index < stats::StatsSchema.size(); ++index) {
+        auto const& descriptor = stats::StatsSchema[index];
+        if (static_cast<std::size_t>(descriptor.type) != index + 1) {
+            std::cerr << "FAILED: StatsType index mismatch at " << index << '\n';
+            ++failures;
+        }
+        if (descriptor.key.empty()) {
+            std::cerr << "FAILED: empty StatsType key at " << index << '\n';
+            ++failures;
+        }
+        if (!schemaKeys.emplace(descriptor.key).second) {
+            std::cerr << "FAILED: duplicate StatsType key " << descriptor.key << '\n';
+            ++failures;
+        }
+        if (stats::getStatsTypeIndex(descriptor.type) != index
+            || stats::getStatsTypeKey(descriptor.type) != descriptor.key) {
+            std::cerr << "FAILED: StatsType lookup mismatch at " << index << '\n';
+            ++failures;
+        }
+    }
 
     stats::StatsDataMap source{
         {"minecraft:jump",           9  },

@@ -13,12 +13,13 @@ void exportRemoteCall() {
         RC_NAMESPACE,
         "getPlayerStats",
         [](std::string uuidStr, int type) -> std::unordered_map<std::string, unsigned long long> {
-            mce::UUID uuid(uuidStr);
-            auto      r = std::unordered_map<std::string, unsigned long long>();
-            if (type < 1 || type > 9) return r;
+            mce::UUID  uuid(uuidStr);
+            auto       r         = std::unordered_map<std::string, unsigned long long>();
+            auto const statsType = static_cast<StatsType>(type);
+            if (!isValidStatsType(statsType)) return r;
             auto const* cached = findCachedStats(uuid);
             if (cached && cached->second) {
-                return *cached->second->getMap((StatsType)type);
+                return *cached->second->getMap(statsType);
             }
             return r;
         }
@@ -27,11 +28,10 @@ void exportRemoteCall() {
         RC_NAMESPACE,
         "getRankStats",
         [](int type, std::string key = "") -> std::unordered_map<std::string, unsigned long long> {
-            auto r = query::RankData{};
-            if (type < 1 || type > 9) {
-            } else if (type == 1 && key.empty()) {
-            } else {
-                r = getStatsRank((StatsType)type, key);
+            auto const statsType = static_cast<StatsType>(type);
+            auto       r         = query::RankData{};
+            if (isValidStatsType(statsType) && (statsType != StatsType::custom || !key.empty())) {
+                r = getStatsRank(statsType, key);
             }
             auto data = std::unordered_map<std::string, unsigned long long>();
             data.reserve(r.size());

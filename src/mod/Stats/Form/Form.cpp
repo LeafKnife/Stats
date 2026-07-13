@@ -38,7 +38,7 @@ void sendStatsGui(Player& player, StatsType type) {
     auto content = renderStatsContent(player.getUuid(), type, player.mTickCount);
     if (content.has_value()) {
         auto fm         = ll::form::SimpleForm();
-        auto typeString = StatsTypeMap.at(type);
+        auto typeString = getStatsTypeKey(type);
         fm.setTitle("gui.title.stats"_tr() + " - " + std::string(ll::i18n::getInstance().get(typeString, {})))
             .setContent(content.value())
             .sendTo(player);
@@ -93,7 +93,7 @@ void sendRankGui(Player& player, StatsType statsType, std::string type) {
     std::string title   = type.empty() ? "" : " | " + std::string(ll::i18n::getInstance().get(type, {}));
     std::string content = "";
     renderContent(content, data);
-    auto typeString = StatsTypeMap.at(statsType);
+    auto typeString = getStatsTypeKey(statsType);
     auto fm         = ll::form::SimpleForm();
     fm.setTitle("gui.title.rank"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {})) + title)
         .setContent(content)

@@ -88,7 +88,7 @@ void registerCommand() {
                 form::renderStatsContent(mce::UUID(cached->first.uuid), param.StatsType);
             if (!content.has_value()) return output.error("command.error.find_player"_tr());
             auto fm         = ll::form::SimpleForm();
-            auto typeString = StatsTypeMap.at(param.StatsType);
+            auto typeString = getStatsTypeKey(param.StatsType);
             fm.setTitle(
                   "gui.title.stats"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {})) + " | "
                   + param.playerName
