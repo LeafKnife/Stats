@@ -7,25 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
-## [0.8.3] - 2026-07-13
+## [0.8.3] - 2026-07-14
 
 ### 新增
 
 - GUI 与 RemoteCall 统计查询分页。
 - 在线玩家每 5 分钟异步保存，并支持中断快照恢复。
-- DLL Windows 版本信息。
 
 ### 优化
 
-- 优化玩家统计索引、排行榜查询与内存占用。
-- 增加排行榜缓存和分页查询，降低大数据量排序开销。
-- 使用 RAII 管理 Hook 生命周期，拆分统计查询、文件仓库和 JSON 编解码职责。
+- 优化玩家统计索引、表单查询与内存占用。
+- 增加排行榜缓存和分页排序，降低大数据量查询开销。
 - 优化玩家移动统计热路径。
 
 ### 修复
 
 - 修复异常崩溃时在线玩家统计可能长期未保存的问题。
 - 修复统计文件写入中断时可能忽略有效临时快照的问题。
+- 修复玩家重新加入后名称等缓存信息未刷新的问题。
+- 修复部分动物繁殖统计错误及潜在崩溃问题。
+- 修复物品转移统计读取错误来源槽位的问题。
+- 修复排行榜类型无效时错误提示不明确的问题。
 
 ## [0.8.0] - 2026-04-14
 
@@ -229,7 +231,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.8.0...dev
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.8.3...dev
+[0.8.3]: https://github.com/LeafKnife/Stats/compare/v0.8.0...v0.8.3
 [0.8.0]: https://github.com/LeafKnife/Stats/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/LeafKnife/Stats/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/LeafKnife/Stats/compare/v0.6.0...v0.7.0
