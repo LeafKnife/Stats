@@ -37,10 +37,8 @@ void onJoin(Player& player) {
 }
 
 void onLeft(ServerPlayer& player) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::play_time, player.mTickCount);
     playerStats->addCustomStats(CustomType::leave_game);
@@ -50,51 +48,39 @@ void onLeft(ServerPlayer& player) {
 }
 
 void onSneaking(Player& player) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->startSneaking();
 }
 
 void onSneaked(Player& player) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->stopSneaking();
 }
 
 void onSprinting(Player& player) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->mDistanceCache.isSprinting = true;
 }
 void onSprinted(Player& player) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->mDistanceCache.isSprinting = false;
 }
 
 void onStartRiding(mce::UUID uuid, Actor& vehicle, bool forceRiding) {
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->mDistanceCache.ride = 0;
 }
 void onStopRiding(mce::UUID uuid, Actor* vehicle) {
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     auto value = playerStats->mDistanceCache.ride;
     if (!vehicle) {
@@ -120,10 +106,8 @@ void onStopRiding(mce::UUID uuid, Actor* vehicle) {
 }
 
 void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     auto pos   = const_cast<Vec3&>(player.getPosition());
     auto dimId = player.getDimensionId().id;
@@ -181,29 +165,23 @@ void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet) {
 }
 
 void onTakeItem(Player& player, ItemStack& item) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addStats(StatsType::picked_up, item.getTypeName(), item.mCount);
 }
 
 void onDropItem(Player* player, ItemStack const& item) {
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::drop);
     playerStats->addStats(StatsType::dropped, item.getTypeName(), item.mCount);
 }
 
 void onDied(Player& player, ActorDamageSource const& source) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::deaths);
     // resetCustomSinceTime TODO
@@ -219,10 +197,8 @@ void onDied(Player& player, ActorDamageSource const& source) {
 }
 
 void onKillMob(Player& player, Mob& mob) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     if (mob.isType(::ActorType::Player)) {
         playerStats->addCustomStats(CustomType::player_kills);
@@ -233,10 +209,8 @@ void onKillMob(Player& player, Mob& mob) {
 }
 
 void onTakenDamage(Player* player, float damage, float afterDamage) {
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
 
     auto  heath           = player->getHealth();
@@ -256,10 +230,8 @@ void onTakenDamage(Player* player, float damage, float afterDamage) {
 }
 
 void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
 
     auto  heath           = mob->getHealth();
@@ -279,9 +251,7 @@ void onDealtDamage(Mob* mob, Player* player, float damage, float afterDamage) {
 }
 
 void onCraftedItem(mce::UUID uuid, std::string itemType, int amount, SharedTypes::Legacy::ContainerType type) {
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     switch (type) {
     case SharedTypes::Legacy::ContainerType::Trade:
@@ -301,10 +271,8 @@ void onCraftedItem(mce::UUID uuid, std::string itemType, int amount, SharedTypes
 }
 
 void onItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDamage) {
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     if (!item->isDamageableItem()) return;
     if (!item->isArmorItem()) playerStats->addStats(StatsType::used, item->getTypeName());
@@ -321,10 +289,8 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
     //  - 无论是命名、驯服、喂养、繁殖、上鞍、拴住、剪毛、染色、挤奶还是收集炖菜
     //  - 当盔甲按使用键装备时，当皮革盔甲在炼药锅中清洗时，以及上面提到的例子。
     if (!consumeItem) return;
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     switch (itemUseMethod) {
     case ItemUseMethod::Eat:
@@ -352,12 +318,11 @@ void onUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod itemUseMe
 
 
 void onEffectAdded(Player* player, MobEffectInstance const& effect) {
-    auto effectId      = effect.mId;
-    auto durationValue = effect.mDuration->mValue;
-    auto uuid          = player->getUuid();
-    auto findPlayer    = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  effectId      = effect.mId;
+    auto  durationValue = effect.mDuration->mValue;
+    auto  uuid          = player->getUuid();
+    auto* playerStats   = findPlayerStats(uuid);
+    if (!playerStats) return;
     if (effectId == 29 && durationValue == 40 * 60 * 20) {
         playerStats->addCustomStats(CustomType::raid_win);
     } else if (effectId == 36 && durationValue == 30 * 20) {
@@ -366,38 +331,30 @@ void onEffectAdded(Player* player, MobEffectInstance const& effect) {
 }
 
 void onStartSleep(Player* player) {
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::sleep_in_bed);
 }
 
 void onBlockUsingShield(Player* player, float damage) {
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::damage_blocked_by_shield, static_cast<int>(damage * 10));
     return;
 }
 
 void onOpenTrading(Player* player) {
-    auto uuid       = player->getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player->getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::talked_to_villager);
 }
 
 void onJump(Player& player) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::jump);
 }
@@ -411,10 +368,8 @@ void onChangeContainerWith(
     ItemStack const& oldItem,
     ItemStack const& newItem
 ) {
-    auto uuid       = player.getUuid();
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto  uuid        = player.getUuid();
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     if (blockType == "minecraft:furnace" || blockType == "minecraft:lit_furnace" || blockType == "minecraft:smoker") {
         if (slot != 2) return;
@@ -427,16 +382,12 @@ void onChangeContainerWith(
 }
 
 void onBreedAnimal(mce::UUID uuid) {
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::animals_bred);
 }
 void onFishCaught(mce::UUID uuid) {
-    auto findPlayer = playerStatsMap.find(uuid);
-    if (findPlayer == playerStatsMap.end()) return;
-    auto playerStats = findPlayer->second;
+    auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->addCustomStats(CustomType::fish_caught);
 }

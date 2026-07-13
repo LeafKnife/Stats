@@ -30,7 +30,11 @@ std::string    levelName;
 
 ll::io::Logger& getLogger() { return lk::MyMod::getInstance().getSelf().getLogger(); }
 PlayerStatsMap& getPlayerStatsMap() { return playerStatsMap; }
-StatsCache&     getStatsCache() { return statsCache; }
+PlayerStats*    findPlayerStats(mce::UUID const& uuid) {
+    auto const player = playerStatsMap.find(uuid);
+    return player == playerStatsMap.end() ? nullptr : player->second.get();
+}
+StatsCache& getStatsCache() { return statsCache; }
 
 StatsCacheData parseStatsData(const std::string& data) {
     auto j       = nlohmann::json::parse(data);

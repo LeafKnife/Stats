@@ -7,6 +7,7 @@
 #include <mc/platform/UUID.h>
 #include <memory>
 #include <nlohmann/json_fwd.hpp>
+#include <unordered_map>
 #include <vector>
 
 namespace stats {
@@ -15,12 +16,13 @@ struct PlayerInfo {
     std::string xuid;
     std::string name;
 };
-typedef std::map<mce::UUID, std::shared_ptr<PlayerStats>> PlayerStatsMap;
-typedef std::pair<PlayerInfo, std::shared_ptr<StatsData>> StatsCacheData;
-typedef std::vector<StatsCacheData>                       StatsCache;
+typedef std::unordered_map<mce::UUID, std::shared_ptr<PlayerStats>> PlayerStatsMap;
+typedef std::pair<PlayerInfo, std::shared_ptr<StatsData>>           StatsCacheData;
+typedef std::vector<StatsCacheData>                                 StatsCache;
 
 ll::io::Logger& getLogger();
 PlayerStatsMap& getPlayerStatsMap();
+PlayerStats*    findPlayerStats(mce::UUID const& uuid);
 StatsCache&     getStatsCache();
 StatsCacheData  parseStatsData(std::string const& data);
 query::RankData getStatsRank(StatsType type, std::string const& key);

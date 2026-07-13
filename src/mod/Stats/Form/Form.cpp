@@ -54,11 +54,7 @@ inline void renderContent(std::string& content, std::vector<StatsPair> const& da
 }
 
 inline std::optional<StatsDataMap> getStatsDataMap(mce::UUID uuid, StatsType type) {
-    auto& playerStatsMap = getPlayerStatsMap();
-    auto  findPlayer     = playerStatsMap.find(uuid);
-    if (findPlayer != playerStatsMap.end()) {
-        auto const& playerStats = findPlayer->second;
-        if (!playerStats) return std::nullopt;
+    if (auto* playerStats = findPlayerStats(uuid)) {
         if (auto const* dataMap = playerStats->getStatsMap(type)) {
             return *dataMap;
         }
