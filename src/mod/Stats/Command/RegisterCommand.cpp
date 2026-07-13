@@ -51,21 +51,10 @@ void registerCommand() {
             }
             auto* player = static_cast<Player*>(entity);
             // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.statsType);
-            switch (param.StatsType) {
-            case StatsType::custom:
-            case StatsType::mined:
-            case StatsType::broken:
-            case StatsType::crafted:
-            case StatsType::used:
-            case StatsType::picked_up:
-            case StatsType::dropped:
-            case StatsType::killed:
-            case StatsType::killed_by:
+            if (isValidStatsType(param.StatsType)) {
                 form::sendStatsGui(*player, param.StatsType);
-                break;
-            default:
+            } else {
                 form::sendMainGui(*player);
-                break;
             }
         });
 
@@ -107,29 +96,13 @@ void registerCommand() {
                 return output.error("command.error.notplayer"_tr());
             }
             auto* player = static_cast<Player*>(entity);
-            switch (param.StatsType) {
-            case StatsType::custom:
-                if (param.type.empty()) {
-                    output.error("command.error.rank_type_required"_tr());
-                } else {
-                    form::sendRankGui(*player, StatsType::custom, param.type);
-                }
-                break;
-            case StatsType::mined:
-            case StatsType::broken:
-            case StatsType::crafted:
-            case StatsType::used:
-            case StatsType::picked_up:
-            case StatsType::dropped:
-            case StatsType::killed:
-            case StatsType::killed_by:
-                form::sendRankGui(*player, param.StatsType, param.type);
-                break;
-            default:
-                // form::sendRankGuiMain(*player);
-                output.error("TODO");
-                break;
+            if (!isValidStatsType(param.StatsType)) {
+                return output.error("TODO");
             }
+            if (param.StatsType == StatsType::custom && param.type.empty()) {
+                return output.error("command.error.rank_type_required"_tr());
+            }
+            form::sendRankGui(*player, param.StatsType, param.type);
         });
 }
 } // namespace stats::command

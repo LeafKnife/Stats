@@ -1,11 +1,13 @@
 #include "mod/Stats/StatsData.h"
 
+#include <utility>
+
 namespace stats {
 
-void CustomStatsData::load(StatsDataMap const& values) {
+void CustomStatsData::load(StatsDataMap values) {
     mValues.fill(0);
     mPresent.reset();
-    mUnknown = values;
+    mUnknown = std::move(values);
 
     for (std::size_t index = 0; index < CustomTypeMap.size(); ++index) {
         auto const value = mUnknown.find(CustomTypeMap[index].second);
@@ -51,6 +53,39 @@ StatsDataMap const& CustomStatsData::asMap() const {
     }
     mSnapshotDirty = false;
     return mSnapshot;
+}
+
+void StatsData::loadMap(StatsType type, StatsDataMap values) {
+    switch (type) {
+    case StatsType::custom:
+        return custom.load(std::move(values));
+    case StatsType::mined:
+        mined = std::move(values);
+        return;
+    case StatsType::broken:
+        broken = std::move(values);
+        return;
+    case StatsType::crafted:
+        crafted = std::move(values);
+        return;
+    case StatsType::used:
+        used = std::move(values);
+        return;
+    case StatsType::picked_up:
+        picked_up = std::move(values);
+        return;
+    case StatsType::dropped:
+        dropped = std::move(values);
+        return;
+    case StatsType::killed:
+        killed = std::move(values);
+        return;
+    case StatsType::killed_by:
+        killed_by = std::move(values);
+        return;
+    case StatsType::count:
+        return;
+    }
 }
 
 void StatsData::add(StatsType type, std::string const& key, uint64_t value) {

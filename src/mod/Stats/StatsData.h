@@ -60,7 +60,7 @@ static_assert(isStatsSchemaValid());
 
 class CustomStatsData {
 public:
-    void                load(StatsDataMap const& values);
+    void                load(StatsDataMap values);
     void                add(CustomType type, uint64_t value = 1);
     void                add(std::string const& key, uint64_t value = 1);
     void                set(CustomType type, uint64_t value = 0);
@@ -84,6 +84,7 @@ struct StatsData {
     StatsDataMap        dropped;
     StatsDataMap        killed;
     StatsDataMap        killed_by;
+    void                loadMap(StatsType type, StatsDataMap values);
     void                add(StatsType type, std::string const& key, uint64_t value = 1);
     StatsDataMap const* getMap(StatsType type) const;
 };
