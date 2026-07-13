@@ -1,0 +1,32 @@
+#include "mod/Version.h"
+#include "winres.h"
+
+#pragma code_page(65001)
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION LK_STATS_VERSION_MAJOR, LK_STATS_VERSION_MINOR, LK_STATS_VERSION_PATCH, 0
+    PRODUCTVERSION LK_STATS_VERSION_MAJOR, LK_STATS_VERSION_MINOR, LK_STATS_VERSION_PATCH, 0
+    FILEFLAGSMASK 0x3fL
+    FILEFLAGS 0x0L
+    FILEOS 0x40004L
+    FILETYPE 0x2L
+    FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "CompanyName", "LeafKnife"
+            VALUE "FileDescription", "Player statistics plugin for LeviLamina"
+            VALUE "FileVersion", LK_STATS_VERSION_STRING
+            VALUE "InternalName", "LK-Stats.dll"
+            VALUE "OriginalFilename", "LK-Stats.dll"
+            VALUE "ProductName", "LK-Stats"
+            VALUE "ProductVersion", LK_STATS_VERSION_STRING
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END

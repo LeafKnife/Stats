@@ -18,7 +18,7 @@ void onSneaking(Player& player);
 void onSneaked(Player& player);
 void onSprinting(Player& player);
 void onSprinted(Player& player);
-void onStartRiding(mce::UUID uuid, Actor& vehicle, bool forceRiding);
+void onStartRiding(mce::UUID uuid);
 void onStopRiding(mce::UUID uuid, Actor* vehicle);
 void onAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet);
 void onTakeItem(Player& player, ItemStack& item);

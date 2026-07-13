@@ -69,7 +69,7 @@ void onCakeBlockRemovedSlice(Player& player) {
     return;
 }
 
-void onCauldronBlockUseInventory(Player& player, ItemStack& currentItem, ItemStack& replaceItem, int useCount) {
+void onCauldronBlockUseInventory(Player& player, ItemStack& currentItem) {
     if (player.isSimulatedPlayer()) return;
     auto  uuid        = player.getUuid();
     auto* playerStats = findPlayerStats(uuid);

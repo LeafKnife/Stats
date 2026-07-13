@@ -68,7 +68,7 @@ void onSprinted(Player& player) {
     playerStats->mDistanceCache.isSprinting = false;
 }
 
-void onStartRiding(mce::UUID uuid, Actor& vehicle, bool forceRiding) {
+void onStartRiding(mce::UUID uuid) {
     auto* playerStats = findPlayerStats(uuid);
     if (!playerStats) return;
     playerStats->mDistanceCache.ride = 0;

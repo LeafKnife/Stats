@@ -44,7 +44,10 @@ target("LK-Stats") -- Change this to your mod name.
     set_symbols("debug")
     add_headerfiles("src/**.h")
     add_files("src/**.cpp")
-    add_includedirs("src")
+    add_files("src/**.rc")
+    set_configdir("$(builddir)/config")
+    add_configfiles("src/(mod/Version.h.in)")
+    add_includedirs("src", "$(builddir)/config")
     if is_config("target_type", "server") then
         add_defines("LL_PLAT_S")
     --  add_includedirs("src-server")
@@ -55,26 +58,19 @@ target("LK-Stats") -- Change this to your mod name.
     --  add_files("src-client/**.cpp")
     end
     on_load(function (target)
-        local tag = os.iorun("git describe --tags --abbrev=0 --always")
-        local major, minor, patch, suffix = tag:match("v(%d+)%.(%d+)%.(%d+)(.*)")
-        if not major then
-            print("Failed to parse version tag, using 0.0.0")
-            major, minor, patch = 0, 0, 0
-        end
-        local versionStr =  major.."."..minor.."."..patch
-        if suffix then
-            prerelease = suffix:match("-(.*)")
-            if prerelease then
-                prerelease = prerelease:gsub("\n", "")
-            end
-            if prerelease then
-                versionStr = versionStr.."-"..prerelease
-            end
-        end
-        if not has_config("publish") then
-            local hash = os.iorun("git rev-parse --short HEAD")
-            versionStr = versionStr.."+"..hash:gsub("\n", "")
-        end
+        import("core.base.json")
+        local modVersionString = json.loadfile("tooth.json")["version"]
+        local modVersionMajor, modVersionMinor, modVersionPatch =
+            modVersionString:match("^(%d+)%.(%d+)%.(%d+)$")
+        if not modVersionMajor then raise("tooth.json version must use major.minor.patch format") end
+
+        local hash = os.iorun("git rev-parse --short HEAD"):gsub("\n", "")
+        local versionStr = modVersionString .. "+" .. hash
+        target:set("version", modVersionString)
+        target:set("configvar", "LK_STATS_VERSION_MAJOR", modVersionMajor)
+        target:set("configvar", "LK_STATS_VERSION_MINOR", modVersionMinor)
+        target:set("configvar", "LK_STATS_VERSION_PATCH", modVersionPatch)
+        target:set("configvar", "LK_STATS_VERSION_STRING", versionStr)
 
         target:add("rules", "@levibuildscript/modpacker",{
                modVersion = versionStr

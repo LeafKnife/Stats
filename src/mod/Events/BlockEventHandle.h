@@ -14,7 +14,7 @@ void onBlockPlacedByPlayer(BlockPos const& pos,Player& player);
 void onBlockUsed(BlockPos const& pos, Player& player);
 void onNoteBlockAttacked(Player* player);
 void onCakeBlockRemovedSlice(Player& player);
-void onCauldronBlockUseInventory(Player& player, ItemStack& currentItem, ItemStack& replaceItem, int useCount);
+void onCauldronBlockUseInventory(Player& player, ItemStack& currentItem);
 void onCauldronBlockClean(
     Player const&                                player,
     short                                        itemId,

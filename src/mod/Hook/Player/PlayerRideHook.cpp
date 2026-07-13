@@ -19,7 +19,7 @@ LL_TYPE_INSTANCE_HOOK(
 ) {
     auto r = origin(vehicle, forceRiding);
     if (!r) return r;
-    event::player::onStartRiding(getUuid(), vehicle, forceRiding);
+    event::player::onStartRiding(getUuid());
     return r;
 }
 
