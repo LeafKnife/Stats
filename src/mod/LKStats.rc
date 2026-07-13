@@ -16,7 +16,7 @@ BEGIN
     BEGIN
         BLOCK "080404b0"
         BEGIN
-            VALUE "CompanyName", "LeafKnife"
+            VALUE "CompanyName", "LWenK"
             VALUE "FileDescription", "Player statistics plugin for LeviLamina"
             VALUE "FileVersion", LK_STATS_VERSION_STRING
             VALUE "InternalName", "LK-Stats.dll"
