@@ -7,7 +7,6 @@
 #include <mc/deps/core/math/Vec3.h>
 #include <mc/world/actor/player/Player.h>
 #include <mc/world/level/dimension/Dimension.h>
-#include <nlohmann/json_fwd.hpp>
 
 
 namespace stats {
@@ -38,14 +37,12 @@ public:
 public:
     PlayerStats(Player const& player);
     mce::UUID           getUuid() const;
-    nlohmann::json      getJson() const;
     StatsDataMap const* getStatsMap(StatsType type) const;
-    // nlohmann::json getJsonStatsData(StatsType type);
-    bool saveData();
-    void addStats(StatsType type, std::string const& key, uint64_t value = 1);
-    void addCustomStats(CustomType type, uint64_t value = 1);
-    void resetCustomStats(CustomType type, uint64_t value = 0);
-    void startSneaking();
-    void stopSneaking();
+    bool                saveData();
+    void                addStats(StatsType type, std::string const& key, uint64_t value = 1);
+    void                addCustomStats(CustomType type, uint64_t value = 1);
+    void                resetCustomStats(CustomType type, uint64_t value = 0);
+    void                startSneaking();
+    void                stopSneaking();
 };
 } // namespace stats

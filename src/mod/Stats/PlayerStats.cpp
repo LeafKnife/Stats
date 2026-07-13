@@ -8,9 +8,9 @@
 #include <mc/world/level/Level.h>
 
 #include "mod/Stats/Stats.h"
+#include "mod/Stats/StatsJsonCodec.h"
 
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <string>
 
 using namespace ll::i18n_literals;
@@ -40,29 +40,14 @@ PlayerStats::PlayerStats(Player const& player) {
 };
 mce::UUID             PlayerStats::getUuid() const { return mUuid; };
 std::filesystem::path PlayerStats::getPath() const { return getStatsPath().concat("/" + mUuid.asString() + ".json"); };
-nlohmann::json        PlayerStats::getJson() const {
-    nlohmann::json j = {
-        {"playerInfo",          {{"uuid", mUuid.asString()}, {"xuid", mXuid}, {"name", mName}}},
-        {"minecraft:custom",    *mData->getMap(StatsType::custom)                             },
-        {"minecraft:mined",     mData->mined                                                  },
-        {"minecraft:broken",    mData->broken                                                 },
-        {"minecraft:crafted",   mData->crafted                                                },
-        {"minecraft:used",      mData->used                                                   },
-        {"minecraft:picked_up", mData->picked_up                                              },
-        {"minecraft:dropped",   mData->dropped                                                },
-        {"minecraft:killed",    mData->killed                                                 },
-        {"minecraft:killed_by", mData->killed_by                                              },
-    };
-    return j;
-}
-StatsDataMap const* PlayerStats::getStatsMap(StatsType type) const {
+StatsDataMap const*   PlayerStats::getStatsMap(StatsType type) const {
     return static_cast<StatsData const&>(*mData).getMap(type);
 }
 bool PlayerStats::saveData() {
     getLogger().debug("log.info.savaData"_tr(mName));
-    auto j = getJson();
     try {
-        return ll::file_utils::writeFile(getPath(), j.dump());
+        PlayerInfo const info{mUuid.asString(), mXuid, mName};
+        return ll::file_utils::writeFile(getPath(), encodeStatsJson(info, *mData));
     } catch (std::exception& exception) {
         getLogger().error(exception.what());
         return false;

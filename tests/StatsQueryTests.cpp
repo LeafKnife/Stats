@@ -8,6 +8,7 @@
 
 int runStatsCustomTests();
 int runStatsDataTests();
+int runStatsJsonCodecTests();
 
 namespace {
 
@@ -104,6 +105,7 @@ void testEmptyRanking() {
 int main() {
     failures += runStatsCustomTests();
     failures += runStatsDataTests();
+    failures += runStatsJsonCodecTests();
     testValueLookup();
     testTotalsUse64Bits();
     testDisplayEntriesAddActivePlayTime();

@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include <nlohmann/json.hpp>
 #include <parallel_hashmap/phmap.h>
 
 #include <ll/api/i18n/I18n.h>
@@ -46,8 +45,7 @@ public:
         auto       cached = mByUuid.find(uuid);
         if (cached != mByUuid.end()) {
             auto const oldName = cached->second.first.name;
-            if (auto const old = mUuidByName.find(oldName);
-                old != mUuidByName.end() && old->second == uuid) {
+            if (auto const old = mUuidByName.find(oldName); old != mUuidByName.end() && old->second == uuid) {
                 mUuidByName.erase(old);
             }
             cached->second = std::move(data);
@@ -72,7 +70,7 @@ public:
     UuidIndex const& entries() const { return mByUuid; }
 
 private:
-    UuidIndex                                    mByUuid;
+    UuidIndex mByUuid;
     // Player names are secondary keys; the most recently upserted UUID owns a collision.
     phmap::flat_hash_map<std::string, mce::UUID> mUuidByName;
 };
@@ -80,10 +78,15 @@ private:
 PlayerStatsMap  playerStatsMap;
 StatsCacheStore statsCache;
 std::string     levelName;
+
+StatsCacheData decodeCachedStats(std::string_view source) {
+    auto decoded = decodeStatsJson(source);
+    return std::make_pair(std::move(decoded.info), std::make_shared<StatsData>(std::move(decoded.data)));
+}
 } // namespace
 
 ll::io::Logger& getLogger() { return lk::MyMod::getInstance().getSelf().getLogger(); }
-PlayerStats* findPlayerStats(mce::UUID const& uuid) {
+PlayerStats*    findPlayerStats(mce::UUID const& uuid) {
     auto const player = playerStatsMap.find(uuid);
     return player == playerStatsMap.end() ? nullptr : player->second.get();
 }
@@ -95,37 +98,13 @@ void addPlayerStats(std::shared_ptr<PlayerStats> playerStats) {
 
 void removePlayerStats(mce::UUID const& uuid) { playerStatsMap.erase(uuid); }
 
-StatsCacheData const* findCachedStats(mce::UUID const& uuid) {
-    return statsCache.find(uuid);
-}
+StatsCacheData const* findCachedStats(mce::UUID const& uuid) { return statsCache.find(uuid); }
 
-StatsCacheData const* findCachedStatsByName(std::string const& name) {
-    return statsCache.findByName(name);
-}
+StatsCacheData const* findCachedStatsByName(std::string const& name) { return statsCache.findByName(name); }
 
 void upsertStatsCache(StatsCacheData data) { statsCache.upsert(std::move(data)); }
 
 void clearStatsCache() { statsCache.clear(); }
-
-StatsCacheData parseStatsData(const std::string& data) {
-    auto j       = nlohmann::json::parse(data);
-    auto tmpData = std::make_shared<StatsData>();
-    auto tmpInfo = PlayerInfo();
-    tmpInfo.name = j["playerInfo"]["name"];
-    tmpInfo.uuid = j["playerInfo"]["uuid"];
-    tmpInfo.xuid = j["playerInfo"]["xuid"];
-    tmpData->custom.load(j["minecraft:custom"].get<StatsDataMap>());
-    tmpData->mined     = j["minecraft:mined"];
-    tmpData->broken    = j["minecraft:broken"];
-    tmpData->crafted   = j["minecraft:crafted"];
-    tmpData->used      = j["minecraft:used"];
-    tmpData->picked_up = j["minecraft:picked_up"];
-    tmpData->dropped   = j["minecraft:dropped"];
-    tmpData->killed    = j["minecraft:killed"];
-    tmpData->killed_by = j["minecraft:killed_by"];
-    StatsCacheData r   = std::make_pair(tmpInfo, tmpData);
-    return r;
-}
 
 query::RankData getStatsRank(StatsType type, std::string const& key) {
     std::vector<query::RankEntryView> entries;
@@ -208,7 +187,7 @@ bool loadStatsCache() {
             continue;
         }
         try {
-            upsertStatsCache(parseStatsData(*rawData));
+            upsertStatsCache(decodeCachedStats(*rawData));
         } catch (std::exception& excep) {
             getLogger().error(excep.what());
             getLogger().warn("data.parse.fail"_tr(path.filename()));
