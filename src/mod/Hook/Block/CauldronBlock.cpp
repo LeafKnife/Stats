@@ -17,7 +17,7 @@ LL_TYPE_INSTANCE_HOOK(
     class ItemStack& replaceWith,
     int              useCount
 ) {
-    event::block::onCauldronBlockUseInventory(player, current, replaceWith, useCount);
+    event::block::onCauldronBlockUseInventory(player, current);
     return origin(player, current, replaceWith, useCount);
 }
 
@@ -36,6 +36,8 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookCauldronBlockUseInventory() { CauldronBlockUseInventoryHook::hook(); }
+void unhookCauldronBlockUseInventory() { CauldronBlockUseInventoryHook::unhook(); }
 
 void hookCauldronBlockClean() { CauldronBlockCleanHook::hook(); }
+void unhookCauldronBlockClean() { CauldronBlockCleanHook::unhook(); }
 } // namespace stats::hook::block

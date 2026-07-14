@@ -2,15 +2,25 @@
 
 #include "mod/Stats/StatsCustom.h"
 #include "mod/Stats/StatsData.h"
+#include "mod/Stats/StatsRecord.h"
 
 #include <cstdint>
 #include <mc/deps/core/math/Vec3.h>
-#include <mc/world/actor/player/Player.h>
-#include <mc/world/level/dimension/Dimension.h>
-#include <nlohmann/json_fwd.hpp>
+#include <mc/platform/UUID.h>
+#include <memory>
+#include <string>
 
 
 namespace stats {
+
+struct PlayerSessionInit {
+    mce::UUID   uuid;
+    std::string xuid;
+    std::string name;
+    Vec3        position;
+    int         dimensionId;
+    uint64_t    currentTick;
+};
 
 class PlayerStats {
     struct MoveCache {
@@ -27,8 +37,7 @@ private:
     std::string                mXuid;
     std::string                mName;
     uint64_t                   mSneakingStartTick;
-    std::filesystem::path      getPath();
-    // void                  parseData(std::string const& data);
+    uint64_t                   mLastCheckpointTick;
 
 public:
     MoveCache mDistanceCache;
@@ -36,15 +45,16 @@ public:
     int       mLastDimensionId;
     // PlayerStats();
 public:
-    PlayerStats(Player const& player);
-    mce::UUID      getUuid();
-    nlohmann::json getJson();
-    // nlohmann::json getJsonStatsData(StatsType type);
-    bool saveData();
-    void addStats(StatsType type, std::string key, uint64_t value = 1);
-    void addCustomStats(CustomType type, uint64_t value = 1);
-    void resetCustomStats(CustomType type, uint64_t value = 0);
-    void startSneaking();
-    void stopSneaking();
+    PlayerStats(PlayerSessionInit init, std::shared_ptr<StatsData> data);
+    mce::UUID           getUuid() const;
+    PlayerInfo          getInfo() const;
+    StatsData const&    getData() const;
+    StatsDataMap const* getStatsMap(StatsType type) const;
+    void                addStats(StatsType type, std::string const& key, uint64_t value = 1);
+    void                addCustomStats(CustomType type, uint64_t value = 1);
+    void                startSneaking(uint64_t currentTick);
+    void                stopSneaking(uint64_t currentTick);
+    void                checkpoint(uint64_t currentTick);
+    uint64_t            getPendingPlayTime(uint64_t currentTick) const;
 };
 } // namespace stats

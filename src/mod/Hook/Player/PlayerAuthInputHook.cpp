@@ -8,7 +8,7 @@
 #include <mc/network/ServerNetworkHandler.h>
 #include <mc/network/packet/PlayerAuthInputPacket.h>
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::player {
 
@@ -25,10 +25,11 @@ LL_TYPE_INSTANCE_HOOK(
     auto handle = thisFor<NetEventCallback>();
     auto player = handle->_getServerPlayer(source, packet.mSenderSubId);
     if (!player) return;
-    event::player::onAuthInput(*player, packet);
+    handler::onPlayerAuthInput(*player, packet);
     return;
 }
 
 void hookPlayerAuthInput() { PlayerAuthInputHook::hook(); }
+void unhookPlayerAuthInput() { PlayerAuthInputHook::unhook(); }
 
 } // namespace stats::hook::player

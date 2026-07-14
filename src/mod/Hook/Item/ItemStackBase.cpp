@@ -2,9 +2,12 @@
 
 #include <ll/api/memory/Hook.h>
 #include <mc/deps/ecs/WeakEntityRef.h>
+#include <mc/world/actor/Actor.h>
+#include <mc/world/actor/ActorType.h>
+#include <mc/world/actor/player/Player.h>
 #include <mc/world/item/ItemStackBase.h>
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::item {
 LL_TYPE_INSTANCE_HOOK(
@@ -22,9 +25,10 @@ LL_TYPE_INSTANCE_HOOK(
     if (!res) return res;
     Player* player = owner->getEntityContext().getWeakRef().tryUnwrap<Player>();
     if (!player) return res;
-    event::player::onItemHurtAndBroken(player, item, deltaDamage);
+    handler::onPlayerItemHurtAndBroken(player, item, deltaDamage);
     return res;
 }
 
 void hookItemStackBaseHurtAndBroken() { ItemStackBaseHurtAndBreak::hook(); }
+void unhookItemStackBaseHurtAndBroken() { ItemStackBaseHurtAndBreak::unhook(); }
 } // namespace stats::hook::item

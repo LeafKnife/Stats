@@ -5,10 +5,12 @@
 #include <mc/deps/ecs/WeakEntityRef.h>
 #include <mc/legacy/ActorUniqueID.h>
 #include <mc/world/actor/ActorDamageSource.h>
+#include <mc/world/actor/ActorType.h>
 #include <mc/world/actor/Mob.h>
+#include <mc/world/actor/player/Player.h>
 #include <mc/world/level/Level.h>
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::mob {
 
@@ -16,7 +18,7 @@ void onMobHurt(Mob* mob, ActorDamageSource const& source, float damage, float af
     if (mob->isType(::ActorType::Player)) {
         Player* player = mob->getEntityContext().getWeakRef().tryUnwrap<Player>();
         if (!player) return;
-        event::player::onTakenDamage(player, damage, afterDamage);
+        handler::onPlayerTakenDamage(player, damage, afterDamage);
     }
     if (source.isEntitySource()) {
         Actor* damageSource = nullptr;
@@ -26,7 +28,7 @@ void onMobHurt(Mob* mob, ActorDamageSource const& source, float damage, float af
         if (damageSource->isType(::ActorType::Player)) {
             Player* player = damageSource->getEntityContext().getWeakRef().tryUnwrap<Player>();
             if (!player) return;
-            event::player::onDealtDamage(mob, player, damage, afterDamage);
+            handler::onPlayerDealtDamage(mob, player, damage, afterDamage);
         }
     }
 }
@@ -47,4 +49,5 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookMobGetDamageAfterResistanceEffect() { MobGetDamageAfterResistanceEffectHook::hook(); }
+void unhookMobGetDamageAfterResistanceEffect() { MobGetDamageAfterResistanceEffectHook::unhook(); }
 } // namespace stats::hook::mob
