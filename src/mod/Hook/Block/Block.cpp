@@ -48,5 +48,7 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookBlockUse() { BlockUseHook::hook(); }
+void unhookBlockUse() { BlockUseHook::unhook(); }
 void hookBlockOnFallOn() { BlockOnFallOnHook::hook(); }
+void unhookBlockOnFallOn() { BlockOnFallOnHook::unhook(); }
 } // namespace stats::hook::block

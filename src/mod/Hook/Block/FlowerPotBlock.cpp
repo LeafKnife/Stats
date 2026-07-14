@@ -25,5 +25,6 @@ LL_TYPE_INSTANCE_HOOK(
 void hookFlowerPotBlockPlaceFlower(){
     FlowerPotBlockTryPlaceFlowerHook::hook();
 }
+void unhookFlowerPotBlockPlaceFlower() { FlowerPotBlockTryPlaceFlowerHook::unhook(); }
 
 } // namespace stats::hook::block

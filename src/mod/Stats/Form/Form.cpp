@@ -3,13 +3,12 @@
 #include "mc/platform/UUID.h"
 #include "mod/Stats/Stats.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <ll/api/form/SimpleForm.h>
 #include <ll/api/i18n/I18n.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
-#include <memory>
-#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -35,116 +34,123 @@ void sendMainGui(Player& player) {
         .sendTo(player);
 }
 
-void sendStatsGui(Player& player, StatsType type) {
-    auto content = renderStatsContent(player.getUuid(), type, player.mTickCount);
-    if (content.has_value()) {
-        auto fm         = ll::form::SimpleForm();
-        auto typeString = StatsTypeMap.at(type);
-        fm.setTitle("gui.title.stats"_tr() + " - " + std::string(ll::i18n::getInstance().get(typeString, {})))
-            .setContent(content.value())
-            .sendTo(player);
-    }
-};
-
 inline void renderContent(std::string& content, std::vector<StatsPair> const& data) {
+    content.reserve(content.size() + data.size() * 32);
     for (auto it = data.begin(); it != data.end(); ++it) {
         std::string str  = "§6" + it->first + "§r : §a" + std::to_string(it->second) + "§r\n";
         content         += str;
     }
 }
 
-inline std::optional<StatsDataMap> getStatsDataMap(mce::UUID uuid, StatsType type) {
-    auto& playerStatsMap = getPlayerStatsMap();
-    auto  findPlayer     = playerStatsMap.find(uuid);
-    if (findPlayer != playerStatsMap.end()) {
-        auto playerStats = findPlayer->second;
-        if (!playerStats) return std::nullopt;
-        auto j          = playerStats->getJson();
-        auto typeString = StatsTypeMap.at(type);
-        auto dataMap    = j[typeString].get<StatsDataMap>();
-        return std::make_optional(dataMap);
-    } else {
-        auto& cache = getStatsCache();
-        for (auto it : cache) {
-            if (mce::UUID(it.first.uuid) != uuid) continue;
-            if (auto r = it.second->getMap(type); r) {
-                return std::make_optional(*r);
-            } else {
-                return std::nullopt;
-            }
-        }
-        return std::nullopt;
+struct StatsView {
+    StatsDataMap const* data;
+    uint64_t            playTimeDelta;
+};
+
+inline StatsView getStatsView(mce::UUID uuid, StatsType type) {
+    if (auto* playerStats = findPlayerStats(uuid)) {
+        auto const level = ll::service::getLevel();
+        auto const tick  = level ? level->getCurrentTick().tickID : 0;
+        return {playerStats->getStatsMap(type), playerStats->getPendingPlayTime(tick)};
     }
+
+    auto const* cached = findCachedStats(uuid);
+    return {cached && cached->second ? cached->second->getMap(type) : nullptr, 0};
 }
 
-std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type, uint64_t tick) {
-    auto data = getStatsDataMap(uuid, type);
+std::optional<query::StatsEntries> buildStatsEntries(mce::UUID uuid, StatsType type) {
+    auto const view = getStatsView(uuid, type);
+    if (!view.data) return std::nullopt;
 
-    if (!data.has_value()) return std::nullopt;
-
-    auto& dataMap = data.value();
-
-    std::vector<StatsPair> dataVector;
-    for (const auto& pair : dataMap) {
-        dataVector.push_back(std::make_pair(std::string(ll::i18n::getInstance().get(pair.first, {})), pair.second));
-    }
+    auto dataVector = query::buildDisplayEntries(*view.data, type, view.playTimeDelta);
     if (type == StatsType::custom) {
-        dataMap["minecraft:play_time"] += tick;
-        auto levelTick =
-            std::make_pair("minecraft:total_world_time"_tr(), ll::service::getLevel()->getCurrentServerTick().tickID);
-        dataVector.push_back(levelTick);
-        std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
-            return a.first < b.first;
-        });
-    } else {
-        std::sort(dataVector.begin(), dataVector.end(), [](const StatsPair& a, const StatsPair& b) {
-            return a.second > b.second;
-        });
+        auto const level = ll::service::getLevel();
+        if (level) {
+            dataVector.emplace_back(
+                "minecraft:total_world_time",
+                level->getCurrentServerTick().tickID
+            );
+        }
     }
+    for (auto& pair : dataVector) {
+        pair.first = std::string(ll::i18n::getInstance().get(pair.first, {}));
+    }
+    query::sortStatsEntries(dataVector, type == StatsType::custom);
+    return dataVector;
+}
 
-    std::string content = "";
-    renderContent(content, dataVector);
+std::string pageSuffix(query::StatsPage const& page) {
+    auto const current = page.totalPages == 0 ? 0 : page.pageIndex + 1;
+    return " [" + std::to_string(current) + "/" + std::to_string(page.totalPages) + "]";
+}
+
+std::optional<std::string> renderStatsContent(mce::UUID uuid, StatsType type) {
+    auto entries = buildStatsEntries(uuid, type);
+    if (!entries) return std::nullopt;
+
+    std::string content;
+    renderContent(content, *entries);
     return content;
 }
 
-inline uint64_t getStatsDataMapValue(StatsDataMap const& map, std::string type) {
-    uint64_t value;
-    if (type.empty()) {
-        value =
-            std::accumulate(map.begin(), map.end(), 0, [](int total, const StatsPair& p) { return total + p.second; });
-    } else {
-        auto mapValue = map.find(type);
-        if (mapValue != map.end()) {
-            value = mapValue->second;
-        } else {
-            value = 0;
-        }
+void sendStatsGui(Player& player, StatsType type, std::size_t pageIndex) {
+    sendStatsGui(player, player.getUuid(), {}, type, pageIndex);
+}
+
+void sendStatsGui(
+    Player&     player,
+    mce::UUID   targetUuid,
+    std::string targetName,
+    StatsType   type,
+    std::size_t pageIndex
+) {
+    auto entries = buildStatsEntries(targetUuid, type);
+    if (!entries) return;
+
+    auto page       = query::paginate(std::move(*entries), pageIndex);
+    auto typeString = getStatsTypeKey(type);
+    auto title      = "gui.title.stats"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {}));
+    if (!targetName.empty()) title += " | " + targetName;
+    title += pageSuffix(page);
+
+    std::string content;
+    renderContent(content, page.entries);
+    auto fm = ll::form::SimpleForm(title, content);
+    if (page.pageIndex > 0) {
+        fm.appendButton("<", [targetUuid, targetName, type, pageIndex = page.pageIndex - 1](Player& viewer) {
+            sendStatsGui(viewer, targetUuid, targetName, type, pageIndex);
+        });
     }
-    return value;
+    if (page.pageIndex + 1 < page.totalPages) {
+        fm.appendButton(">", [targetUuid, targetName, type, pageIndex = page.pageIndex + 1](Player& viewer) {
+            sendStatsGui(viewer, targetUuid, targetName, type, pageIndex);
+        });
+    }
+    fm.sendTo(player);
 }
 
-inline void getRankData(std::vector<StatsPair>& data, StatsType statsType, std::string type) {
-    auto& cache = getStatsCache();
-    for (auto it : cache) {
-        auto name  = it.first.name;
-        auto map   = it.second->getMap(statsType);
-        auto value = getStatsDataMapValue(*map, type);
-        data.push_back(std::make_pair(name, value));
-    };
-    std::sort(data.begin(), data.end(), [](const StatsPair& a, const StatsPair& b) { return a.second > b.second; });
-}
-
-void sendRankGui(Player& player, StatsType statsType, std::string type) {
-    std::vector<StatsPair> data;
-    getRankData(data, statsType, type);
+void sendRankGui(Player& player, StatsType statsType, std::string type, std::size_t pageIndex) {
+    auto        page    = getStatsRankPage(statsType, type, pageIndex);
     std::string title   = type.empty() ? "" : " | " + std::string(ll::i18n::getInstance().get(type, {}));
-    std::string content = "";
-    renderContent(content, data);
-    auto typeString = StatsTypeMap.at(statsType);
+    std::string content;
+    renderContent(content, page.entries);
+    auto typeString = getStatsTypeKey(statsType);
     auto fm         = ll::form::SimpleForm();
-    fm.setTitle("gui.title.rank"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {})) + title)
-        .setContent(content)
-        .sendTo(player);
+    fm.setTitle(
+          "gui.title.rank"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {})) + title
+          + pageSuffix(page)
+    ).setContent(content);
+    if (page.pageIndex > 0) {
+        fm.appendButton("<", [statsType, type, pageIndex = page.pageIndex - 1](Player& viewer) {
+            sendRankGui(viewer, statsType, type, pageIndex);
+        });
+    }
+    if (page.pageIndex + 1 < page.totalPages) {
+        fm.appendButton(">", [statsType, type, pageIndex = page.pageIndex + 1](Player& viewer) {
+            sendRankGui(viewer, statsType, type, pageIndex);
+        });
+    }
+    fm.sendTo(player);
 }
 
 } // namespace stats::form

@@ -5,26 +5,30 @@ on:
   
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: xmake-io/github-action-setup-xmake@v1
         # with:
         #   xmake-version: branch@master
-      - uses: matbour/setup-sentry-cli@v1
+      - uses: matbour/setup-sentry-cli@v2
         with:
           token: ${{ SECRETS.SENTRY_TOKEN }}
           organization: ${{ SECRETS.SENTRY_ORG }}
           project: ${{ SECRETS.SENTRY_PROJECT }}
-      
-      - uses: actions/cache@v4
+
+      - uses: actions/cache@v6
         with:
           path: |
             ~/AppData/Local/.xmake
           key: xmake-${{ hashFiles('xmake.lua') }}
           restore-keys: |
             xmake-
+
+      - run: |
+          xrepo clean --cache -y
+          xmake global --policies=package.precompiled:n
 
       - run: |
           xmake repo -u
@@ -37,7 +41,7 @@ jobs:
       - run: |
           sentry-cli debug-files upload --include-sources bin/LK-Stats
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
           path: |
@@ -48,12 +52,12 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - id: extract-release-notes
-        uses: ffurrer2/extract-release-notes@v2
+        uses: ffurrer2/extract-release-notes@v3
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v3
         with:
           body: |
             ${{ steps.extract-release-notes.outputs.release_notes }}
@@ -66,9 +70,9 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
           path: artifact
@@ -80,7 +84,7 @@ jobs:
           zip -r ../${{ github.event.repository.name }}-windows-x64.zip *
         working-directory: artifact
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ github.event.repository.name }}-windows-x64.zip
