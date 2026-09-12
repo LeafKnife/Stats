@@ -154,21 +154,21 @@ bool initialize() {
     auto const newPath = resolveStatsPath();
     if (!std::filesystem::exists(newPath)) {
         if (std::filesystem::exists(oldPath)) {
-            getLogger().warn("log.info.ExistOldPath"_tr());
+            getLogger().warn("log.warning.legacy_data_migration_started"_tr());
             try {
                 std::filesystem::rename(oldPath, newPath);
             } catch (std::exception const& exception) {
                 getLogger().error(exception.what());
-                getLogger().warn("log.warn.moveStats.fail"_tr());
+                getLogger().warn("log.warning.legacy_data_migration_failed"_tr());
                 return false;
             }
         } else {
-            getLogger().warn("log.info.CreateStatsPath"_tr());
+            getLogger().warn("log.warning.data_directory_initializing"_tr());
             try {
                 std::filesystem::create_directory(newPath);
             } catch (std::exception const& exception) {
                 getLogger().error(exception.what());
-                getLogger().warn("log.warn.CreatePath.fail"_tr());
+                getLogger().warn("log.warning.data_directory_creation_failed"_tr());
                 return false;
             }
         }
@@ -196,14 +196,14 @@ bool loadAll(std::vector<DecodedStats>& records) {
     for (auto const& path : files) {
         auto const source = ll::file_utils::readFile(path);
         if (!source) {
-            getLogger().warn("data.parse.fail"_tr(path.filename()));
+            getLogger().warn("log.warning.data_parse_failed"_tr(path.filename()));
             continue;
         }
         try {
             records.push_back(decodeStatsJson(*source));
         } catch (std::exception const& exception) {
             getLogger().error(exception.what());
-            getLogger().warn("data.parse.fail"_tr(path.filename()));
+            getLogger().warn("log.warning.data_parse_failed"_tr(path.filename()));
         }
     }
     return true;

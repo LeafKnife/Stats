@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+### 更改
+
+- 重构语言文件结构：界面、命令、日志、统计分类与通用统计分别使用嵌套键；Minecraft 名称按 `block`、`item`、`entity` 分类。
+- 更新简体中文、繁体中文（香港）与繁体中文（台湾）的 Minecraft 官方译名数据。
+
+### 修复
+
+- 修复物品/方块混合统计在缺少物品译名时显示 `item.minecraft:<id>`，而不回退到方块译名的问题。
+
 ## [0.10.0] - 2026-09-12
 
 ## 新增

@@ -71,20 +71,20 @@ LL_TYPE_INSTANCE_HOOK(
 
     // This is immediately before the inlined resistance calculation.
     if (this->isType(::ActorType::Player)) {
-        getLogger().info(
-            "[DEBUG-enchant-reduction] victim={} tag='{}' damage_after_armor={:.3f} "
-            "damage_before_resistance={:.3f} resistance_amplifier={} resistance_damage={:.3f} "
-            "resistance_applies={}",
-            this->getTypeName(),
-            this->getNameTag(),
-            damage,
-            afterEnchantReduction,
-            resistance ? resistance->mAmplifier : -1,
-            resistance && source.isReducedByResistanceEffect()
-                ? getResistanceDamage(afterEnchantReduction, resistance->mAmplifier)
-                : 0.0f,
-            source.isReducedByResistanceEffect()
-        );
+        // getLogger().info(
+        //     "[DEBUG-enchant-reduction] victim={} tag='{}' damage_after_armor={:.3f} "
+        //     "damage_before_resistance={:.3f} resistance_amplifier={} resistance_damage={:.3f} "
+        //     "resistance_applies={}",
+        //     this->getTypeName(),
+        //     this->getNameTag(),
+        //     damage,
+        //     afterEnchantReduction,
+        //     resistance ? resistance->mAmplifier : -1,
+        //     resistance && source.isReducedByResistanceEffect()
+        //         ? getResistanceDamage(afterEnchantReduction, resistance->mAmplifier)
+        //         : 0.0f,
+        //     source.isReducedByResistanceEffect()
+        // );
     }
 
     return afterEnchantReduction;

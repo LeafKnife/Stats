@@ -19,18 +19,20 @@ using namespace ll::i18n_literals;
 
 namespace stats::form {
 
+std::string translateStatsCategory(StatsType type);
+
 void sendMainGui(Player& player) {
     auto fm = ll::form::SimpleForm();
     fm.setTitle("gui.title.stats"_tr())
-        .appendButton("minecraft:custom"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::custom); })
-        .appendButton("minecraft:mined"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::mined); })
-        .appendButton("minecraft:broken"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::broken); })
-        .appendButton("minecraft:crafted"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::crafted); })
-        .appendButton("minecraft:used"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::used); })
-        .appendButton("minecraft:dropped"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::dropped); })
-        .appendButton("minecraft:picked_up"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::picked_up); })
-        .appendButton("minecraft:killed"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::killed); })
-        .appendButton("minecraft:killed_by"_tr(), [](Player& pl) { sendStatsGui(pl, StatsType::killed_by); })
+        .appendButton(translateStatsCategory(StatsType::custom), [](Player& pl) { sendStatsGui(pl, StatsType::custom); })
+        .appendButton(translateStatsCategory(StatsType::mined), [](Player& pl) { sendStatsGui(pl, StatsType::mined); })
+        .appendButton(translateStatsCategory(StatsType::broken), [](Player& pl) { sendStatsGui(pl, StatsType::broken); })
+        .appendButton(translateStatsCategory(StatsType::crafted), [](Player& pl) { sendStatsGui(pl, StatsType::crafted); })
+        .appendButton(translateStatsCategory(StatsType::used), [](Player& pl) { sendStatsGui(pl, StatsType::used); })
+        .appendButton(translateStatsCategory(StatsType::dropped), [](Player& pl) { sendStatsGui(pl, StatsType::dropped); })
+        .appendButton(translateStatsCategory(StatsType::picked_up), [](Player& pl) { sendStatsGui(pl, StatsType::picked_up); })
+        .appendButton(translateStatsCategory(StatsType::killed), [](Player& pl) { sendStatsGui(pl, StatsType::killed); })
+        .appendButton(translateStatsCategory(StatsType::killed_by), [](Player& pl) { sendStatsGui(pl, StatsType::killed_by); })
         .sendTo(player);
 }
 
@@ -46,6 +48,38 @@ struct StatsView {
     StatsDataMap const* data;
     uint64_t            playTimeDelta;
 };
+
+std::string translateStatsCategory(StatsType type) {
+    auto& i18n = ll::i18n::getInstance();
+    auto const translationKey = getStatsCategoryTranslationKey(type);
+    auto const translation    = i18n.get(translationKey, {});
+    if (hasTranslation(translation, translationKey)) return std::string(translation);
+
+    // Keep external language files written for the former flat key layout working.
+    auto const legacyKey         = getStatsTypeKey(type);
+    auto const legacyTranslation = i18n.get(legacyKey, {});
+    return hasTranslation(legacyTranslation, legacyKey) ? std::string(legacyTranslation) : std::string(legacyKey);
+}
+
+std::string translateStatsEntry(StatsType type, std::string_view typeName) {
+    auto& i18n = ll::i18n::getInstance();
+    auto translate = [&i18n](std::string const& key) -> std::optional<std::string> {
+        auto const translation = i18n.get(key, {});
+        if (!hasTranslation(translation, key)) return std::nullopt;
+        return std::string(translation);
+    };
+
+    if (isBlockOrItemStatsCategory(type)) {
+        if (auto translation = translate("item." + std::string(typeName))) return *translation;
+        if (auto translation = translate("block." + std::string(typeName))) return *translation;
+    } else if (auto translation = translate(getStatsEntryTranslationKey(type, typeName))) {
+        return *translation;
+    }
+
+    // Older custom language files use the bare Minecraft type name.
+    auto const legacyTranslation = i18n.get(typeName, {});
+    return hasTranslation(legacyTranslation, typeName) ? std::string(legacyTranslation) : std::string(typeName);
+}
 
 inline StatsView getStatsView(mce::UUID uuid, StatsType type) {
     if (auto* playerStats = findPlayerStats(uuid)) {
@@ -73,7 +107,7 @@ std::optional<query::StatsEntries> buildStatsEntries(mce::UUID uuid, StatsType t
         }
     }
     for (auto& pair : dataVector) {
-        pair.first = std::string(ll::i18n::getInstance().get(pair.first, {}));
+        pair.first = translateStatsEntry(type, pair.first);
     }
     query::sortStatsEntries(dataVector, type == StatsType::custom);
     return dataVector;
@@ -107,9 +141,8 @@ void sendStatsGui(
     auto entries = buildStatsEntries(targetUuid, type);
     if (!entries) return;
 
-    auto page       = query::paginate(std::move(*entries), pageIndex);
-    auto typeString = getStatsTypeKey(type);
-    auto title      = "gui.title.stats"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {}));
+    auto page  = query::paginate(std::move(*entries), pageIndex);
+    auto title = "gui.title.stats"_tr() + " | " + translateStatsCategory(type);
     if (!targetName.empty()) title += " | " + targetName;
     title += pageSuffix(page);
 
@@ -131,13 +164,12 @@ void sendStatsGui(
 
 void sendRankGui(Player& player, StatsType statsType, std::string type, std::size_t pageIndex) {
     auto        page    = getStatsRankPage(statsType, type, pageIndex);
-    std::string title   = type.empty() ? "" : " | " + std::string(ll::i18n::getInstance().get(type, {}));
+    std::string title   = type.empty() ? "" : " | " + translateStatsEntry(statsType, type);
     std::string content;
     renderContent(content, page.entries);
-    auto typeString = getStatsTypeKey(statsType);
-    auto fm         = ll::form::SimpleForm();
+    auto fm = ll::form::SimpleForm();
     fm.setTitle(
-          "gui.title.rank"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {})) + title
+          "gui.title.rank"_tr() + " | " + translateStatsCategory(statsType) + title
           + pageSuffix(page)
     ).setContent(content);
     if (page.pageIndex > 0) {

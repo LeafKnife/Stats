@@ -188,7 +188,7 @@ void addPlayerStats(Player const& player) {
     auto        data             = needsInitialSave ? std::make_shared<StatsData>() : cached->second;
 
     PlayerInfo info{uuid.asString(), player.getXuid(), player.getRealName()};
-    if (needsInitialSave) getLogger().debug("log.info.createData"_tr(info.name));
+    if (needsInitialSave) getLogger().debug("log.info.player_data_creating"_tr(info.name));
     upsertStatsCache(std::make_pair(info, data));
     PlayerSessionInit session{
         uuid,
@@ -204,7 +204,7 @@ void addPlayerStats(Player const& player) {
 
 bool savePlayerStats(PlayerStats const& playerStats) {
     auto const info = playerStats.getInfo();
-    getLogger().debug("log.info.savaData"_tr(info.name));
+    getLogger().debug("log.info.player_data_saving"_tr(info.name));
     return repository::save(info, playerStats.getData());
 }
 
@@ -288,10 +288,10 @@ void load() {
         command::registerCommand();
         exportRemoteCall();
         scheduleAutosave();
-        getLogger().info("plugins.load.success"_tr());
+        getLogger().info("log.info.plugin_loaded"_tr());
     } else {
         repository::shutdown();
-        getLogger().warn("plugins.load.fail"_tr());
+        getLogger().warn("log.warning.plugin_load_failed"_tr());
     }
 }
 
