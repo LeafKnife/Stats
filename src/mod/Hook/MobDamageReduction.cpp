@@ -1,3 +1,4 @@
+#include "mc/world/effect/MobEffectIds.h"
 #include "mod/Hook/Hook.h"
 
 #include <cmath>
@@ -13,8 +14,9 @@
 #include <mc/world/effect/MobEffectInstance.h>
 #include <mc/world/level/Level.h>
 
-#include "mod/Stats/Stats.h"
 #include "mod/Stats/Handlers/PlayerStatsHandlers.h"
+#include "mod/Stats/Stats.h"
+
 
 namespace stats::hook::mob {
 namespace {
@@ -61,8 +63,8 @@ LL_TYPE_INSTANCE_HOOK(
     ::ActorDamageSource const& source,
     float                      damage
 ) {
-    auto const afterEnchantReduction = origin(source, damage);
-    auto const* resistance = this->getEffect(*MobEffect::DAMAGE_RESISTANCE());
+    auto const  afterEnchantReduction = origin(source, damage);
+    auto const* resistance            = this->getEffect((uint)MobEffectIds::DamageResistance);
 
     if (resistance && source.isReducedByResistanceEffect()) {
         auto const resistanceDamage = getResistanceDamage(afterEnchantReduction, resistance->mAmplifier);

@@ -14,9 +14,11 @@ LL_TYPE_INSTANCE_HOOK(
     Player,
     &Player::$startSleepInBed,
     BedSleepingResult,
-    BlockPos const& pos
+    ::BlockPos const& bedPos,
+    bool              setsRespawn,
+    float             sleepOffset
 ) {
-    auto    res    = origin(pos);
+    auto    res    = origin(bedPos, setsRespawn, sleepOffset);
     Player* player = this;
     if (res == BedSleepingResult::Ok) handler::onPlayerStartSleep(player);
     return res;

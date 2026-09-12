@@ -24,13 +24,13 @@
 #include <mc/world/attribute/AttributeInstanceConstRef.h>
 #include <mc/world/attribute/SharedAttributes.h>
 #include <mc/world/effect/MobEffect.h>
+#include <mc/world/effect/MobEffectIds.h>
 #include <mc/world/effect/MobEffectInstance.h>
 #include <mc/world/level/Level.h>
 
 #include "mod/Events/BlockEventHandle.h"
-#include "mod/Stats/Stats.h"
 #include "mod/Stats/Handlers/PlayerStatsHandlers.h"
-
+#include "mod/Stats/Stats.h"
 
 namespace stats {
 namespace event {
@@ -114,12 +114,12 @@ void listenEvents() {
         [](ll::event::entity::ActorHurtEvent& event) {
             if (event.isCancelled()) return;
 
-            auto&       victim = event.self();
-            auto const& source = event.source();
-            auto const  damage = event.damage();
+            auto&       victim              = event.self();
+            auto const& source              = event.source();
+            auto const  damage              = event.damage();
             auto const  absorptionAttribute = victim.getAttribute(SharedAttributes::ABSORPTION());
-            auto const  absorption = absorptionAttribute.mPtr ? absorptionAttribute.mPtr->mCurrentValue : 0.0f;
-            auto const* resistance = victim.getEffect(*MobEffect::DAMAGE_RESISTANCE());
+            auto const  absorption          = absorptionAttribute.mPtr ? absorptionAttribute.mPtr->mCurrentValue : 0.0f;
+            auto const* resistance          = victim.getEffect((uint)MobEffectIds::DamageResistance);
 
             // getLogger().info(
             //     "[ActorHurt] victim={} tag='{}' final_damage={:.3f} health_before={} absorption_before={:.3f} "
