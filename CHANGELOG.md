@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.10.0] - 2026-09-12
+
+## 新增
+
+- 适配LeviLamina 26.32
+
 ### 更改
 
 - 重构语言文件结构：界面、命令、日志、统计分类与通用统计分别使用嵌套键；Minecraft 名称按 `block`、`item`、`entity` 分类。
@@ -15,12 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 修复
 
 - 修复物品/方块混合统计在缺少物品译名时显示 `item.minecraft:<id>`，而不回退到方块译名的问题。
-
-## [0.10.0] - 2026-09-12
-
-## 新增
-
-- 适配LeviLamina 26.32
 
 ## [0.9.0] - 2026-07-05
 
@@ -252,7 +252,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.9.0...dev
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.10.0...dev
+[0.10.0]: https://github.com/LeafKnife/Stats/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/LeafKnife/Stats/compare/v0.8.3...v0.9.0
 [0.8.3]: https://github.com/LeafKnife/Stats/compare/v0.8.0...v0.8.3
 [0.8.0]: https://github.com/LeafKnife/Stats/compare/v0.7.1...v0.8.0
