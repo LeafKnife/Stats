@@ -8,7 +8,12 @@ on:
   
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target_type:
+          - server
+          # - client
     steps:
       - uses: actions/checkout@v7
 
@@ -24,22 +29,23 @@ jobs:
           restore-keys: |
             xmake-
 
-      - run: |
-          xrepo clean --cache -y
-          xmake global --policies=package.precompiled:n
+      - name: Setup LLVM
+        uses: ZhongRuoyu/setup-llvm@v0
+        with:
+          llvm-version: 22
 
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows -v -y
+          xmake f -a x64 -m release -p windows -v --target_type=${{ matrix.target_type }} -y
 
       - run: |
           xmake -v -y
 
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-${{ github.sha }}-${{ matrix.target_type }}-windows-x64
           path: |
             bin/
 
