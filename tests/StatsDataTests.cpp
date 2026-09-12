@@ -13,6 +13,13 @@ int runStatsDataTests() {
     static_assert(!stats::isValidStatsType(static_cast<StatsType>(0)));
     static_assert(!stats::isValidStatsType(StatsType::count));
     static_assert(stats::isStatsSchemaValid());
+    static_assert(!stats::isBlockOrItemStatsCategory(StatsType::mined));
+    static_assert(!stats::isBlockOrItemStatsCategory(StatsType::broken));
+    static_assert(stats::isBlockOrItemStatsCategory(StatsType::used));
+    static_assert(!stats::isBlockOrItemStatsCategory(StatsType::killed));
+    static_assert(stats::hasTranslation("石头", "block.minecraft:stone"));
+    static_assert(!stats::hasTranslation("", "block.minecraft:stone"));
+    static_assert(!stats::hasTranslation("item.minecraft:stone", "item.minecraft:stone"));
 
     int failures = 0;
 
@@ -37,6 +44,30 @@ int runStatsDataTests() {
             std::cerr << "FAILED: StatsType lookup mismatch at " << index << '\n';
             ++failures;
         }
+    }
+
+    if (stats::getStatsEntryTranslationKey(StatsType::mined, "minecraft:stone")
+        != "block.minecraft:stone") {
+        std::cerr << "FAILED: mined stats use block translation keys\n";
+        ++failures;
+    }
+    if (!stats::getStatsEntryTranslationKey(StatsType::used, "minecraft:arrow").empty()) {
+        std::cerr << "FAILED: mixed block/item stats must not select one source key\n";
+        ++failures;
+    }
+    if (stats::getStatsEntryTranslationKey(StatsType::killed_by, "minecraft:arrow")
+        != "entity.minecraft:arrow") {
+        std::cerr << "FAILED: combat stats use entity translation keys\n";
+        ++failures;
+    }
+    if (stats::getStatsCategoryTranslationKey(StatsType::custom) != "stats.category.custom") {
+        std::cerr << "FAILED: stats categories use category translation keys\n";
+        ++failures;
+    }
+    if (stats::getStatsEntryTranslationKey(StatsType::custom, "minecraft:jump")
+        != "stats.custom.minecraft:jump") {
+        std::cerr << "FAILED: custom stats use their own translation keys\n";
+        ++failures;
     }
 
     stats::StatsDataMap source{

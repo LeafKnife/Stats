@@ -1,33 +1,27 @@
 add_rules("mode.debug", "mode.release")
 
-add_repositories("levimc-repo " .. (get_config("levimc_repo") or "https://github.com/LiteLDev/xmake-repo.git"))
-
--- add_requires("levilamina x.x.x") for a specific version
--- add_requires("levilamina develop") to use develop version
--- please note that you should add bdslibrary yourself if using dev version
-if is_config("target_type", "server") then
-    add_requires("levilamina 26.20.0", {configs = {target_type = "server"}})
-else
-    add_requires("levilamina 26.20.0", {configs = {target_type = "client"}})
-end
-
-set_toolchains("clang-cl")
-
-add_requires("levibuildscript")
-add_requires("legacyremotecall 0.19.0", {configs = {target_type = get_config(target_type)}})
-add_requires("nlohmann_json 3.11.3")
-add_requires("parallel-hashmap 2.0.0")
-
-
-if not has_config("vs_runtime") then
-    set_runtimes("MD")
-end
+add_repositories("levimc-repo https://github.com/LiteLDev/xmake-repo.git")
 
 option("target_type")
     set_default("server")
     set_showmenu(true)
     set_values("server", "client")
 option_end()
+
+-- add_requires("levilamina x.x.x") for a specific version
+-- add_requires("levilamina develop") to use develop version
+-- please note that you should add bdslibrary yourself if using dev version
+add_requires("levilamina 26.32.*", {configs = {target_type = get_config("target_type")}})
+
+add_requires("levibuildscript")
+add_requires("legacyremotecall v0.20.0", {configs = {target_type = get_config("target_type")}})
+add_requires("nlohmann_json v3.11.3")
+add_requires("parallel-hashmap v2.0.0")
+
+
+if not has_config("vs_runtime") then
+    set_runtimes("MD")
+end
 
 option("publish")
     set_default(false)
@@ -36,6 +30,7 @@ option_end()
 
 target("LK-Stats") -- Change this to your mod name.
     add_rules("@levibuildscript/linkrule")
+    add_rules("@levibuildscript/modpacker")
     if is_plat("windows") then
         add_defines("NOMINMAX", "UNICODE", "REMOTE_CALL_EXPORT")
         set_exceptions("none") -- To avoid conflicts with /EHa.
@@ -56,7 +51,7 @@ target("LK-Stats") -- Change this to your mod name.
         set_toolchains("clang-cl")
     end
     add_packages("levilamina", "legacyremotecall", "nlohmann_json", "parallel-hashmap")
-    set_exceptions("none") -- To avoid conflicts with /EHa.
+    -- set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
     set_languages("c++20")
     set_symbols("debug")
@@ -67,11 +62,11 @@ target("LK-Stats") -- Change this to your mod name.
     add_configfiles("src/(mod/Version.h.in)")
     add_includedirs("src", "$(builddir)/config")
     if is_config("target_type", "server") then
-        add_defines("LL_PLAT_S")
+        -- add_defines("LL_PLAT_S")
     --  add_includedirs("src-server")
     --  add_files("src-server/**.cpp")
     else
-        add_defines("LL_PLAT_C")
+        -- add_defines("LL_PLAT_C")
     --  add_includedirs("src-client")
     --  add_files("src-client/**.cpp")
     end

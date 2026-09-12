@@ -6,7 +6,9 @@
 #include <mc/deps/nbt/CompoundTag.h>
 #include <mc/world/actor/player/Player.h>
 #include <mc/world/level/block/Block.h>
+#include <mc/world/level/block/BlockType.h>
 #include <mc/world/level/block/CachedComponentData.h>
+#include <mc/world/level/block/block_events/BlockEntityFallOnEvent.h>
 #include <mc/world/level/block/components/BlockComponentDirectData.h>
 #include <mc/world/level/block/components/BlockComponentStorage.h>
 
@@ -30,25 +32,45 @@ LL_TYPE_INSTANCE_HOOK(
     return r;
 }
 
+// LL_TYPE_INSTANCE_HOOK(
+//     BlockOnFallOnHook,
+//     HookPriority::Normal,
+//     Block,
+//     &Block::onFallOn,
+//     void,
+//     ::BlockSource&    region,
+//     ::BlockPos const& pos,
+//     ::Actor&          entity,
+//     float             fallDistance
+// ) {
+
+//     if (fallDistance < 1.0f) return origin(region, pos, entity, fallDistance);
+//     event::block::onFallOn(entity, fallDistance);
+//     return origin(region, pos, entity, fallDistance);
+// }
+
 LL_TYPE_INSTANCE_HOOK(
-    BlockOnFallOnHook,
+    BlockOnFallOnBaseHook,
     HookPriority::Normal,
-    Block,
-    &Block::onFallOn,
+    BlockType,
+    &BlockType::onFallOnBase,
     void,
-    ::BlockSource&    region,
-    ::BlockPos const& pos,
-    ::Actor&          entity,
-    float             fallDistance
+    ::BlockEvents::BlockEntityFallOnEvent& eventData
 ) {
-    
-    if (fallDistance < 1.0f) return origin(region, pos, entity, fallDistance);
-    event::block::onFallOn(entity, fallDistance);
-    return origin(region, pos, entity, fallDistance);
+    if (eventData.mFallDistance < 1.0f) return origin(eventData);
+    event::block::onFallOn(eventData.mEntity, eventData.mFallDistance);
+    return origin(eventData);
 }
+
 
 void hookBlockUse() { BlockUseHook::hook(); }
 void unhookBlockUse() { BlockUseHook::unhook(); }
-void hookBlockOnFallOn() { BlockOnFallOnHook::hook(); }
-void unhookBlockOnFallOn() { BlockOnFallOnHook::unhook(); }
+void hookBlockOnFallOn() {
+    // BlockOnFallOnHook::hook();
+    BlockOnFallOnBaseHook::hook();
+}
+void unhookBlockOnFallOn() {
+    // BlockOnFallOnHook::unhook();
+    BlockOnFallOnBaseHook::unhook();
+}
 } // namespace stats::hook::block

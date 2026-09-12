@@ -102,7 +102,7 @@ void onPlayerAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet
         updateGlidingState();
         return;
     }
-    if (player.isRiding()) {
+    if (player.isRiding(nullptr)) {
         auto const value = static_cast<uint64_t>(std::floor(position.distanceTo(playerStats->mLastPos) * 100));
         playerStats->mDistanceCache.ride += value;
         playerStats->mLastPos             = position;
@@ -114,7 +114,7 @@ void onPlayerAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet
             auto const value = static_cast<uint64_t>(std::floor(posDelta.length() * 100));
             if (player.isSwimming()) {
                 playerStats->addCustomStats(CustomType::swim_one_cm, value);
-            } else if (player._isHeadInWater()) {
+            } else if (player.isImmersedInWater()) {
                 playerStats->addCustomStats(CustomType::walk_on_water_one_cm, value);
             } else {
                 playerStats->addCustomStats(CustomType::walk_under_water_one_cm, value);

@@ -52,7 +52,7 @@ void onPlayerItemHurtAndBroken(Player* player, ItemStackBase* item, int deltaDam
     if (!playerStats || !item->isDamageableItem()) return;
     if (!item->isArmorItem()) playerStats->addStats(StatsType::used, item->getTypeName());
 
-    auto const maxDamage = item->getMaxDamage();
+    auto const maxDamage = item->mItem->getMaxDamage();
     auto const damage    = item->getDamageValue();
     if (damage + deltaDamage > maxDamage) {
         playerStats->addStats(StatsType::broken, item->getTypeName());
@@ -75,7 +75,7 @@ void onPlayerUsedItem(Player* player, ItemStackBase& instance, ItemUseMethod ite
         break;
     case ItemUseMethod::Place:
         playerStats->addStats(StatsType::used, instance.getTypeName());
-        if (instance.getItem()->isMusicDisk()) {
+        if (instance.mItem->isMusicDisk()) {
             playerStats->addCustomStats(CustomType::play_record);
         }
         break;

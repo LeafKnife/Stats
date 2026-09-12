@@ -31,9 +31,9 @@ void unhookPlayerAuthInput();
 } // namespace player
 
 namespace mob {
-void hookMobGetDamageAfterResistanceEffect();
-void unhookMobGetDamageAfterResistanceEffect();
-}
+void hookMobGetDamageAfterEnchantReduction();
+void unhookMobGetDamageAfterEnchantReduction();
+} // namespace mob
 
 namespace block {
 void hookBlockUse();

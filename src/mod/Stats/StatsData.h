@@ -45,6 +45,55 @@ constexpr std::string_view getStatsTypeKey(StatsType type) {
     return isValidStatsType(type) ? StatsSchema[getStatsTypeIndex(type)].key : std::string_view{};
 }
 
+inline std::string getStatsCategoryTranslationKey(StatsType type) {
+    constexpr std::string_view namespacePrefix = "minecraft:";
+    auto const                 storageKey      = getStatsTypeKey(type);
+    if (!storageKey.starts_with(namespacePrefix)) return {};
+    return "stats.category." + std::string(storageKey.substr(namespacePrefix.size()));
+}
+
+constexpr std::string_view getStatsEntryTranslationPrefix(StatsType type) {
+    switch (type) {
+    case StatsType::mined:
+        return "block.";
+    case StatsType::broken:
+        return "item.";
+    case StatsType::killed:
+    case StatsType::killed_by:
+        return "entity.";
+    case StatsType::custom:
+        return "stats.custom.";
+    case StatsType::crafted:
+    case StatsType::used:
+    case StatsType::picked_up:
+    case StatsType::dropped:
+    case StatsType::count:
+        return {};
+    }
+    return {};
+}
+
+constexpr bool isBlockOrItemStatsCategory(StatsType type) {
+    switch (type) {
+    case StatsType::crafted:
+    case StatsType::used:
+    case StatsType::picked_up:
+    case StatsType::dropped:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline std::string getStatsEntryTranslationKey(StatsType type, std::string_view typeName) {
+    if (isBlockOrItemStatsCategory(type)) return {};
+    return std::string(getStatsEntryTranslationPrefix(type)) + std::string(typeName);
+}
+
+constexpr bool hasTranslation(std::string_view translation, std::string_view key) {
+    return !translation.empty() && translation != key;
+}
+
 constexpr bool isStatsSchemaValid() {
     for (std::size_t index = 0; index < StatsSchema.size(); ++index) {
         auto const& descriptor = StatsSchema[index];
