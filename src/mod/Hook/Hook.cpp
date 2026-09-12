@@ -24,7 +24,7 @@ constexpr std::array bindings{
     HookBinding{player::hookPlayerUseBucketItemOnFish, player::unhookPlayerUseBucketItemOnFish},
     HookBinding{player::hookPlayerRiding, player::unhookPlayerRiding},
     HookBinding{player::hookPlayerAuthInput, player::unhookPlayerAuthInput},
-    HookBinding{mob::hookMobGetDamageAfterResistanceEffect, mob::unhookMobGetDamageAfterResistanceEffect},
+    HookBinding{mob::hookMobGetDamageAfterEnchantReduction, mob::unhookMobGetDamageAfterEnchantReduction},
     HookBinding{block::hookBlockUse, block::unhookBlockUse},
     HookBinding{block::hookBlockOnFallOn, block::unhookBlockOnFallOn},
     HookBinding{block::hookCakeRemoveSlice, block::unhookCakeRemoveSlice},

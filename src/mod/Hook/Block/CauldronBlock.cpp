@@ -6,7 +6,7 @@
 
 
 namespace stats::hook::block {
-LL_TYPE_INSTANCE_HOOK(
+LL_TYPE_STATIC_HOOK(
     CauldronBlockUseInventoryHook,
     HookPriority::Normal,
     CauldronBlock,
@@ -21,7 +21,7 @@ LL_TYPE_INSTANCE_HOOK(
     return origin(player, current, replaceWith, useCount);
 }
 
-LL_TYPE_INSTANCE_HOOK(
+LL_TYPE_STATIC_HOOK(
     CauldronBlockCleanHook,
     HookPriority::Normal,
     CauldronBlock,

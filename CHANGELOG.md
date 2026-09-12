@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.10.0] - 2026-09-12
+
+## 新增
+
+- 适配LeviLamina 26.32
+
 ## [0.9.0] - 2026-07-05
 
 ### 新增

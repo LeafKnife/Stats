@@ -2,6 +2,7 @@
 
 #include <ll/api/event/EventBus.h>
 #include <ll/api/event/ListenerBase.h>
+#include <ll/api/event/entity/ActorHurtEvent.h>
 #include <ll/api/event/entity/MobDieEvent.h>
 #include <ll/api/event/player/PlayerDestroyBlockEvent.h>
 #include <ll/api/event/player/PlayerDieEvent.h>
@@ -12,11 +13,22 @@
 #include <ll/api/event/player/PlayerSneakEvent.h>
 #include <ll/api/event/player/PlayerSprintEvent.h>
 #include <ll/api/service/Bedrock.h>
+#include <mc/deps/ecs/WeakEntityRef.h>
 #include <mc/legacy/ActorUniqueID.h>
+#include <mc/world/actor/Actor.h>
+#include <mc/world/actor/ActorDamageSource.h>
 #include <mc/world/actor/ActorType.h>
+#include <mc/world/actor/Mob.h>
+#include <mc/world/actor/player/Player.h>
+#include <mc/world/attribute/AttributeInstance.h>
+#include <mc/world/attribute/AttributeInstanceConstRef.h>
+#include <mc/world/attribute/SharedAttributes.h>
+#include <mc/world/effect/MobEffect.h>
+#include <mc/world/effect/MobEffectInstance.h>
 #include <mc/world/level/Level.h>
 
 #include "mod/Events/BlockEventHandle.h"
+#include "mod/Stats/Stats.h"
 #include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 
@@ -33,6 +45,7 @@ ll::event::ListenerPtr playerSneakingListener;
 ll::event::ListenerPtr playerSneakedListener;
 ll::event::ListenerPtr playerSprintingListener;
 ll::event::ListenerPtr playerSprintedListener;
+ll::event::ListenerPtr actorHurtListener;
 ll::event::ListenerPtr mobDieListener;
 } // namespace
 
@@ -97,6 +110,62 @@ void listenEvents() {
             handler::onPlayerStopSprinting(event.self());
         });
 
+    actorHurtListener = eventBus.emplaceListener<ll::event::entity::ActorHurtEvent>(
+        [](ll::event::entity::ActorHurtEvent& event) {
+            if (event.isCancelled()) return;
+
+            auto&       victim = event.self();
+            auto const& source = event.source();
+            auto const  damage = event.damage();
+            auto const  absorptionAttribute = victim.getAttribute(SharedAttributes::ABSORPTION());
+            auto const  absorption = absorptionAttribute.mPtr ? absorptionAttribute.mPtr->mCurrentValue : 0.0f;
+            auto const* resistance = victim.getEffect(*MobEffect::DAMAGE_RESISTANCE());
+
+            getLogger().info(
+                "[ActorHurt] victim={} tag='{}' final_damage={:.3f} health_before={} absorption_before={:.3f} "
+                "resistance_amplifier={} resistance_applies={} entity_source={} child_source={}",
+                victim.getTypeName(),
+                victim.getNameTag(),
+                damage,
+                victim.getHealth(),
+                absorption,
+                resistance ? resistance->mAmplifier : -1,
+                source.isReducedByResistanceEffect(),
+                source.isEntitySource(),
+                source.isChildEntitySource()
+            );
+
+            if (victim.isType(ActorType::Player)) {
+                if (auto* player = victim.getEntityContext().getWeakRef().tryUnwrap<Player>().as_ptr()) {
+                    handler::onPlayerTakenDamage(player, damage);
+                }
+            }
+
+            // Preserve the previous Hook's scope: direct player damage only.
+            if (!source.isEntitySource() || source.isChildEntitySource()) return;
+
+            auto level = ll::service::getLevel();
+            if (!level) return;
+
+            auto* attacker = level->fetchEntity(source.getDamagingEntityUniqueID(), false);
+            if (!attacker || !attacker->isType(ActorType::Player)) return;
+
+            getLogger().info(
+                "[ActorHurt] attacker={} victim={} damage={:.3f}",
+                attacker->getTypeName(),
+                victim.getTypeName(),
+                damage
+            );
+
+            auto* player = attacker->getEntityContext().getWeakRef().tryUnwrap<Player>().as_ptr();
+            auto* mob    = victim.getEntityContext().getWeakRef().tryUnwrap<Mob>().as_ptr();
+            if (!player || !mob) return;
+
+            handler::onPlayerDealtDamage(mob, player, damage);
+        },
+        ll::event::EventPriority::Lowest
+    );
+
     mobDieListener =
         eventBus.emplaceListener<ll::event::entity::MobDieEvent>([](ll::event::entity::MobDieEvent& event) {
             auto& mob    = event.self();
@@ -124,6 +193,7 @@ void removeEvents() {
     eventBus.removeListener(playerSneakedListener);
     eventBus.removeListener(playerSprintingListener);
     eventBus.removeListener(playerSprintedListener);
+    eventBus.removeListener(actorHurtListener);
     eventBus.removeListener(playerDieListener);
     eventBus.removeListener(playerJumpListener);
     eventBus.removeListener(mobDieListener);
