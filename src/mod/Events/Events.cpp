@@ -23,9 +23,8 @@
 #include <mc/world/level/Level.h>
 
 #include "mod/Events/BlockEventHandle.h"
-#include "mod/Stats/Stats.h"
 #include "mod/Stats/Handlers/PlayerStatsHandlers.h"
-
+#include "mod/Stats/Stats.h"
 
 namespace stats {
 namespace event {
