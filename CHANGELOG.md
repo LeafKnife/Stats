@@ -7,11 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [未发布]
 
+## [0.11.0] - 2026-09-16
+
+## 新增
+
+- 适配LeviLamina 26.40
+
+## [0.10.1] - 2026-09-13
+
+### 修复
+
+- 修复骑乘状态判断在 LeviLamina 26.32 中失效，导致载具移动距离无法统计的问题。
+- 修复异常伤害值、无效客户端移动数据或计数溢出可能导致统计数值异常增大的问题。
+- 修复抗性、吸收和盾牌伤害统计的边界计算。
+- 修复花盆交互统计组件获取失败，以及村民交易统计中的空指针问题。
+
+## [0.10.0] - 2026-09-12
+
+## 新增
+
+- 适配LeviLamina 26.32
+
+### 更改
+
+- 重构语言文件结构：界面、命令、日志、统计分类与通用统计分别使用嵌套键；Minecraft 名称按 `block`、`item`、`entity` 分类。
+- 更新简体中文、繁体中文（香港）与繁体中文（台湾）的 Minecraft 官方译名数据。
+
+### 修复
+
+- 修复物品/方块混合统计在缺少物品译名时显示 `item.minecraft:<id>`，而不回退到方块译名的问题。
+
 ## [0.9.0] - 2026-07-05
 
 ### 新增
 
 - 适配LeviLamina 26.20
+
+## [0.8.3] - 2026-07-14
+
+### 新增
+
+- GUI 与 RemoteCall 统计查询分页。
+- 在线玩家每 5 分钟异步保存，并支持中断快照恢复。
+
+### 优化
+
+- 优化玩家统计索引、表单查询与内存占用。
+- 增加排行榜缓存和分页排序，降低大数据量查询开销。
+- 优化玩家移动统计热路径。
+
+### 修复
+
+- 修复异常崩溃时在线玩家统计可能长期未保存的问题。
+- 修复统计文件写入中断时可能忽略有效临时快照的问题。
+- 修复玩家重新加入后名称等缓存信息未刷新的问题。
+- 修复部分动物繁殖统计错误及潜在崩溃问题。
+- 修复物品转移统计读取错误来源槽位的问题。
+- 修复排行榜类型无效时错误提示不明确的问题。
 
 ## [0.8.0] - 2026-04-14
 
@@ -215,8 +267,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 统计玩家与床交互次数
 - 统计玩家与部分方块交互次数
 
-[未发布]: https://github.com/LeafKnife/Stats/compare/v0.9.0...dev
-[0.9.0]: https://github.com/LeafKnife/Stats/compare/v0.8.0...0.9.0
+[未发布]: https://github.com/LeafKnife/Stats/compare/v0.11.0...dev
+[0.11.0]: https://github.com/LeafKnife/Stats/compare/v0.10.1...v0.11.0
+[0.10.1]: https://github.com/LeafKnife/Stats/compare/v0.10.0...v0.10.1
+[0.10.0]: https://github.com/LeafKnife/Stats/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/LeafKnife/Stats/compare/v0.8.3...v0.9.0
+[0.8.3]: https://github.com/LeafKnife/Stats/compare/v0.8.0...v0.8.3
 [0.8.0]: https://github.com/LeafKnife/Stats/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/LeafKnife/Stats/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/LeafKnife/Stats/compare/v0.6.0...v0.7.0

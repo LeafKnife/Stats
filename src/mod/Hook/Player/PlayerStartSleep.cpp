@@ -1,8 +1,11 @@
 #include "mod/Hook/Hook.h"
 
 #include <ll/api/memory/Hook.h>
+#include <mc/world/actor/player/BedSleepingResult.h>
+#include <mc/world/actor/player/Player.h>
+#include <mc/world/level/BlockPos.h>
 
-#include "mod/Events/PlayerEventHandle.h"
+#include "mod/Stats/Handlers/PlayerStatsHandlers.h"
 
 namespace stats::hook::player {
 LL_TYPE_INSTANCE_HOOK(
@@ -11,12 +14,15 @@ LL_TYPE_INSTANCE_HOOK(
     Player,
     &Player::$startSleepInBed,
     BedSleepingResult,
-    BlockPos const& pos
+    ::BlockPos const& bedPos,
+    bool              setsRespawn,
+    float             sleepOffset
 ) {
-    auto    res    = origin(pos);
+    auto    res    = origin(bedPos, setsRespawn, sleepOffset);
     Player* player = this;
-    if (res == BedSleepingResult::Ok) event::player::onStartSleep(player);
+    if (res == BedSleepingResult::Ok) handler::onPlayerStartSleep(player);
     return res;
 }
 void hookPlayerStartSleep() { PlayerStartSleepHook::hook(); }
+void unhookPlayerStartSleep() { PlayerStartSleepHook::unhook(); }
 } // namespace stats::hook::player

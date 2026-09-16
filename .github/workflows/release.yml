@@ -6,19 +6,25 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        target_type:
+          - server
+          # - client
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: xmake-io/github-action-setup-xmake@v1
         # with:
         #   xmake-version: branch@master
-      - uses: matbour/setup-sentry-cli@v1
+
+      - uses: matbour/setup-sentry-cli@v2
         with:
           token: ${{ SECRETS.SENTRY_TOKEN }}
           organization: ${{ SECRETS.SENTRY_ORG }}
           project: ${{ SECRETS.SENTRY_PROJECT }}
-      
-      - uses: actions/cache@v4
+
+      - uses: actions/cache@v6
         with:
           path: |
             ~/AppData/Local/.xmake
@@ -26,20 +32,25 @@ jobs:
           restore-keys: |
             xmake-
 
+      - name: Setup LLVM
+        uses: ZhongRuoyu/setup-llvm@v0
+        with:
+          llvm-version: 22
+
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows -y --publish=y
+          xmake f -a x64 -m release -p windows --target_type=${{ matrix.target_type }} -y --publish=y
 
       - run: |
           xmake -w -y
       - run: |
           sentry-cli debug-files upload --include-sources bin/LK-Stats
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-${{ github.sha }}-${{ matrix.target_type }}-windows-x64
           path: |
             bin/
 
@@ -48,12 +59,12 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - id: extract-release-notes
-        uses: ffurrer2/extract-release-notes@v2
+        uses: ffurrer2/extract-release-notes@v3
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v3
         with:
           body: |
             ${{ steps.extract-release-notes.outputs.release_notes }}
@@ -64,23 +75,28 @@ jobs:
       - update-release-notes
     permissions:
       contents: write
+    strategy:
+      matrix:
+        target_type:
+          - server
+          # - client
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-${{ github.sha }}-${{ matrix.target_type }}-windows-x64
           path: artifact
 
       - run: |
           cp CHANGELOG.md LICENSE README.md artifact/
 
       - run: |
-          zip -r ../${{ github.event.repository.name }}-windows-x64.zip *
+          zip -r ../${{ github.event.repository.name }}-${{ matrix.target_type }}-windows-x64.zip *
         working-directory: artifact
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
-            ${{ github.event.repository.name }}-windows-x64.zip
+            ${{ github.event.repository.name }}-${{ matrix.target_type }}-windows-x64.zip

@@ -23,5 +23,6 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookNoteBlockAttack() { NoteBlockAttackHook::hook(); }
+void unhookNoteBlockAttack() { NoteBlockAttackHook::unhook(); }
 
 } // namespace stats::hook::block

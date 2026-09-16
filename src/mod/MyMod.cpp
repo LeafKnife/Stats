@@ -1,8 +1,47 @@
 #include "mod/MyMod.h"
 
 #include "mod/Stats/Stats.h"
+
+#include <filesystem>
+#include <fstream>
+#include <string>
 #include <ll/api/i18n/I18n.h>
 #include <ll/api/mod/RegisterHelper.h>
+#include <nlohmann/json.hpp>
+
+namespace {
+
+void loadTranslationNode(
+    nlohmann::json const& data,
+    std::string const&    locale,
+    std::string const&    prefix,
+    ll::i18n::I18n&       i18n
+) {
+    for (auto const& [name, value] : data.items()) {
+        auto const key = prefix.empty() ? name : prefix + "." + name;
+        if (value.is_string()) {
+            i18n.set(locale, key, value.get<std::string>());
+        } else if (value.is_object()) {
+            loadTranslationNode(value, locale, key, i18n);
+        }
+    }
+}
+
+bool loadTranslations(std::filesystem::path const& langDir, ll::i18n::I18n& i18n) {
+    std::error_code error;
+    for (std::filesystem::directory_iterator it(langDir, error), end; !error && it != end; it.increment(error)) {
+        if (!it->is_regular_file(error) || it->path().extension() != ".json") continue;
+
+        std::ifstream input(it->path());
+        auto          data = nlohmann::json::parse(input, nullptr, false);
+        if (!input || data.is_discarded() || !data.is_object()) return false;
+
+        loadTranslationNode(data, it->path().stem().string(), {}, i18n);
+    }
+    return !error;
+}
+
+} // namespace
 
 namespace lk {
 
@@ -13,7 +52,9 @@ MyMod& MyMod::getInstance() {
 
 bool MyMod::load() {
     getSelf().getLogger().debug("Loading...");
-    auto res = ll::i18n::getInstance().load(getSelf().getLangDir());
+    if (!loadTranslations(getSelf().getLangDir(), ll::i18n::getInstance())) {
+        getSelf().getLogger().error("Failed to load translations");
+    }
     stats::printLogo();
     // Code for loading the mod goes here.
     return true;

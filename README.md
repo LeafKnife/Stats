@@ -48,6 +48,26 @@ const getStats = ll.import("LK-Stats", "getPlayerStats");
 const stats = getStats(uuid, 1);
 ```
 
+### Paginated RemoteCall API
+
+The existing `getPlayerStats` and `getRankStats` exports remain available. For large datasets, use the paginated exports below. Both return a JSON string; `page` starts at `1`, and `pageSize` is limited to `1`-`100` (values less than `1` use `20`). Ranking results may be cached for up to 30 seconds.
+
+```javascript
+const getPlayerStatsPage = ll.import("LK-Stats", "getPlayerStatsPage");
+const statsPage = JSON.parse(getPlayerStatsPage(uuid, 1, 1, 20));
+
+// { page, pageSize, total, totalPages, items: [{ key, value }] }
+logger.info(JSON.stringify(statsPage));
+```
+
+```javascript
+const getRankStatsPage = ll.import("LK-Stats", "getRankStatsPage");
+const rankPage = JSON.parse(getRankStatsPage(1, "minecraft:play_time", 1, 20));
+
+// { page, pageSize, total, totalPages, items: [{ player, value }] }
+logger.info(JSON.stringify(rankPage));
+```
+
 获取排行榜信息
 
 - 参数：
@@ -78,6 +98,34 @@ const rank3 = getRankData(2,""); // 挖掘排行榜
 | ITEM_DROPPED     | 与丢弃的物品数量有关的统计信息             | minecraft:dropped   |
 | ENTITY_KILLED    | 与玩家杀死的实体数量相关的统计信息         | minecraft:killed    |
 | ENTITY_KILLED_BY | 与玩家被实体杀死相关的统计信息             | minecraft:killed_by |
+
+### 语言文件对象键
+
+统计数据和 RemoteCall API 中的对象键仍为原始命名空间 ID，例如 `minecraft:arrow`。语言文件会按用途及来源嵌套：界面为 `gui`，命令为 `command`，日志为 `log`；统计分类标题为 `stats.category`，通用统计项为 `stats.custom`。方块和物品有时使用相同的 ID，有时不同，因此按来源分为 `block`、`item`、`entity` 三组，避免同一 ID 时互相覆盖：
+
+```json
+{
+    "stats": {
+        "category": {
+            "used": "物品使用"
+        },
+        "custom": {
+            "minecraft:jump": "跳跃次数"
+        }
+    },
+    "block": {
+        "minecraft:stone": "石头"
+    },
+    "item": {
+        "minecraft:arrow": "箭"
+    },
+    "entity": {
+        "minecraft:arrow": "射出的箭"
+    }
+}
+```
+
+加载时会将嵌套对象展开为内部翻译键。统计存档和 RemoteCall API 的字段不变：`mined` 使用 `block`，`broken` 使用 `item`，`killed` 与 `killed_by` 使用 `entity`；`crafted`、`used`、`picked_up`、`dropped` 会依次查询 `item` 与 `block`；通用统计使用 `stats.custom`。为兼容旧语言文件，未找到新键时仍会回退到原本的裸 `minecraft:<id>` 键。
 
 ### 统计信息列表
 

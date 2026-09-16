@@ -9,14 +9,19 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        target_type:
+          - server
+          # - client
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: xmake-io/github-action-setup-xmake@v1
         # with:
         #   xmake-version: branch@master
-      
-      - uses: actions/cache@v4
+
+      - uses: actions/cache@v6
         with:
           path: |
             ~/AppData/Local/.xmake
@@ -24,25 +29,30 @@ jobs:
           restore-keys: |
             xmake-
 
+      - name: Setup LLVM
+        uses: ZhongRuoyu/setup-llvm@v0
+        with:
+          llvm-version: 22
+
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows -v -y
+          xmake f -a x64 -m release -p windows -v --target_type=${{ matrix.target_type }} -y
 
       - run: |
           xmake -v -y
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-${{ github.sha }}-${{ matrix.target_type }}-windows-x64
           path: |
             bin/
 
   # clang-format:
-  #   runs-on: windows-latest
+  #   runs-on: windows-2022
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v7
 
   #     - run: |
   #         choco install llvm -y --version=17.0.6

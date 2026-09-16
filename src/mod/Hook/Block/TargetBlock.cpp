@@ -24,5 +24,6 @@ LL_TYPE_INSTANCE_HOOK(
 void hookProjectileHitTargetBlock(){
     TargetBlockOnProjectileHitHook::hook();
 }
+void unhookProjectileHitTargetBlock() { TargetBlockOnProjectileHitHook::unhook(); }
 
 } // namespace stats::hook::block

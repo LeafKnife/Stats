@@ -6,7 +6,7 @@
 
 
 namespace stats::hook::block {
-LL_TYPE_INSTANCE_HOOK(
+LL_TYPE_STATIC_HOOK(
     CauldronBlockUseInventoryHook,
     HookPriority::Normal,
     CauldronBlock,
@@ -17,11 +17,11 @@ LL_TYPE_INSTANCE_HOOK(
     class ItemStack& replaceWith,
     int              useCount
 ) {
-    event::block::onCauldronBlockUseInventory(player, current, replaceWith, useCount);
+    event::block::onCauldronBlockUseInventory(player, current);
     return origin(player, current, replaceWith, useCount);
 }
 
-LL_TYPE_INSTANCE_HOOK(
+LL_TYPE_STATIC_HOOK(
     CauldronBlockCleanHook,
     HookPriority::Normal,
     CauldronBlock,
@@ -36,6 +36,8 @@ LL_TYPE_INSTANCE_HOOK(
 }
 
 void hookCauldronBlockUseInventory() { CauldronBlockUseInventoryHook::hook(); }
+void unhookCauldronBlockUseInventory() { CauldronBlockUseInventoryHook::unhook(); }
 
 void hookCauldronBlockClean() { CauldronBlockCleanHook::hook(); }
+void unhookCauldronBlockClean() { CauldronBlockCleanHook::unhook(); }
 } // namespace stats::hook::block

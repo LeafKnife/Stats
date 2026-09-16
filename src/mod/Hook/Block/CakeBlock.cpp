@@ -22,5 +22,6 @@ LL_TYPE_STATIC_HOOK(
 }
 
 void hookCakeRemoveSlice() { CakeRemoveSliceHook::hook(); }
+void unhookCakeRemoveSlice() { CakeRemoveSliceHook::unhook(); }
 
 } // namespace stats::hook::block

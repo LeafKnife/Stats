@@ -1,6 +1,5 @@
 #include "mod/Stats/Command/RegisterCommand.h"
 
-#include <optional>
 #include <string>
 
 #include <ll/api/Expected.h>
@@ -15,7 +14,6 @@
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/player/Player.h>
 
-
 #include "mod/Stats/Form/Form.h"
 #include "mod/Stats/Stats.h"
 #include "mod/Stats/StatsData.h"
@@ -24,13 +22,13 @@ using namespace ll::i18n_literals;
 
 namespace stats::command {
 struct StatsGui {
-    StatsType   StatsType;
+    StatsType   category;
     std::string playerName;
 };
 
 struct StatsRank {
-    StatsType   StatsType;
-    std::string type;
+    StatsType   category;
+    std::string stat;
 };
 
 void registerCommand() {
@@ -43,101 +41,61 @@ void registerCommand() {
                     .alias("command.stats.alias"_tr());
     cmd.overload<StatsGui>()
         .text("gui")
-        .optional("StatsType")
+        .optional("category")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->isType(::ActorType::Player)) {
-                output.error("command.error.notplayer"_tr());
+                return output.error("command.error.not_player"_tr());
             }
-            Player* player = (Player*)entity;
-            // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.statsType);
-            switch (param.StatsType) {
-            case StatsType::custom:
-            case StatsType::mined:
-            case StatsType::broken:
-            case StatsType::crafted:
-            case StatsType::used:
-            case StatsType::picked_up:
-            case StatsType::dropped:
-            case StatsType::killed:
-            case StatsType::killed_by:
-                form::sendStatsGui(*player, param.StatsType);
-                break;
-            default:
+            auto* player = static_cast<Player*>(entity);
+            // lk::MyMod::getInstance().getSelf().getLogger().info("cmd {} {}", player->getRealName(), param.category);
+            if (isValidStatsType(param.category)) {
+                form::sendStatsGui(*player, param.category);
+            } else {
                 form::sendMainGui(*player);
-                break;
             }
         });
 
     cmd.overload<StatsGui>()
         .text("player")
         .required("playerName")
-        .required("StatsType")
+        .required("category")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsGui const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->isType(::ActorType::Player)) {
-                output.error("command.error.notplayer"_tr());
+                return output.error("command.error.not_player"_tr());
             }
-            Player* player = (Player*)entity;
+            auto* player = static_cast<Player*>(entity);
             if (param.playerName.empty()) {
                 return output.error("command.error.player_name_empty"_tr());
             }
-            // auto playerInfo = ll::service::PlayerInfo::getInstance().fromName(param.playerName);
-            // if (!playerInfo.has_value()) return output.error("Error");
-            // auto                       uuid    = playerInfo->uuid;
-            auto const& cache = getStatsCache();
-            std::string uuid;
-            for (auto& it : cache) {
-                if (it.first.name == param.playerName) {
-                    uuid = it.first.uuid;
-                    break;
-                }
-            }
-            std::optional<std::string> content = form::renderStatsContent(mce::UUID(uuid), param.StatsType);
-            if (!content.has_value()) return output.error("command.error.find_player"_tr());
-            auto fm         = ll::form::SimpleForm();
-            auto typeString = StatsTypeMap.at(param.StatsType);
-            fm.setTitle(
-                  "gui.title.stats"_tr() + " | " + std::string(ll::i18n::getInstance().get(typeString, {})) + " | "
-                  + param.playerName
-            )
-                .setContent(content.value())
-                .sendTo(*player);
+            auto const* cached = findCachedStatsByName(param.playerName);
+            if (!cached) return output.error("command.error.player_not_found"_tr());
+            form::sendStatsGui(
+                *player,
+                mce::UUID(cached->first.uuid),
+                param.playerName,
+                param.category
+            );
         });
 
     cmd.overload<StatsRank>()
         .text("rank")
-        .required("StatsType")
-        .optional("type")
+        .required("category")
+        .optional("stat")
         .execute([&](CommandOrigin const& origin, CommandOutput& output, StatsRank const& param) {
             auto* entity = origin.getEntity();
             if (entity == nullptr || !entity->isType(::ActorType::Player)) {
-                output.error("command.error.notplayer"_tr());
+                return output.error("command.error.not_player"_tr());
             }
-            Player* player = (Player*)entity;
-            switch (param.StatsType) {
-            case StatsType::custom:
-                if (param.type.empty()) {
-                    output.error("command.error.rank_type_required"_tr());
-                } else {
-                    form::sendRankGui(*player, StatsType::custom, param.type);
-                }
-                break;
-            case StatsType::mined:
-            case StatsType::broken:
-            case StatsType::crafted:
-            case StatsType::used:
-            case StatsType::picked_up:
-            case StatsType::dropped:
-            case StatsType::killed:
-            case StatsType::killed_by:
-                form::sendRankGui(*player, param.StatsType, param.type);
-                break;
-            default:
-                // form::sendRankGuiMain(*player);
-                output.error("TODO");
-                break;
+            auto* player = static_cast<Player*>(entity);
+            if (!isValidStatsType(param.category)) {
+                return output.error("command.error.invalid_stats_category"_tr());
             }
+            if (param.category == StatsType::custom && param.stat.empty()) {
+                return output.error("command.error.rank_stat_required"_tr());
+            }
+            form::sendRankGui(*player, param.category, param.stat);
         });
 }
 } // namespace stats::command
