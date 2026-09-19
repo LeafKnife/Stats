@@ -24,9 +24,10 @@ LL_TYPE_INSTANCE_HOOK(
     ::Player&               player,
     ::BlockPos const&       pos,
     uchar                   face,
+    ::HandSlot              handSlot,
     ::std::optional<::Vec3> hit
 ) {
-    auto r = origin(player, pos, face, hit);
+    auto r = origin(player, pos, face, handSlot, hit);
     if (!r) return r;
     event::block::onBlockUsed(pos, player);
     return r;

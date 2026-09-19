@@ -109,9 +109,9 @@ void onPlayerAuthInput(ServerPlayer& player, PlayerAuthInputPacket const& packet
     auto const  dimId     = player.getDimensionId().mValue;
 
     auto updateGlidingState = [&] {
-        if (inputData.test(static_cast<std::size_t>(PlayerAuthInputPacket::InputData::StartGliding))) {
+        if (inputData.contains(PlayerAuthInputPacket::InputData::StartGliding)) {
             playerStats->mDistanceCache.isGliding = true;
-        } else if (inputData.test(static_cast<std::size_t>(PlayerAuthInputPacket::InputData::StopGliding))) {
+        } else if (inputData.contains(PlayerAuthInputPacket::InputData::StopGliding)) {
             playerStats->mDistanceCache.isGliding = false;
         }
     };
